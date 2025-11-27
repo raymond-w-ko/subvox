@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, libs, ... }:
 
 {
   nix.settings.experimental-features = [
@@ -18,10 +18,20 @@
     fish
   ];
 
-  services.openssh.enable = true;
+  # services.openssh.enable = true;
+
   programs.fish.enable = true;
 
   users.users.rko = {
+    isNormalUser = true;
     shell = pkgs.fish;
+  };
+
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+
+    users.rko = import ../home/rko.nix;
   };
 }
