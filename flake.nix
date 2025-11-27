@@ -2,7 +2,7 @@
   description = "subvox nixos configs for rko";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # if you use nixos-wsl:
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
