@@ -13,9 +13,15 @@
     htop
     curl
     wget
+    ripgrep
+    fzf
+    fish
   ];
 
-  # shared services / defaults go here
-  # programs.zsh.enable = true;
-  # services.openssh.enable = true;
+  services.openssh.enable = true;
+  programs.fish.enable = true;
+
+  users.users.rko = {
+    shell = pkgs.fish;
+  };
 }
