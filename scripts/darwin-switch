@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+attr="${1:-}"
+if [[ -z "${attr}" ]]; then
+  printf "usage: %s <flake-attr> [extra darwin-rebuild args]\n" "$(basename "$0")" >&2
+  printf "example: %s darwin --profile /nix/var/nix/profiles/system\n" "$(basename "$0")" >&2
+  exit 64
+fi
+
+shift || true
+sudo nix run nix-darwin#darwin-rebuild -- switch --flake ".#${attr}" "$@"

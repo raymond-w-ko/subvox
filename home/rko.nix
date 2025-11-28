@@ -1,11 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  home.username = "rko";
-  home.homeDirectory = "/home/rko";
-
-  home.stateVersion = "25.11";
-
   programs.zoxide = {
     enable = true;
     enableBashIntegration = true;

@@ -10,18 +10,18 @@
 - Validate flake and eval consistency: `nix flake check`.
 - Build without applying for quick safety: `nix build .#nixosConfigurations.wsl2.config.system.build.toplevel` (swap host attr as needed).
 - Apply NixOS changes on WSL: `sudo nixos-rebuild switch --flake .#wsl2`.
-- Apply on macOS (darwin output): `darwin-rebuild switch --flake .#macbook` once `hosts/darwin.nix` exists.
+- Apply on macOS (darwin output): `darwin-rebuild switch --flake .#darwin` once `hosts/darwin.nix` exists.
 - Update inputs carefully: `nix flake update`; commit resulting `flake.lock` with a dedicated message.
 
 ## Coding Style & Naming Conventions
 - Nix files use 2-space indentation, trailing semicolons on attr sets, and concise comments explaining non-obvious choices.
-- Keep host module names aligned with flake outputs (`wsl2`, `vm`, `macbook`) and place per-host overrides in `hosts/<name>.nix`.
+- Keep host module names aligned with flake outputs (`wsl2`, `vm`, `darwin`) and place per-host overrides in `hosts/<name>.nix`.
 - Prefer small reusable options in `profiles/`; keep secrets and machine-specific paths inside host files.
 - Run a formatter before pushing (`nix fmt` if configured, otherwise `nixpkgs-fmt`/`alejandra`).
 
 ## Testing Guidelines
 - Always run `nix flake check` before opening a PR or switching a system.
-- For risky changes, build each target you affect (e.g., `.#nixosConfigurations.vm` or `.#darwinConfigurations.macbook`) to catch eval errors early.
+- For risky changes, build each target you affect (e.g., `.#nixosConfigurations.vm` or `.#darwinConfigurations.darwin`) to catch eval errors early.
 - Name tests and modules after the machine or feature they configure to simplify diff review.
 
 ## Commit & Pull Request Guidelines

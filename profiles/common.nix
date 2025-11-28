@@ -26,15 +26,6 @@
   programs.fish.enable = true;
 
   users.users.rko = {
-    isNormalUser = true;
     shell = pkgs.fish;
-  };
-
-
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-
-    users.rko = import ../home/rko.nix;
   };
 }
