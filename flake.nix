@@ -16,7 +16,7 @@
 
   outputs = inputs@{ nixpkgs, nixos-wsl, darwin, home-manager, ... }:
     let
-      wslConfig = { ... } : {
+      wslConfig = { pkgs, ... } : {
         wsl.enable = true;
         wsl.defaultUser = "rko";
 
