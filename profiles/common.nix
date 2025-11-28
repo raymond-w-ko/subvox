@@ -15,7 +15,10 @@
     wget
     ripgrep
     fzf
+    zsh
     fish
+    zoxide
+    eza
   ];
 
   # services.openssh.enable = true;
