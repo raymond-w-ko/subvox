@@ -8,6 +8,7 @@
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -23,11 +24,12 @@
       ...
     }:
     let
+      user = "rko";
       wslConfig =
         { pkgs, ... }:
         {
           wsl.enable = true;
-          wsl.defaultUser = "rko";
+          wsl.defaultUser = user;
           wsl.useWindowsDriver = true;
 
           # This value determines the NixOS release from which the default
@@ -47,6 +49,12 @@
           environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
           environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
           environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
+
+          # services.openssh.enable = true;
+
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users."${user}" = homeManagerConfig;
         };
       commonConfig =
         { pkgs, ... }:
@@ -71,71 +79,70 @@
             eza
           ];
 
-          # services.openssh.enable = true;
-
           programs.fish.enable = true;
-
-          users.users.rko = {
+          users.users."${user}" = {
             shell = pkgs.fish;
           };
         };
-      homeManagerConfig = {
-        programs.zoxide = {
-          enable = true;
-          enableBashIntegration = true;
-          enableZshIntegration = true;
-          enableFishIntegration = true;
-          options = [
-            "--cmd"
-            "j"
-          ];
-        };
+      homeManagerConfig =
+        { ... }:
+        {
+          programs.zoxide = {
+            enable = true;
+            enableBashIntegration = true;
+            enableZshIntegration = true;
+            enableFishIntegration = true;
+            options = [
+              "--cmd"
+              "j"
+            ];
+          };
 
-        programs.fish = {
-          enable = true;
-          binds = { };
-          shellAbbrs = {
-            e = "eza -l";
-            ee = "eza -la";
-            l = "eza -l";
-            ll = "eza -la";
-            v = "nvim";
-            cd = "__zoxide_z";
+          programs.fish = {
+            enable = true;
+            binds = { };
+            shellAbbrs = {
+              e = "eza -l";
+              ee = "eza -la";
+              l = "eza -l";
+              ll = "eza -la";
+              v = "nvim";
+              cd = "__zoxide_z";
 
-            g = "git";
-            gs = "git status";
-            gsw = "git switch";
-            gcfxd = "git clean -fxd";
-            gd = "git diff";
-            ga = "git add";
-            gf = "git fetch";
-            gl = "git pull";
-            gc = "git commit";
-            gca = "git commit -a";
-            gcam = "git commit -a -m";
-            gp = "git push";
-            gpfnv = "git push --force-with-lease --no-verify";
+              g = "git";
+              gs = "git status";
+              gsw = "git switch";
+              gcfxd = "git clean -fxd";
+              gd = "git diff";
+              ga = "git add";
+              gf = "git fetch";
+              gl = "git pull";
+              gc = "git commit";
+              gca = "git commit -a";
+              gcam = "git commit -a -m";
+              gp = "git push";
+              gpfnv = "git push --force-with-lease --no-verify";
 
-            ts = "tmux new -s";
-            ta = "tmux attach -d -t";
-            tl = "tmux list-sessions";
+              ts = "tmux new -s";
+              ta = "tmux attach -d -t";
+              tl = "tmux list-sessions";
 
-            oc = "opencode";
-            cx = "codex";
+              oc = "opencode";
+              cx = "codex";
 
-            ".." = "__zoxide_z ..";
-            "..." = "__zoxide_z ../..";
-            "...." = "__zoxide_z ../../..";
+              ".." = "__zoxide_z ..";
+              "..." = "__zoxide_z ../..";
+              "...." = "__zoxide_z ../../..";
+            };
+          };
+          programs.git = {
+            enable = true;
+            settings = {
+              user.name = "Raymond W. Ko";
+              user.email = "raymond.w.ko@gmail.com";
+            };
           };
         };
-        programs.git = {
-          enable = true;
-          settings = {
-            user.name = "Raymond W. Ko";
-            user.email = "raymond.w.ko@gmail.com";
-          };
-        };
-      };
     in
     {
       ########################
@@ -154,7 +161,9 @@
             home-manager.nixosModules.home-manager
             wslConfig
             commonConfig
-            homeManagerConfig
+            {
+              home-manager.users."${user}".home.stateVersion = "26.05";
+            }
           ];
         };
       };
@@ -167,18 +176,7 @@
           system = "aarch64-darwin";
 
           modules = [
-            ./hosts/darwin.nix
             home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.jdoe = ./home.nix;
-              home-manager.users.rko = {
-                home.username = "rko";
-                home.homeDirectory = "/Users/rko";
-                home.stateVersion = "25.11";
-              };
-            }
             commonConfig
             homeManagerConfig
           ];
