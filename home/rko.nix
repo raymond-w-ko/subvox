@@ -6,12 +6,15 @@
     enableBashIntegration = true;
     enableZshIntegration = true;
     enableFishIntegration = true;
-    options = ["--cmd" "j"];
+    options = [
+      "--cmd"
+      "j"
+    ];
   };
 
   programs.fish = {
     enable = true;
-    binds = {};
+    binds = { };
     shellAbbrs = {
       e = "eza -l";
       ee = "eza -la";
