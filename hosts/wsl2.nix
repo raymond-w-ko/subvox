@@ -18,4 +18,13 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
+  
+  hardware.graphics.enable = true;
+  hardware.graphics.enable32Bit = true;
+  environment.systemPackages = with pkgs; [ mesa mesa-demos ];
+  environment.sessionVariables.LD_LIBRARY_PATH = [
+    "/run/opengl-driver/lib/"
+    "${pkgs.openssl.out}/lib"
+  ];
+  environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
 }

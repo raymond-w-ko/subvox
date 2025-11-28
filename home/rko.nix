@@ -4,7 +4,7 @@
   home.username = "rko";
   home.homeDirectory = "/home/rko";
 
-  home.stateVersion = "26.05";
+  home.stateVersion = "25.11";
 
   programs.zoxide = {
     enable = true;

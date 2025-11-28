@@ -11,14 +11,14 @@
   outputs = inputs@{ self, nixpkgs, nixos-wsl, home-manager, ... }: {
     nixosConfigurations = {
       wsl2 = nixpkgs.lib.nixosSystem {
-			  system = "x86_64-linux";
-				modules = [
+        system = "x86_64-linux";
+        modules = [
           nixos-wsl.nixosModules.default
-					home-manager.nixosModules.home-manager
+          home-manager.nixosModules.home-manager
           ./profiles/common.nix
           ./hosts/wsl2.nix
-				];
-			};
-	  };
-	};
+        ];
+      };
+    };
+  };
 }
