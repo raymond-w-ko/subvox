@@ -36,6 +36,8 @@
       gc = "git commit";
       gca = "git commit -a";
       gcam = "git commit -a -m";
+      gp = "git push";
+      gpfnv = "git push --force-with-lease --no-verify";
 
       ts = "tmux new -s";
       ta = "tmux attach -d -t";
