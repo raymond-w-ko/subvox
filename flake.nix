@@ -28,6 +28,7 @@
         {
           wsl.enable = true;
           wsl.defaultUser = "rko";
+          wsl.useWindowsDriver = true;
 
           # This value determines the NixOS release from which the default
           # settings for stateful data, like file locations and database versions
@@ -45,6 +46,7 @@
           ];
           environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
           environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
+          environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
         };
       commonConfig =
         { pkgs, ... }:
