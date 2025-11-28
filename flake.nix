@@ -16,7 +16,7 @@
 
   outputs = inputs@{ nixpkgs, nixos-wsl, darwin, home-manager, ... }:
     let
-      wslConfig: { ... } : {
+      wslConfig = { ... } : {
         wsl.enable = true;
         wsl.defaultUser = "rko";
 
@@ -37,7 +37,7 @@
         ];
         environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
       };
-      commonConfig: { pkgs, ... } : {
+      commonConfig = { pkgs, ... } : {
         nix.settings.experimental-features = [
           "nix-command"
           "flakes"
