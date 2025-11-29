@@ -85,8 +85,15 @@
           };
         };
       homeManagerConfig =
-        { ... }:
+        { config, ... }:
         {
+          xdg.enable = true;
+
+          home.file.".config/nvim/" = {
+            source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/subvox/nvim";
+            recursive = true;
+          };
+
           programs.zoxide = {
             enable = true;
             enableBashIntegration = true;
