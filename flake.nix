@@ -64,6 +64,10 @@
           system.stateVersion = 6;
           nixpkgs.hostPlatform = "aarch64-darwin";
           nix.enable = false; # needed for Determinate Systems Nix
+
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users."${user}" = homeManagerConfig;
         };
       commonConfig =
         { pkgs, ... }:
@@ -191,10 +195,15 @@
       darwinConfigurations = {
         macos = nix-darwin.lib.darwinSystem {
           modules = [
+            home-manager.darwinModules.home-manager
             macosConfig
-            # home-manager.darwinModules.home-manager
             commonConfig
-            # homeManagerConfig
+            {
+              users.users.${user}.home = "/Users/${user}";
+              home-manager.users.${user}.home = {
+                stateVersion = "26.05";
+              };
+            }
           ];
         };
       };
