@@ -5,11 +5,14 @@
  ;; conflicts with nmap S
  ; (uu.tx :shortcuts/no-neck-pain.nvim)
 
- (uu.tx :loganswartz/selenized.nvim
-        {:dependencies [:rktjmp/lush.nvim]
-         :config (fn []
-                   (tset _G.vim.g :selenized_variant "normal")
-                   (tset _G.vim.o :background "light")
+ ; (uu.tx :loganswartz/selenized.nvim
+ ;        {:dependencies [:rktjmp/lush.nvim]
+ ;         :config (fn []
+ ;                   (tset _G.vim.g :selenized_variant "normal")
+ ;                   (tset _G.vim.o :background "light")
+ ;                   (vim.cmd.colorscheme "selenized"))})
+ (uu.tx :calind/selenized.nvim
+        {:config (fn []
                    (vim.cmd "colorscheme selenized"))})
 
  ;; does not work by default for Lisp languages
@@ -31,7 +34,7 @@
                 {1 "gs" 2 "<Plug>(leap-from-window)" :mode "n"}]})
  
  (uu.tx :nvim-lualine/lualine.nvim
-        {:dependencies [:loganswartz/selenized.nvim
+        {:dependencies [:calind/selenized.nvim
                         :nvim-tree/nvim-web-devicons]
          :config (fn []
                    (local lualine (require "lualine"))
