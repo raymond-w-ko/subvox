@@ -4,8 +4,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    darwin.url = "github:nix-darwin/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.url = "github:nix-darwin/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
@@ -17,9 +17,10 @@
 
   outputs =
     inputs@{
+      self,
       nixpkgs,
       nixos-wsl,
-      darwin,
+      nix-darwin,
       home-manager,
       ...
     }:
@@ -55,6 +56,13 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users."${user}" = homeManagerConfig;
+        };
+      macosConfig =
+        { pkgs, ... }:
+        {
+          system.configurationRevision = self.rev or self.dirtyRev or null;
+          system.stateVersion = 6;
+          nixpkgs.hostPlatform = "aarch64-darwin";
         };
       commonConfig =
         { pkgs, ... }:
@@ -180,13 +188,13 @@
       # darwin
       ########################
       darwinConfigurations = {
-        darwin = darwin.lib.darwinSystem {
+        macos = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-
           modules = [
-            home-manager.darwinModules.home-manager
+            macosConfig
+            # home-manager.darwinModules.home-manager
             commonConfig
-            homeManagerConfig
+            # homeManagerConfig
           ];
         };
       };
