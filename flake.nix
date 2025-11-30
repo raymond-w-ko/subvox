@@ -78,9 +78,11 @@
           ];
           time.timeZone = "America/New_York";
 
-          nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-            "claude-code"
-          ];
+          nixpkgs.config.allowUnfreePredicate =
+            pkg:
+            builtins.elem (lib.getName pkg) [
+              "claude-code"
+            ];
           environment.systemPackages = with pkgs; [
             git
             neovim
@@ -114,9 +116,6 @@
               aporetic
               jetbrains-mono
             ];
-            enableDefaultPackages = true;
-            fontDir.enable = true;
-            fontconfig.useEmbeddedBitmaps = true;
           };
 
           programs.fish.enable = true;
@@ -129,6 +128,19 @@
         {
           environment.systemPackages = with pkgs; [
             ghostty
+          ];
+          fonts = {
+            fontDir.enable = true;
+            fontconfig.useEmbeddedBitmaps = true;
+            fonts.enableDefaultPackages = true;
+          };
+        };
+      macosOnlyPackages =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = with pkgs; [
+            aerospace
+            sketchybar
           ];
         };
       homeManagerConfig =
@@ -233,6 +245,7 @@
             home-manager.darwinModules.home-manager
             macosConfig
             commonConfig
+            macosOnlyPackages
             {
               users.users.${user}.home = "/Users/${user}";
               home-manager.users.${user}.home = {
