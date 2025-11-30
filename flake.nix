@@ -160,15 +160,17 @@
             raycast
           ];
         };
+
       homeManagerConfig =
         { config, ... }:
+        let
+          dotfilesDir = "${config.home.homeDirectory}/subvox/home";
+        in
         {
           xdg.enable = true;
 
-          home.file.".config/nvim/" = {
-            source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/subvox/nvim";
-            recursive = true;
-          };
+          home.file.".config/nvim/".source =
+            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/nvim";
 
           programs.zoxide = {
             enable = true;
