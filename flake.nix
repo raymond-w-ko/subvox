@@ -97,7 +97,8 @@
             codex
             claude-code
           ];
-          environment.enableAllTerminfo = true;
+          # this pulls in termbench-pro, which does not compile
+          # environment.enableAllTerminfo = true;
           security.sudo.keepTerminfo = true;
           fonts = {
             packages = with pkgs; [
