@@ -26,6 +26,17 @@
     }:
     let
       user = "rko";
+
+      globalConfig =
+        { lib, pkgs, ... }:
+        {
+          nixpkgs.config.allowUnfreePredicate =
+            pkg:
+            builtins.elem (lib.getName pkg) [
+              "claude-code"
+              "raycast"
+            ];
+        };
       wslConfig =
         { pkgs, ... }:
         {
@@ -141,6 +152,7 @@
           environment.systemPackages = with pkgs; [
             aerospace
             sketchybar
+            raycast
           ];
         };
       homeManagerConfig =
@@ -209,6 +221,11 @@
               user.email = "raymond.w.ko@gmail.com";
             };
           };
+          programs.neovim = {
+            enable = true;
+            defaultEditor = true;
+            vimAlias = true;
+          };
         };
     in
     {
@@ -226,6 +243,7 @@
           modules = [
             nixos-wsl.nixosModules.default
             home-manager.nixosModules.home-manager
+            globalConfig
             wslConfig
             commonConfig
             linuxOnlyPackages
@@ -243,6 +261,7 @@
         macos = nix-darwin.lib.darwinSystem {
           modules = [
             home-manager.darwinModules.home-manager
+            globalConfig
             macosConfig
             commonConfig
             macosOnlyPackages
