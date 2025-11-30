@@ -112,6 +112,10 @@
             zoxide
             eza
 
+            nodejs_24
+            bun
+            uv
+
             codex
             claude-code
           ];
@@ -237,6 +241,12 @@
             enable = true;
             defaultEditor = true;
             vimAlias = true;
+          };
+          programs.bun = {
+            enable = true;
+          };
+          programs.uv = {
+            enable = true;
           };
         };
     in
