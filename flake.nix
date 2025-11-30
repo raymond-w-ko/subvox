@@ -30,6 +30,11 @@
       globalConfig =
         { lib, pkgs, ... }:
         {
+          nixpkgs.overlays = [
+            (final: prev: {
+              raycast = prev.callPackage ./pkgs/raycast/default.nix { };
+            })
+          ];
           nixpkgs.config.allowUnfreePredicate =
             pkg:
             builtins.elem (lib.getName pkg) [
