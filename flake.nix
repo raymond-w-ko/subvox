@@ -91,6 +91,8 @@
             zoxide
             eza
           ];
+          environment.enableAllTerminfo = true;
+          security.sudo.keepTerminfo = true;
 
           programs.fish.enable = true;
           users.users."${user}" = {
