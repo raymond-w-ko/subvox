@@ -70,7 +70,7 @@
           home-manager.users."${user}" = homeManagerConfig;
         };
       commonConfig =
-        { pkgs, ... }:
+        { lib, pkgs, ... }:
         {
           nix.settings.experimental-features = [
             "nix-command"
@@ -78,6 +78,9 @@
           ];
           time.timeZone = "America/New_York";
 
+          nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+            "claude-code"
+          ];
           environment.systemPackages = with pkgs; [
             git
             neovim
@@ -90,14 +93,42 @@
             fish
             zoxide
             eza
+
+            codex
+            claude-code
           ];
           environment.enableAllTerminfo = true;
           security.sudo.keepTerminfo = true;
+          fonts = {
+            packages = with pkgs; [
+              noto-fonts
+              noto-fonts-cjk-sans
+              noto-fonts-color-emoji
+              liberation_ttf
+              fira-code
+              fira-code-symbols
+              mplus-outline-fonts.githubRelease
+              dina-font
+              iosevka
+              aporetic
+              jetbrains-mono
+            ];
+            enableDefaultPackages = true;
+            fontDir.enable = true;
+            fontconfig.useEmbeddedBitmaps = true;
+          };
 
           programs.fish.enable = true;
           users.users."${user}" = {
             shell = pkgs.fish;
           };
+        };
+      linuxOnlyPackages =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = with pkgs; [
+            ghostty
+          ];
         };
       homeManagerConfig =
         { config, ... }:
@@ -184,6 +215,7 @@
             home-manager.nixosModules.home-manager
             wslConfig
             commonConfig
+            linuxOnlyPackages
             {
               home-manager.users."${user}".home.stateVersion = "26.05";
             }
