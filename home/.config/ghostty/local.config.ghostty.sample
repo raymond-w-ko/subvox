@@ -1,0 +1,5 @@
+font-family = Aporetic Sans Mono
+font-size = 9
+adjust-cell-width = 0
+adjust-cell-height = -2
+config-file = keybinds.ghostty

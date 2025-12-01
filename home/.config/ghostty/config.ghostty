@@ -1,0 +1,34 @@
+auto-update = off
+
+window-padding-x = 6
+window-padding-y = 6
+window-width = 180
+window-height = 45
+
+theme = Selenized Light
+
+gtk-titlebar = true
+window-theme = auto
+gtk-custom-css = ghostty.css
+
+bell-features=audio,attention,title
+bell-audio-path=~/bell.mp3
+bell-audio-volume=1.0
+
+cursor-opacity = 1.0
+cursor-style = block
+cursor-style-blink = false
+cursor-color = #000000
+cursor-text = #00ff00
+cursor-opacity = 0.33
+
+shell-integration-features=no-cursor
+app-notifications=false
+selection-clear-on-copy=true
+
+# custom-shader = shaders/cursor_blaze_no_trail.glsl
+custom-shader = shaders/cursor_smear.glsl
+
+keybind = shift+enter=text:\n
+
+config-file = local.config.ghostty

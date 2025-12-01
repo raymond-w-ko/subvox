@@ -1,1 +1,4 @@
+# symlink to result of nix build
 /result
+
+/home/.config/ghostty/local.config.ghostty

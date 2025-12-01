@@ -1,0 +1,15 @@
+headerbar {
+  min-height: 8px;
+  margin: 0;
+  padding: 0;
+}
+headerbar button {
+  min-height: 8px;
+  padding: 0;
+  margin: 0;
+}
+tabbox tab {
+  min-height: 8px;
+  padding: 0;
+  margin: 0;
+}

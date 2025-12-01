@@ -176,6 +176,8 @@
 
           home.file.".config/nvim/".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/nvim";
+          home.file.".config/ghostty/".source =
+            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/ghostty";
 
           programs.zoxide = {
             enable = true;
