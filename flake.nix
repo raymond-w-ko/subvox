@@ -111,6 +111,7 @@
             fish
             zoxide
             eza
+            tmux
 
             nodejs_24
             bun
