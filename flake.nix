@@ -153,7 +153,7 @@
           fonts = {
             fontDir.enable = true;
             fontconfig.useEmbeddedBitmaps = true;
-            fonts.enableDefaultPackages = true;
+            enableDefaultPackages = true;
           };
         };
       macosOnlyPackages =
