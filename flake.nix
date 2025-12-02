@@ -202,6 +202,13 @@
               set fish_greeting
               set -gx fish_prompt_pwd_dir_length 3
               set -gx fish_prompt_pwd_full_dirs 3
+
+              set -l newpath (for p in $PATH
+                if not string match -rq '^/mnt/c/' -- $p
+                  echo $p
+                end
+              end)
+              set -gx PATH (string join ":" $newpath)
             '';
             shellAbbrs = {
               e = "eza -l";
