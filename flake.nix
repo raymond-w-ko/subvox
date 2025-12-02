@@ -42,6 +42,17 @@
               "raycast"
             ];
         };
+      linuxConfig =
+        { pkgs, ... }:
+        {
+          programs.nix-ld.enable = true;
+
+          # services.openssh.enable = true;
+
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users."${user}" = homeManagerConfig;
+        };
       wslConfig =
         { pkgs, ... }:
         {
@@ -66,12 +77,6 @@
           environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
           environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
           environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
-
-          # services.openssh.enable = true;
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users."${user}" = homeManagerConfig;
         };
       macosConfig =
         { pkgs, ... }:
@@ -99,6 +104,7 @@
             builtins.elem (lib.getName pkg) [
               "claude-code"
             ];
+          environment.localBinInPath = true;
           environment.systemPackages = with pkgs; [
             git
             neovim
@@ -203,6 +209,8 @@
               set -gx fish_prompt_pwd_dir_length 3
               set -gx fish_prompt_pwd_full_dirs 3
 
+              fish_add_path $HOME/subvox/bin
+
               set -l newpath (for p in $PATH
                 if not string match -rq '^/mnt/c/' -- $p
                   echo $p
@@ -293,6 +301,7 @@
             nixos-wsl.nixosModules.default
             home-manager.nixosModules.home-manager
             globalConfig
+            linuxConfig
             wslConfig
             commonConfig
             linuxOnlyPackages
