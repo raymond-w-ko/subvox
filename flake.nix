@@ -267,6 +267,7 @@
           };
           programs.git = {
             enable = true;
+            lfs.enable = true;
             settings = {
               user.name = "Raymond W. Ko";
               user.email = "raymond.w.ko@gmail.com";
