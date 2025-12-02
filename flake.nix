@@ -178,7 +178,7 @@
         };
 
       homeManagerConfig =
-        { config, ... }:
+        { pkgs, config, ... }:
         let
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
         in
@@ -266,9 +266,31 @@
             mouse = true;
             focusEvents = true;
             clock24 = true;
-            newSession = true;
+            newSession = false;
             baseIndex = 1;
             historyLimit = 10000;
+            extraConfig = ''
+              set -g status-justify centre
+              set -g status-position top
+              setw -g monitor-activity on
+            '';
+            plugins = with pkgs; [
+              {
+                plugin = tmuxPlugins.catppuccin;
+                extraConfig = ''
+                  set -g @catppuccin_flavor "latte"
+                  set -g @catppuccin_window_status_style "rounded"
+                  set -g status-right-length 100
+                  set -g status-left-length 100
+                  set -g status-left ""
+                  set -g status-right "#{E:@catppuccin_status_application}"
+                  # set -agF status-right "#{E:@catppuccin_status_cpu}"
+                  set -ag status-right "#{E:@catppuccin_status_session}"
+                  set -ag status-right "#{E:@catppuccin_status_uptime}"
+                  # set -agF status-right "#{E:@catppuccin_status_battery}"
+                '';
+              }
+            ];
           };
           programs.git = {
             enable = true;
