@@ -179,6 +179,11 @@
           home.file.".config/ghostty/".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/ghostty";
 
+          home.file.".codex/config.template.toml".source =
+            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
+          home.file.".codex/AGENTS.md".source =
+            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
+
           programs.zoxide = {
             enable = true;
             enableBashIntegration = true;
