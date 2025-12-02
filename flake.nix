@@ -233,6 +233,18 @@
               "....." = "__zoxide_z ../../../..";
             };
           };
+          programs.tmux = {
+            enable = true;
+            terminal = "tmux-256color";
+            prefix = "f5";
+            keyMode = "vi";
+            mouse = true;
+            focusEvents = true;
+            clock24 = true;
+            newSession = true;
+            baseIndex = 1;
+            historyLimit = 10000;
+          };
           programs.git = {
             enable = true;
             settings = {
