@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run from repository root so nix finds the flake
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+nix flake update "$@"
