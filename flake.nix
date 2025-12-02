@@ -41,6 +41,11 @@
               "claude-code"
               "raycast"
             ];
+          nix.gc = {
+            automatic = true;
+            dates = "weekly"; # or daily if you're wild
+            options = "--delete-older-than 14d";
+          };
         };
       linuxConfig =
         { pkgs, ... }:
