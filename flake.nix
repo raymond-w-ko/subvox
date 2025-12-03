@@ -117,6 +117,16 @@
           codex
           claude-code
         ];
+      myLinuxPackages =
+        pkgs: with pkgs; [
+          ghostty
+        ];
+      myMacosPackages =
+        pkgs: with pkgs; [
+          aerospace
+          sketchybar
+          raycast
+        ];
       commonConfig =
         { lib, pkgs, ... }:
         {
@@ -160,9 +170,7 @@
       linuxOnlyPackages =
         { pkgs, ... }:
         {
-          environment.systemPackages = with pkgs; [
-            ghostty
-          ];
+          environment.systemPackages = myLinuxPackages pkgs;
           fonts = {
             fontDir.enable = true;
             fontconfig.useEmbeddedBitmaps = true;
@@ -172,11 +180,7 @@
       macosOnlyPackages =
         { pkgs, ... }:
         {
-          environment.systemPackages = with pkgs; [
-            aerospace
-            sketchybar
-            raycast
-          ];
+          environment.systemPackages = myMacosPackages pkgs;
         };
 
       homeManagerConfig =
