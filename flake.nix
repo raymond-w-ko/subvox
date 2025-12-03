@@ -41,15 +41,16 @@
               "claude-code"
               "raycast"
             ];
-          nix.gc = {
-            automatic = true;
-            dates = "weekly"; # or daily if you're wild
-            options = "--delete-older-than 14d";
-          };
+          # no nix.gc becuase darwin determinate systems nix requires nix.enable = false
+          # nix.gc = {
+          #   automatic = true;
+          # };
         };
       linuxConfig =
         { pkgs, ... }:
         {
+          environment.localBinInPath = true;
+
           programs.nix-ld.enable = true;
 
           # services.openssh.enable = true;
@@ -141,7 +142,6 @@
             builtins.elem (lib.getName pkg) [
               "claude-code"
             ];
-          environment.localBinInPath = true;
           environment.systemPackages = myPackages pkgs;
           # this pulls in termbench-pro, which does not compile
           # environment.enableAllTerminfo = true;
