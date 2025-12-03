@@ -95,6 +95,28 @@
           home-manager.useUserPackages = true;
           home-manager.users."${user}" = homeManagerConfig;
         };
+      myPackages =
+        pkgs: with pkgs; [
+          git
+          neovim
+          htop
+          curl
+          wget
+          ripgrep
+          fzf
+          zsh
+          fish
+          zoxide
+          eza
+          tmux
+
+          nodejs_24
+          bun
+          uv
+
+          codex
+          claude-code
+        ];
       commonConfig =
         { lib, pkgs, ... }:
         {
@@ -110,27 +132,7 @@
               "claude-code"
             ];
           environment.localBinInPath = true;
-          environment.systemPackages = with pkgs; [
-            git
-            neovim
-            htop
-            curl
-            wget
-            ripgrep
-            fzf
-            zsh
-            fish
-            zoxide
-            eza
-            tmux
-
-            nodejs_24
-            bun
-            uv
-
-            codex
-            claude-code
-          ];
+          environment.systemPackages = myPackages pkgs;
           # this pulls in termbench-pro, which does not compile
           # environment.enableAllTerminfo = true;
           security.sudo.keepTerminfo = true;
@@ -262,7 +264,7 @@
             enable = true;
             terminal = "tmux-256color";
             prefix = "f5";
-            keyMode = "vi";
+            keyMode = "emacs";
             mouse = true;
             focusEvents = true;
             clock24 = true;
@@ -275,6 +277,9 @@
               setw -g monitor-activity on
             '';
             plugins = with pkgs; [
+              {
+                plugin = tmuxPlugins.sensible;
+              }
               {
                 plugin = tmuxPlugins.catppuccin;
                 extraConfig = ''
