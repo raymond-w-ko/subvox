@@ -120,6 +120,7 @@
         ];
       myLinuxPackages =
         pkgs: with pkgs; [
+          adwaita-icon-theme
           ghostty
         ];
       myMacosPackages =
