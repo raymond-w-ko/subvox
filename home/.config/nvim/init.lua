@@ -31,4 +31,6 @@ vim.o.showmatch = true
 
 vim.keymap.set({"n", "v"}, "/", "/\\v")
 
+vim.o.guicursor = ""
+
 require("config.lazy")
