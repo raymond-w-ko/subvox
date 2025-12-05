@@ -59,7 +59,7 @@
           home-manager.useUserPackages = true;
           home-manager.users."${user}" = homeManagerConfig;
         };
-      wslConfig =
+      wsl2Config =
         { pkgs, ... }:
         {
           wsl.enable = true;
@@ -79,6 +79,7 @@
           environment.systemPackages = with pkgs; [
             mesa
             mesa-demos
+            glmark2
           ];
           environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
           environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
@@ -347,7 +348,7 @@
             home-manager.nixosModules.home-manager
             globalConfig
             linuxConfig
-            wslConfig
+            wsl2Config
             commonConfig
             linuxOnlyPackages
             {
