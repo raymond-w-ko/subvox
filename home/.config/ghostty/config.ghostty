@@ -18,7 +18,7 @@ bell-audio-volume=1.0
 cursor-opacity = 1.0
 cursor-style = block
 cursor-style-blink = false
-cursor-color = #ffff00
+cursor-color = #aaff00
 cursor-text = #000000
 cursor-opacity = 1.0
 
