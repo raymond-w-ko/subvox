@@ -1,8 +1,10 @@
 config-file = keybinds.ghostty
 
-font-family = Aporetic Sans Mono
-font-size = 9
-adjust-cell-width = 0
+font-family = Iosevka
+# font-family = Aporetic Sans Mono
+font-style = Medium
+font-size = 10
+adjust-cell-width = -1
 adjust-cell-height = -2
 
 window-theme=ghostty
