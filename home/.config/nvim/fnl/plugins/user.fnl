@@ -24,7 +24,7 @@
 
  (uu.tx :nvim-telescope/telescope.nvim
         {:dependencies [:nvim-lua/plenary.nvim]
-         :keys [["<C-p>" "<cmd>Telescope find_files<cr>"]]
+         :keys [["<C-p>" "<cmd>Telescope find_files find_command=rg,--files,--hidden,--iglob,!.git prompt_prefix=🔍<cr>"]]
          :tag "0.1.8"})
  
  (uu.tx :ggandor/leap.nvim
