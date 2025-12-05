@@ -98,6 +98,8 @@
         };
       myPackages =
         pkgs: with pkgs; [
+          nixpkgs-review
+
           git
           neovim
           htop
@@ -190,6 +192,10 @@
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
         in
         {
+          # Disable manual generation to avoid builtins.toFile warning
+          # See: https://github.com/nix-community/home-manager/issues/7935
+          manual.manpages.enable = false;
+
           xdg.enable = true;
 
           home.file.".config/nvim/".source =
