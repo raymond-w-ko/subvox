@@ -39,6 +39,7 @@
           wget
           ripgrep
           fzf
+          jq
           zsh
           fish
           zoxide
