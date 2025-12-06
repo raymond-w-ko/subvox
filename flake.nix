@@ -33,6 +33,7 @@
           nixpkgs.overlays = [
             (final: prev: {
               raycast = prev.callPackage ./pkgs/raycast/default.nix { };
+              kanata = prev.callPackage ./pkgs/kanata/default.nix { };
             })
           ];
           nixpkgs.config.allowUnfreePredicate =
@@ -136,6 +137,7 @@
         ];
       myMacosPackages =
         pkgs: with pkgs; [
+          kanata
           aerospace
           sketchybar
           raycast
@@ -161,7 +163,11 @@
         { pkgs, ... }:
         {
           environment.systemPackages = myMacosPackages pkgs;
-          environment.shells = with pkgs; [ bash fish zsh ];
+          environment.shells = with pkgs; [
+            bash
+            fish
+            zsh
+          ];
         };
 
       commonConfig =
