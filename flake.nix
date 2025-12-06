@@ -185,6 +185,9 @@
           nixpkgs.hostPlatform = "aarch64-darwin";
           nix.enable = true;
 
+          system.primaryUser = "${user}";
+          system.defaults.NSGlobalDomain.NSWindowShouldDragOnGesture = true;
+
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
         };
