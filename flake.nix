@@ -27,6 +27,66 @@
     let
       user = "rko";
 
+      myPackages =
+        pkgs: with pkgs; [
+          nixpkgs-review
+          nix-update
+
+          git
+          neovim
+          htop
+          curl
+          wget
+          ripgrep
+          fzf
+          zsh
+          fish
+          zoxide
+          eza
+          tmux
+
+          nodejs_24
+          bun
+          uv
+
+          codex
+          claude-code
+        ];
+      myFontPackages =
+        pkgs: with pkgs; [
+          noto-fonts
+          noto-fonts-cjk-sans
+          noto-fonts-color-emoji
+          liberation_ttf
+          fira-code
+          fira-code-symbols
+          mplus-outline-fonts.githubRelease
+          dina-font
+          iosevka
+          aporetic
+          jetbrains-mono
+        ];
+      myLinuxPackages =
+        pkgs: with pkgs; [
+          adwaita-icon-theme
+          ghostty
+          # one of these is needed for ghostty playing bell
+          gst_all_1.gstreamer
+          gst_all_1.gst-plugins-base
+          gst_all_1.gst-plugins-good
+          gst_all_1.gst-plugins-ugly
+          gst_all_1.gst-plugins-bad
+          gst_all_1.gst-libav
+          gst_all_1.gst-vaapi
+        ];
+      myMacosPackages =
+        pkgs: with pkgs; [
+          kanata
+          aerospace
+          sketchybar
+          raycast
+        ];
+
       globalConfig =
         { lib, pkgs, ... }:
         {
@@ -42,14 +102,36 @@
               "claude-code"
               "raycast"
             ];
-          # no nix.gc becuase darwin determinate systems nix requires nix.enable = false
-          # nix.gc = {
-          #   automatic = true;
-          # };
+          nix.settings.experimental-features = [
+            "nix-command"
+            "flakes"
+          ];
+
+          nix.gc = {
+            automatic = true;
+            options = "--delete-older-than 30d";
+          };
+
+          time.timeZone = "America/New_York";
+
+          environment.systemPackages = myPackages pkgs;
+          # this pulls in termbench-pro, which does not compile
+          # environment.enableAllTerminfo = true;
+          security.sudo.keepTerminfo = true;
+          fonts = {
+            packages = myFontPackages pkgs;
+          };
+
+          programs.fish.enable = true;
+          users.users."${user}" = {
+            shell = pkgs.fish;
+          };
+          home-manager.users."${user}" = homeManagerConfig;
         };
       linuxConfig =
         { pkgs, ... }:
         {
+          nix.gc.dates = "weekly";
           environment.localBinInPath = true;
 
           programs.nix-ld.enable = true;
@@ -89,6 +171,11 @@
       macosConfig =
         { pkgs, ... }:
         {
+          nix.gc.interval = {
+            Weekday = 0;
+            Hour = 0;
+            Minute = 0;
+          };
           system.configurationRevision = self.rev or self.dirtyRev or null;
           system.stateVersion = 6;
           nixpkgs.hostPlatform = "aarch64-darwin";
@@ -97,51 +184,6 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
         };
-      myPackages =
-        pkgs: with pkgs; [
-          nixpkgs-review
-          nix-update
-
-          git
-          neovim
-          htop
-          curl
-          wget
-          ripgrep
-          fzf
-          zsh
-          fish
-          zoxide
-          eza
-          tmux
-
-          nodejs_24
-          bun
-          uv
-
-          codex
-          claude-code
-        ];
-      myLinuxPackages =
-        pkgs: with pkgs; [
-          adwaita-icon-theme
-          ghostty
-          # one of these is needed for ghostty playing bell
-          gst_all_1.gstreamer
-          gst_all_1.gst-plugins-base
-          gst_all_1.gst-plugins-good
-          gst_all_1.gst-plugins-ugly
-          gst_all_1.gst-plugins-bad
-          gst_all_1.gst-libav
-          gst_all_1.gst-vaapi
-        ];
-      myMacosPackages =
-        pkgs: with pkgs; [
-          kanata
-          aerospace
-          sketchybar
-          raycast
-        ];
       linuxOnlyPackages =
         { pkgs, ... }:
         {
@@ -170,46 +212,6 @@
           ];
         };
 
-      commonConfig =
-        { lib, pkgs, ... }:
-        {
-          nix.settings.experimental-features = [
-            "nix-command"
-            "flakes"
-          ];
-          time.timeZone = "America/New_York";
-
-          nixpkgs.config.allowUnfreePredicate =
-            pkg:
-            builtins.elem (lib.getName pkg) [
-              "claude-code"
-            ];
-          environment.systemPackages = myPackages pkgs;
-          # this pulls in termbench-pro, which does not compile
-          # environment.enableAllTerminfo = true;
-          security.sudo.keepTerminfo = true;
-          fonts = {
-            packages = with pkgs; [
-              noto-fonts
-              noto-fonts-cjk-sans
-              noto-fonts-color-emoji
-              liberation_ttf
-              fira-code
-              fira-code-symbols
-              mplus-outline-fonts.githubRelease
-              dina-font
-              iosevka
-              aporetic
-              jetbrains-mono
-            ];
-          };
-
-          programs.fish.enable = true;
-          users.users."${user}" = {
-            shell = pkgs.fish;
-          };
-          home-manager.users."${user}" = homeManagerConfig;
-        };
       homeManagerConfig =
         { pkgs, config, ... }:
         let
@@ -391,9 +393,7 @@
             home-manager.nixosModules.home-manager
             globalConfig
             linuxOnlyPackages
-            commonConfig
             linuxConfig
-            linuxHomeManagerConfig
             wsl2Config
             {
               home-manager.users."${user}".home.stateVersion = "26.05";
@@ -411,7 +411,6 @@
             home-manager.darwinModules.home-manager
             globalConfig
             macosOnlyPackages
-            commonConfig
             macosConfig
             {
               users.users.${user}.home = "/Users/${user}";
