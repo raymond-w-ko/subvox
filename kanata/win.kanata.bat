@@ -1,0 +1,1 @@
+.\kanata_windows_gui_winIOv2_cmd_allowed_x64.exe -c windows.alice.kbd --quiet

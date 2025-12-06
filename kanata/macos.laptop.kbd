@@ -1,0 +1,61 @@
+(defcfg 
+process-unmapped-keys no log-layer-changes no )
+
+(defvar 
+one-shot-time 500 tap-time 225 hold-time 225 hold-time-slow 275 hold-time-glacial 325 )
+
+(defalias 
+l_base (layer-switch base )
+l_gaming (layer-switch gaming )
+l_shortcut (layer-toggle shortcut )
+l_sym1 (layer-toggle sym1 )
+l_misc (layer-toggle misc )
+l_num (layer-toggle num )
+l_fn (layer-toggle fn )
+os_rsft (one-shot-release $one-shot-time rsft )
+spc (tap-hold $tap-time $hold-time spc lmet )
+f (tap-hold $tap-time $hold-time f @l_shortcut )
+j (tap-hold $tap-time $hold-time j @l_shortcut )
+d (tap-hold $tap-time $hold-time d @l_sym1 )
+k (tap-hold $tap-time $hold-time k @l_sym1 )
+s (tap-hold $tap-time $hold-time s @l_misc )
+l (tap-hold $tap-time $hold-time l @l_misc )
+a (tap-hold $tap-time $hold-time-slow a @l_num )
+scln (tap-hold $tap-time $hold-time-slow scln @l_num )
+g (tap-hold $tap-time $hold-time g @l_fn )
+w (tap-hold $tap-time $hold-time-slow w lctl )
+e (tap-hold $tap-time $hold-time e lalt )
+r (tap-hold $tap-time $hold-time r lmet )
+o (tap-hold $tap-time $hold-time-slow o rctl )
+i (tap-hold $tap-time $hold-time i ralt )
+u (tap-hold $tap-time $hold-time-slow u rmet )
+q (tap-hold $tap-time $hold-time-glacial q lsft )
+p (tap-hold $tap-time $hold-time-glacial p rsft )
+d_h (tap-hold $tap-time $hold-time del home )
+p_e (tap-hold $tap-time $hold-time M-lbrc end )
+)
+
+(defsrc 
+f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc caps a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet spc rmet ralt up down left right )
+
+(deflayer 
+base brdown brup f3 @l_gaming f5 lrld prev pp next mute vold volu ins tab @q @w @e @r t y @u @i @o @p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lsft @a @s @d @f @g h @j @k @l @scln rsft ret lsft z x c v b n m comm . / @os_rsft fn lctl lalt lmet @spc rmet ralt up down left right )
+
+(deflayer 
+gaming f1 f2 f3 @l_base f5 lrld f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lctrl a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet spc rmet ralt up down left right )
+
+(deflayer 
+shortcut • • • • • • • • • • • • • • tab esc C-S-tab C-tab • • • up A-bspc • • • • • • • • • • • • • • • • • • • M-grv @d_h @p_e M-rbrc C-M-S-4 • left down right ret • • • • • • • • • • • • • @os_rsft • • • • @spc • • • • • • )
+
+(deflayer 
+sym1 • • • • • • • • • • • • • • S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0 • • • • • • • • • • • • • • • • • • grv S-min min bksl S-bksl • S-scln scln lbrc rbrc • • • S-grv • S-apos apos • • S-= = S-lbrc S-rbrc @os_rsft • • • • @spc • • • • • • )
+
+(deflayer 
+misc • • • • • • • • • • • • • • • • A-rbrc A-S-rbrc M-v • • • • • • • • • • • • • • • • • • • • • • • • • A-lbrc A-S-lbrc • • • • • • • • • • • • M-c • • • • • • @os_rsft • • • • @spc • • • • • • )
+
+(deflayer 
+num • • • • • • • • • • • • • • • • • • • • 7 8 9 0 • • • • • • • • • • • • • • • • • • • • • • • bspc 4 5 6 kp. • • • • • • • • • 1 2 3 ret @os_rsft • • • • @spc • • • • • • )
+
+(deflayer 
+fn • • • • • • • • • • • • • • • • • • • • f7 f8 f9 f10 • • • • • • • • • • • • • • • • • • • • • • • • f4 f5 f6 f11 • • • • • • • • • f1 f2 f3 f12 @os_rsft • • • • @spc • • • • • • )
+

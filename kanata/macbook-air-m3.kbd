@@ -1,0 +1,98 @@
+(defcfg
+  process-unmapped-keys no)
+
+(defvar
+  ;; Note: consider using different time values for your different fingers.
+  ;; For example, your pinkies might be slower to release keys and index
+  ;; fingers faster.
+  tap-time 200
+  hold-time 200 
+  hold-time-slow 300 
+)
+
+(defalias
+  l_cmd  (layer-toggle cmd)
+  l_sys1 (layer-toggle sys1)
+  l_sys2 (layer-toggle sys2)
+  l_num  (layer-toggle num)
+
+  f (tap-hold $tap-time $hold-time      f @l_cmd)
+  j (tap-hold $tap-time $hold-time      j @l_cmd)
+  d (tap-hold $tap-time $hold-time      d @l_sys1)
+  k (tap-hold $tap-time $hold-time      k @l_sys1)
+  s (tap-hold $tap-time $hold-time      s @l_sys2)
+  l (tap-hold $tap-time $hold-time      l @l_sys2)
+  a (tap-hold $tap-time $hold-time-slow a @l_num)
+  ; (tap-hold $tap-time $hold-time-slow ; @l_num)
+
+  w (tap-hold $tap-time $hold-time-slow w lctl)
+  e (tap-hold $tap-time $hold-time      e lalt)
+  r (tap-hold $tap-time $hold-time      r lmet)
+
+  o (tap-hold $tap-time $hold-time-slow o lctl)
+  i (tap-hold $tap-time $hold-time      i lalt)
+  u (tap-hold $tap-time $hold-time      u lmet)
+)
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '         ret
+  lsft z    x    c    v    b    n    m    ,    .    /              rsft
+  fn   lctl lalt lmet           spc       rmet ralt ▲    ▼    ◀    ▶
+)
+
+(deflayer qwerty
+  esc  🔅   🔆   ✗    ✗    ✗    lrld ◀◀   ▶⏸   ▶▶   🔇   🔉   🔊
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    @w   @e   @r   t    y    @u   @i   @o   p    [    ]    \
+  ✗    @a   @s   @d   @f   g    h    @j   @k   @l   @;   '         ret
+  lsft z    x    c    v    b    n    m    ,    .    /              rsft
+  fn   lctl lalt lmet           spc       rmet ralt ▲    ▼    ◀    ▶
+)
+
+(deflayer cmd
+  esc  🔅   🔆   ✗    ✗    ✗    lrld ◀◀   ▶⏸   ▶▶   🔇   🔉   🔊
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  ✗    ✗    ✗    ✗    ✗    ✗    M-c  ▲    bspc M-v  [    ]    \
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ◀    ▼    ▶    ret  '         ret
+  lsft ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗              rsft
+  ✗    ✗    ✗    ✗              lmet      ✗    ✗    ✗    ✗    ✗    ✗
+)
+
+(deflayer sys1
+  esc  🔅   🔆   ✗    ✗    ✗    lrld ◀◀   ▶⏸   ▶▶   🔇   🔉   🔊
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    [    ]    \
+  ✗    S-1  S-2  S-3  S-4  S-5  S-6  S-7  S-8  S-9  S-0  '         ret
+  lsft ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    [    ]              rsft
+  ✗    ✗    ✗    ✗              lmet      ✗    ✗    ✗    ✗    ✗    ✗
+)
+
+(deflayer sys2
+  esc  🔅   🔆   ✗    ✗    ✗    lrld ◀◀   ▶⏸   ▶▶   🔇   🔉   🔊
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    [    ]    \
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    '         ret
+  lsft ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗              rsft
+  ✗    ✗    ✗    ✗              lmet      ✗    ✗    ✗    ✗    ✗    ✗
+)
+
+(deflayer num
+  esc  🔅   🔆   ✗    ✗    ✗    lrld ◀◀   ▶⏸   ▶▶   🔇   🔉   🔊
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    7    8    9    0    ✗    ✗    ✗
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    4    5    6    .    ✗         ✗
+  lsft ✗    ✗    ✗    ✗    ✗    ✗    1    2    3    ✗              ✗
+  ✗    ✗    ✗    ✗              lmet      ✗    ✗    ✗    ✗    ✗    ✗
+)
+
+(deflayer nop
+  esc  🔅   🔆   ✗    ✗    ✗    lrld ◀◀   ▶⏸   ▶▶   🔇   🔉   🔊
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗         ✗
+  ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗    ✗              ✗
+  ✗    ✗    ✗    ✗              lmet      ✗    ✗    ✗    ✗    ✗    ✗
+)
