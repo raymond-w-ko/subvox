@@ -57,7 +57,7 @@
 
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users."${user}" = homeManagerConfig;
+          home-manager.users."${user}" = linuxHomeManagerConfig;
         };
       wsl2Config =
         { pkgs, ... }:
@@ -91,11 +91,10 @@
           system.configurationRevision = self.rev or self.dirtyRev or null;
           system.stateVersion = 6;
           nixpkgs.hostPlatform = "aarch64-darwin";
-          nix.enable = false; # needed for Determinate Systems Nix
+          nix.enable = true;
 
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users."${user}" = homeManagerConfig;
         };
       myPackages =
         pkgs: with pkgs; [
@@ -140,6 +139,30 @@
           sketchybar
           raycast
         ];
+      linuxOnlyPackages =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = myLinuxPackages pkgs;
+
+          fonts = {
+            fontDir.enable = true;
+            fontconfig.useEmbeddedBitmaps = true;
+            enableDefaultPackages = true;
+          };
+
+          # environment.variables = {
+          #   GST_PLUGIN_SYSTEM_PATH_1_0 = "/run/current-system/sw/lib/gstreamer-1.0/";
+          #   GST_PLUGIN_SYSTEM_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
+          #   GST_PLUGIN_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
+          # };
+        };
+      macosOnlyPackages =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = myMacosPackages pkgs;
+          environment.shells = with pkgs; [ bash fish zsh ];
+        };
+
       commonConfig =
         { lib, pkgs, ... }:
         {
@@ -178,40 +201,14 @@
           users.users."${user}" = {
             shell = pkgs.fish;
           };
+          home-manager.users."${user}" = homeManagerConfig;
         };
-      linuxOnlyPackages =
-        { pkgs, ... }:
-        {
-          environment.systemPackages = myLinuxPackages pkgs;
-
-          fonts = {
-            fontDir.enable = true;
-            fontconfig.useEmbeddedBitmaps = true;
-            enableDefaultPackages = true;
-          };
-
-          # environment.variables = {
-          #   GST_PLUGIN_SYSTEM_PATH_1_0 = "/run/current-system/sw/lib/gstreamer-1.0/";
-          #   GST_PLUGIN_SYSTEM_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
-          #   GST_PLUGIN_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
-          # };
-        };
-      macosOnlyPackages =
-        { pkgs, ... }:
-        {
-          environment.systemPackages = myMacosPackages pkgs;
-        };
-
       homeManagerConfig =
         { pkgs, config, ... }:
         let
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
         in
         {
-          home.packages = [
-            pkgs.dconf
-          ];
-
           # Disable manual generation to avoid builtins.toFile warning
           # See: https://github.com/nix-community/home-manager/issues/7935
           manual.manpages.enable = false;
@@ -227,15 +224,6 @@
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
           home.file.".codex/AGENTS.md".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
-
-          dconf = {
-            enable = true;
-            settings = {
-              "org/gnome/desktop/interface" = {
-                enable-animations = false;
-              };
-            };
-          };
 
           programs.zoxide = {
             enable = true;
@@ -278,6 +266,7 @@
               gsw = "git switch";
               gcfxd = "git clean -fxd";
               gd = "git diff";
+
               ga = "git add";
               gf = "git fetch";
               gl = "git pull";
@@ -357,6 +346,25 @@
             enable = true;
           };
         };
+      linuxHomeManagerConfig =
+        { pkgs, config, ... }:
+        let
+          dotfilesDir = "${config.home.homeDirectory}/subvox/home";
+        in
+        {
+          home.packages = [
+            pkgs.dconf
+          ];
+
+          dconf = {
+            enable = true;
+            settings = {
+              "org/gnome/desktop/interface" = {
+                enable-animations = false;
+              };
+            };
+          };
+        };
     in
     {
       ########################
@@ -375,10 +383,11 @@
             nixos-wsl.nixosModules.default
             home-manager.nixosModules.home-manager
             globalConfig
-            linuxConfig
-            wsl2Config
-            commonConfig
             linuxOnlyPackages
+            commonConfig
+            linuxConfig
+            linuxHomeManagerConfig
+            wsl2Config
             {
               home-manager.users."${user}".home.stateVersion = "26.05";
             }
@@ -394,9 +403,9 @@
           modules = [
             home-manager.darwinModules.home-manager
             globalConfig
-            macosConfig
-            commonConfig
             macosOnlyPackages
+            commonConfig
+            macosConfig
             {
               users.users.${user}.home = "/Users/${user}";
               home-manager.users.${user}.home = {
