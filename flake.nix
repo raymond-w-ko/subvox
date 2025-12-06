@@ -131,6 +131,7 @@
       linuxConfig =
         { pkgs, ... }:
         {
+          nix.settings.trusted-users = [ "${user}" ];
           nix.gc.dates = "weekly";
           environment.localBinInPath = true;
 
