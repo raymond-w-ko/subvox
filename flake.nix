@@ -50,6 +50,7 @@
           nodejs_24
           bun
           uv
+          babashka
 
           codex
           claude-code
