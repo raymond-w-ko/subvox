@@ -99,6 +99,7 @@
       myPackages =
         pkgs: with pkgs; [
           nixpkgs-review
+          nix-update
 
           git
           neovim
