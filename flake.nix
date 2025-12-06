@@ -125,6 +125,14 @@
         pkgs: with pkgs; [
           adwaita-icon-theme
           ghostty
+          # one of these is needed for ghostty playing bell
+          gst_all_1.gstreamer
+          gst_all_1.gst-plugins-base
+          gst_all_1.gst-plugins-good
+          gst_all_1.gst-plugins-ugly
+          gst_all_1.gst-plugins-bad
+          gst_all_1.gst-libav
+          gst_all_1.gst-vaapi
         ];
       myMacosPackages =
         pkgs: with pkgs; [
@@ -175,11 +183,18 @@
         { pkgs, ... }:
         {
           environment.systemPackages = myLinuxPackages pkgs;
+
           fonts = {
             fontDir.enable = true;
             fontconfig.useEmbeddedBitmaps = true;
             enableDefaultPackages = true;
           };
+
+          # environment.variables = {
+          #   GST_PLUGIN_SYSTEM_PATH_1_0 = "/run/current-system/sw/lib/gstreamer-1.0/";
+          #   GST_PLUGIN_SYSTEM_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
+          #   GST_PLUGIN_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
+          # };
         };
       macosOnlyPackages =
         { pkgs, ... }:
@@ -193,6 +208,10 @@
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
         in
         {
+          home.packages = [
+            pkgs.dconf
+          ];
+
           # Disable manual generation to avoid builtins.toFile warning
           # See: https://github.com/nix-community/home-manager/issues/7935
           manual.manpages.enable = false;
@@ -208,6 +227,15 @@
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
           home.file.".codex/AGENTS.md".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
+
+          dconf = {
+            enable = true;
+            settings = {
+              "org/gnome/desktop/interface" = {
+                enable-animations = false;
+              };
+            };
+          };
 
           programs.zoxide = {
             enable = true;
