@@ -44,6 +44,7 @@
           zoxide
           eza
           tmux
+          ncdu
 
           nodejs_24
           bun
