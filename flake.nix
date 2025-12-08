@@ -40,6 +40,7 @@
           ripgrep
           fzf
           jq
+          bash
           zsh
           fish
           zoxide
@@ -126,6 +127,7 @@
           };
 
           programs.fish.enable = true;
+
           users.users."${user}" = {
             isNormalUser = true;
             shell = pkgs.fish;
@@ -253,6 +255,10 @@
             ];
           };
 
+          programs.fzf = {
+            enableZshIntegration = true;
+            enableFishIntegration = true;
+          };
           programs.fish = {
             enable = true;
             binds = { };
