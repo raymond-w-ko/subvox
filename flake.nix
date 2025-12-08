@@ -127,6 +127,7 @@
 
           programs.fish.enable = true;
           users.users."${user}" = {
+            isNormalUser = true;
             shell = pkgs.fish;
           };
           home-manager.users."${user}" = homeManagerConfig;
@@ -317,6 +318,7 @@
             baseIndex = 1;
             historyLimit = 10000;
             extraConfig = ''
+              set -g default-shell ${pkgs.fish}/bin/fish
               set -g status-justify centre
               set -g status-position top
               setw -g monitor-activity on
