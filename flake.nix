@@ -97,7 +97,6 @@
           nixpkgs.overlays = [
             (final: prev: {
               raycast = prev.callPackage ./pkgs/raycast/default.nix { };
-              kanata = prev.callPackage ./pkgs/kanata/default.nix { };
             })
           ];
           nixpkgs.config.allowUnfreePredicate =
@@ -129,7 +128,6 @@
           programs.fish.enable = true;
 
           users.users."${user}" = {
-            isNormalUser = true;
             shell = pkgs.fish;
           };
           home-manager.users."${user}" = homeManagerConfig;
@@ -144,6 +142,8 @@
           programs.nix-ld.enable = true;
 
           # services.openssh.enable = true;
+
+          users.users."${user}".isNormalUser = true;
 
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
