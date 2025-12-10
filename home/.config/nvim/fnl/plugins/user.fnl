@@ -27,7 +27,7 @@
          :keys [["<C-p>" "<cmd>Telescope find_files find_command=rg,--files,--hidden,--iglob,!.git prompt_prefix=🔍<cr>"]]
          :tag "0.1.8"})
  
- (uu.tx :ggandor/leap.nvim
+ (uu.tx "https://codeberg.org/andyg/leap.nvim.git"
         {:dependencies [:tpope/vim-repeat]
          :keys [{1 "s" 2 "<Plug>(leap-forward)" :mode ["n" "x" "o"]}
                 {1 "S" 2 "<Plug>(leap-backward)" :mode ["n" "x" "o"]}
