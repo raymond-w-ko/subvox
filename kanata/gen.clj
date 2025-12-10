@@ -181,6 +181,7 @@
     ~@(tap-hold :slow :scln :at/l_num)
 
     ~@(tap-hold :normal :g :at/l_fn)
+    ~@(tap-hold :normal :h :at/l_fn)
     
     ~@(tap-hold :slow :w :lctl)
     ~@(tap-hold :normal :e :lalt)
@@ -211,7 +212,7 @@
             w :at/w e :at/e r :at/r
             u :at/u o :at/o i :at/i
 
-            a :at/a s :at/s d :at/d f :at/f g :at/g
+            a :at/a s :at/s d :at/d f :at/f g :at/g h :at/h
             j :at/j k :at/k l :at/l scln :at/scln
             
             spc :at/spc

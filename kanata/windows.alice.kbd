@@ -23,6 +23,7 @@ l (tap-hold $tap-time $hold-time l @l_misc )
 a (tap-hold $tap-time $hold-time-slow a @l_num )
 scln (tap-hold $tap-time $hold-time-slow scln @l_num )
 g (tap-hold $tap-time $hold-time g @l_fn )
+h (tap-hold $tap-time $hold-time h @l_fn )
 w (tap-hold $tap-time $hold-time-slow w lctl )
 e (tap-hold $tap-time $hold-time e lalt )
 r (tap-hold $tap-time $hold-time r lmet )
@@ -39,7 +40,7 @@ p_e (tap-hold $tap-time $hold-time C-lbrc end )
 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc caps a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft lctl lalt lmet spc rmet ralt up down left right )
 
 (deflayer 
-base f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 @l_gaming tab @q @w @e @r t y @u @i @o @p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lsft @a @s @d @f @g h @j @k @l @scln rsft ret lsft z x c v b n m comm . / @os_rsft lctl lalt lmet @spc lrld ralt up down left right )
+base f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 @l_gaming tab @q @w @e @r t y @u @i @o @p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lsft @a @s @d @f @g @h @j @k @l @scln rsft ret lsft z x c v b n m comm . / @os_rsft lctl lalt lmet @spc lrld ralt up down left right )
 
 (deflayer 
 gaming f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 @l_base tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lctrl a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft lctl lalt lmet spc lrld ralt up down left right )
