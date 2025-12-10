@@ -316,7 +316,7 @@
           programs.tmux = {
             enable = true;
             terminal = "tmux-256color";
-            prefix = "f5";
+            prefix = "f4";
             keyMode = "emacs";
             mouse = true;
             focusEvents = true;
