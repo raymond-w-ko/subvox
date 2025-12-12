@@ -40,6 +40,7 @@
           wget
           ripgrep
           fzf
+          fd
           jq
           bash
           zsh
