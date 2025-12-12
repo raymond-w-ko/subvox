@@ -98,6 +98,7 @@
           nixpkgs.overlays = [
             (final: prev: {
               raycast = prev.callPackage ./pkgs/raycast/default.nix { };
+              claude-code = prev.callPackage ./pkgs/claude-code/default.nix { };
             })
           ];
           nixpkgs.config.allowUnfreePredicate =
@@ -297,6 +298,7 @@
               gc = "git commit";
               gca = "git commit -a";
               gcam = "git commit -a -m";
+              gcav = "git commit -a -v";
               gp = "git push";
               gpfnv = "git push --force-with-lease --no-verify";
 
