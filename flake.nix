@@ -52,8 +52,14 @@
 
           nodejs_24
           bun
+
+          python314
           uv
+
+          javaPackages.compiler.openjdk25
           babashka
+
+          go
 
           codex
           claude-code
@@ -274,6 +280,7 @@
               set -gx fish_prompt_pwd_full_dirs 3
 
               fish_add_path $HOME/subvox/bin
+              fish_add_path $HOME/bin
 
               set -l newpath (for p in $PATH
                 if not string match -rq '^/mnt/c/' -- $p
