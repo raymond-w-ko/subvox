@@ -46,7 +46,7 @@ base brdown brup f3 @l_gaming f5 lrld prev pp next mute vold volu ins tab @q @w 
 gaming f1 f2 f3 @l_base f5 lrld f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lctrl a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet spc rmet ralt up down left right )
 
 (deflayer 
-shortcut • • • • • • • • • • • • • • tab esc C-S-tab C-tab • • • up A-bspc • • • • • • • • • • • • • • • • • • • M-grv @d_h @p_e M-rbrc C-M-S-4 • left down right ret • • • • • • • • • • • • • @os_rsft • • • • @spc • • • • • • )
+shortcut • • • • • • • • • • • • • • tab esc C-S-tab C-tab • • bspc up A-bspc • • • • • • • • • • • • • • • • • • • M-grv @d_h @p_e M-rbrc C-M-S-4 • left down right ret • • • • • • • • • • • • • @os_rsft • • • • @spc • • • • • • )
 
 (deflayer 
 sym1 • • • • • • • • • • • • • • S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0 • • • • • • • • • • • • • • • • • • grv S-min min bksl S-bksl • S-scln scln lbrc rbrc • • • S-grv • S-apos apos • • S-= = S-lbrc S-rbrc @os_rsft • • • • @spc • • • • • • )
@@ -55,8 +55,8 @@ sym1 • • • • • • • • • • • • • • S-1 S-2 S-3 S-4 S-5
 misc • • • • • • • • • • • • • • • • A-rbrc A-S-rbrc M-v • • • • • • • • • • • • • • • • • • • • • • • • • A-lbrc A-S-lbrc • • • • • • • • • • • • M-c • • • • • • @os_rsft • • • • @spc • • • • • • )
 
 (deflayer 
-num • • • • • • • • • • • • • • • • • • • • 7 8 9 0 • • • • • • • • • • • • • • • • • • • • • • • bspc 4 5 6 kp. • • • • • • • • • 1 2 3 ret @os_rsft • • • • @spc • • • • • • )
+num • • • • • • • • • • • • • • 0 9 8 7 • • 7 8 9 0 • • • • • • • • • • • • • • • • • • kp. 6 5 4 bspc bspc 4 5 6 kp. • • • ret 3 2 1 • • 1 2 3 ret @os_rsft • • • • @spc • • • • • • )
 
 (deflayer 
-fn • • • • • • • • • • • • • • • • • • • • f7 f8 f9 f10 • • • • • • • • • • • • • • • • • • • • • • • • f4 f5 f6 f11 • • • • • • • • • f1 f2 f3 f12 @os_rsft • • • • @spc • • • • • • )
+fn • • • • • • • • • • • • • • f10 f9 f8 f7 • • f7 f8 f9 f10 • • • • • • • • • • • • • • • • • • f11 f6 f5 f4 • • f4 f5 f6 f11 • • • f12 f3 f2 f1 • • f1 f2 f3 f12 @os_rsft • • • • @spc • • • • • • )
 

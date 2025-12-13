@@ -222,7 +222,8 @@
   (->hash '[caps lctrl]))
 
 (defn gen-qwerty-to-shortcut-layer []
-  (->hash `[i up
+  (->hash `[u bspc
+            i up
             j left
             k down
             l right
@@ -301,6 +302,20 @@
             scln kp.
             h bspc
             / ret
+
+            v 1
+            c 2
+            x 3
+            f 4
+            d 5
+            s 6
+            r 7
+            e 8
+            w 9
+            q 0
+            a kp.
+            g bspc
+            z ret
             
             spc :at/spc
             rsft :at/os_rsft]))
@@ -318,6 +333,19 @@
             p f10
             scln f11
             / f12
+
+            v f1
+            c f2
+            x f3
+            f f4
+            d f5
+            s f6
+            r f7
+            e f8
+            w f9
+            q f10
+            a f11
+            z f12
 
             spc :at/spc
             rsft :at/os_rsft]))
