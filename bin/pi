@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+exec $HOME/src/pi-mono/packages/coding-agent/dist/pi "$@"

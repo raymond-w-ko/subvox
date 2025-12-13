@@ -246,6 +246,7 @@
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
           home.file.".codex/AGENTS.md".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
+          home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
 
           programs.zoxide = {
             enable = true;

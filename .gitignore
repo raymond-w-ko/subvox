@@ -1,4 +1,8 @@
 # symlink to result of nix build
-/result
+result
 
-/home/.config/ghostty/config-local.ghostty
+home/.config/ghostty/config-local.ghostty
+
+home/.pi/agent/oauth.json
+home/.pi/agent/sessions
+home/.pi/agent/tools
