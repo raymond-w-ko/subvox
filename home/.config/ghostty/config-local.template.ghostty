@@ -6,5 +6,6 @@ font-style = Medium
 font-size = 10
 adjust-cell-width = -1
 adjust-cell-height = -2
+font-feature=+NWID
 
 window-theme=ghostty
