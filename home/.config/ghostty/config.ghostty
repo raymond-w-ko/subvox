@@ -7,7 +7,7 @@ window-height = 45
 
 theme = Selenized Light
 
-gtk-titlebar = true
+gtk-titlebar = false
 window-theme = auto
 gtk-custom-css = ghostty.css
 
