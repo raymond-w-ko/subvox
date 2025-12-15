@@ -9,6 +9,7 @@ theme = Selenized Light
 
 gtk-titlebar = false
 window-theme = auto
+macos-titlebar-style = tabs
 gtk-custom-css = ghostty.css
 
 bell-features=audio,attention,title
