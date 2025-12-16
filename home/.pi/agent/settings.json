@@ -1,6 +1,7 @@
 {
-  "lastChangelogVersion": "0.21.0",
+  "lastChangelogVersion": "0.22.2",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-4-5",
-  "theme": "light"
+  "theme": "light",
+  "defaultThinkingLevel": "minimal"
 }
