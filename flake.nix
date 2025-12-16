@@ -61,6 +61,8 @@
 
           go
 
+          perl
+
           codex
           claude-code
         ];
@@ -80,6 +82,7 @@
         ];
       myLinuxPackages =
         pkgs: with pkgs; [
+          perf
           adwaita-icon-theme
           ghostty
           # one of these is needed for ghostty playing bell
