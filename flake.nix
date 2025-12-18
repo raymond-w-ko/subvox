@@ -257,6 +257,14 @@
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
           home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
 
+          programs.direnv = {
+            enable = true;
+            nix-direnv.enable = true;
+            enableBashIntegration = true;
+            enableZshIntegration = true;
+            # enableFishIntegration = true;
+          };
+
           programs.zoxide = {
             enable = true;
             enableBashIntegration = true;
@@ -291,6 +299,8 @@
                 end
               end)
               set -gx PATH (string join ":" $newpath)
+
+              source $HOME/.config/secrets
             '';
             shellAbbrs = {
               e = "eza -l";
@@ -373,7 +383,7 @@
             settings = {
               user.name = "Raymond W. Ko";
               user.email = "raymond.w.ko@gmail.com";
-              pull.rebase = false;
+              pull.rebase = true;
             };
           };
           programs.lazygit = {
