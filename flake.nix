@@ -373,6 +373,7 @@
             settings = {
               user.name = "Raymond W. Ko";
               user.email = "raymond.w.ko@gmail.com";
+              pull.rebase = false;
             };
           };
           programs.lazygit = {
