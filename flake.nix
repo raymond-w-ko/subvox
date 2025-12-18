@@ -300,7 +300,7 @@
               end)
               set -gx PATH (string join ":" $newpath)
 
-              source $HOME/.config/secrets
+              test -f $HOME/.config/secrets && source $HOME/.config/secrets
             '';
             shellAbbrs = {
               e = "eza -l";
