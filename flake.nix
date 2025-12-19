@@ -187,6 +187,7 @@
           environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
           environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
           environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
+          environment.sessionVariables.GDK_BACKEND = "x11";
         };
       macosConfig =
         { pkgs, ... }:
