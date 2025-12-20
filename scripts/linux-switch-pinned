@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+release="${NIXPKGS_RELEASE:-nixos-25.05}"
+attr="${1:-}"
+if [[ -z "${attr}" ]]; then
+  printf "usage: %s <flake-attr> [extra nixos-rebuild args]\n" "$(basename "$0")" >&2
+  printf "set NIXPKGS_RELEASE to override (default: %s)\n" "${release}" >&2
+  exit 64
+fi
+
+shift || true
+sudo nix run "nixpkgs/${release}#nixos-rebuild" -- switch --flake ".#${attr}" "$@"
