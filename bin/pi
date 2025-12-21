@@ -1,2 +1,4 @@
 #!/usr/bin/env sh
-exec $HOME/src/pi-mono/packages/coding-agent/dist/pi "$@"
+exec $HOME/src/pi-mono/packages/coding-agent/dist/pi \
+  --models claude-opus-4-5,google/gemini-3-flash-preview,google/gemini-3-pro-preview,openai/gpt-5.2 \
+  "$@"
