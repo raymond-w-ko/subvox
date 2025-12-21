@@ -207,7 +207,7 @@
             f10 mute f11 vold f12 volu]))
 
 (def qwerty-to-base-layer
-  (->hash '[caps :at/os_lsft apos :at/os_lsft
+  (->hash '[caps :at/os_lsft apos :at/os_rsft
             q :at/q p :at/p
             
             w :at/w e :at/e r :at/r
