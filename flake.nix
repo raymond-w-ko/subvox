@@ -321,6 +321,7 @@
               ga = "git add";
               gf = "git fetch";
               gl = "git pull";
+              gm = "git merge";
               gc = "git commit";
               gca = "git commit -a";
               gcam = "git commit -a -m";
