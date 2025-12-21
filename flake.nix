@@ -384,6 +384,14 @@
               user.name = "Raymond W. Ko";
               user.email = "raymond.w.ko@gmail.com";
               pull.rebase = true;
+              init.defaultBranch = "master";
+              alias = {
+                co = "checkout";
+                br = "branch";
+                cp = "cherry-pick";
+                undo = "reset --soft HEAD^";
+                lg = "log --graph --full-history --pretty=format:\"%h%x09%ar%x09%d%x20%s\"";
+              };
             };
           };
           programs.lazygit = {
