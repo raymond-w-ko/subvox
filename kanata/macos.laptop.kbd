@@ -12,6 +12,7 @@ l_sym1 (layer-toggle sym1 )
 l_misc (layer-toggle misc )
 l_num (layer-toggle num )
 l_fn (layer-toggle fn )
+os_lsft (one-shot-release $one-shot-time lsft )
 os_rsft (one-shot-release $one-shot-time rsft )
 spc (tap-hold $tap-time $hold-time spc lmet )
 f (tap-hold $tap-time $hold-time f @l_shortcut )
@@ -40,7 +41,7 @@ p_e (tap-hold $tap-time $hold-time M-lbrc end )
 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc caps a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet spc rmet ralt up down left right )
 
 (deflayer 
-base brdown brup f3 @l_gaming f5 lrld prev pp next mute vold volu ins tab @q @w @e @r t y @u @i @o @p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lsft @a @s @d @f @g @h @j @k @l @scln rsft ret lsft z x c v b n m comm . / @os_rsft fn lctl lalt lmet @spc rmet ralt up down left right )
+base brdown brup f3 @l_gaming f5 lrld prev pp next mute vold volu ins tab @q @w @e @r t y @u @i @o @p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc @os_lsft @a @s @d @f @g @h @j @k @l @scln @os_lsft ret lsft z x c v b n m comm . / @os_rsft fn lctl lalt lmet @spc rmet ralt up down left right )
 
 (deflayer 
 gaming f1 f2 f3 @l_base f5 lrld f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lctrl a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet spc rmet ralt up down left right )

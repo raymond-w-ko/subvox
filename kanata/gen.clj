@@ -167,6 +167,7 @@
     :l_num (layer-toggle num)
     :l_fn (layer-toggle fn)
   
+    :os_lsft ~@(one-shot-release :lsft)
     :os_rsft ~@(one-shot-release :rsft)
 
     ~@(tap-hold :normal :spc (primary-mod))
@@ -206,7 +207,7 @@
             f10 mute f11 vold f12 volu]))
 
 (def qwerty-to-base-layer
-  (->hash '[caps lsft apos rsft
+  (->hash '[caps :at/os_lsft apos :at/os_lsft
             q :at/q p :at/p
             
             w :at/w e :at/e r :at/r
