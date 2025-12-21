@@ -33,6 +33,7 @@
           nix-update
 
           git
+          gh
           lazygit
           neovim
           htop
