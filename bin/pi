@@ -1,33 +1,5 @@
 #!/usr/bin/env sh
 
-# Detect OS and architecture
-OS="$(uname -s)"
-ARCH="$(uname -m)"
-
-case "$OS" in
-  Darwin)
-    case "$ARCH" in
-      arm64) PLATFORM="darwin-arm64" ;;
-      x86_64) PLATFORM="darwin-x64" ;;
-      *) echo "Unsupported Darwin architecture: $ARCH" >&2; exit 1 ;;
-    esac
-    ;;
-  Linux)
-    case "$ARCH" in
-      aarch64|arm64) PLATFORM="linux-arm64" ;;
-      x86_64) PLATFORM="linux-x64" ;;
-      *) echo "Unsupported Linux architecture: $ARCH" >&2; exit 1 ;;
-    esac
-    ;;
-  MINGW*|MSYS*|CYGWIN*|Windows_NT)
-    PLATFORM="windows-x64"
-    ;;
-  *)
-    echo "Unsupported OS: $OS" >&2
-    exit 1
-    ;;
-esac
-
-$HOME/src/pi-mono/packages/coding-agent/binaries/$PLATFORM/pi \
+exec $HOME/src/pi-mono/packages/coding-agent/dist/cli.js \
   --models claude-opus-4-5,google/gemini-3-flash-preview,google/gemini-3-pro-preview,openai/gpt-5.2 \
   "$@"
