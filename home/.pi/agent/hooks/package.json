@@ -1,0 +1,16 @@
+{
+  "name": "pi-hooks",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@mariozechner/pi-ai": "0.27.1",
+    "@mariozechner/pi-tui": "0.27.1"
+  }
+}

@@ -1,3 +1,5 @@
+node_modules
+
 # symlink to result of nix build
 result
 
