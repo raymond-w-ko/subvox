@@ -43,7 +43,7 @@ const DESTRUCTIVE_PATTERNS: [RegExp, string][] = [
     "Force push (-f) can destroy remote history. Use --force-with-lease if necessary.",
   ],
   [
-    /git\s+branch\s+-D\b/i,
+    /git\s+branch\s+-D\b/,
     "git branch -D force-deletes without merge check. Use -d for safety.",
   ],
   // Destructive filesystem commands
