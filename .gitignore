@@ -1,6 +1,9 @@
 # symlink to result of nix build
 result
 
+kanata/*.dll
+kanata/*.exe
+
 home/.config/ghostty/config-local.ghostty
 
 home/.pi/agent/oauth.json
