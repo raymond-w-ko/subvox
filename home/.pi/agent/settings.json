@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.27.2",
   "defaultProvider": "openrouter",
-  "defaultModel": "minimax/minimax-m2.1",
+  "defaultModel": "google/gemini-3-flash-preview",
   "theme": "light",
   "compaction": {
     "enabled": true
@@ -9,6 +9,6 @@
   "terminal": {
     "showImages": true
   },
-  "defaultThinkingLevel": "off",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": false
 }
