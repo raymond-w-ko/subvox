@@ -11,3 +11,9 @@ git merge up/main
 go build ./cmd/bv
 cp ./bv ~/bin/bv
 popd
+
+pushd ~/src/pi-mono
+git fetch up
+git merge up/main
+./make.sh
+popd
