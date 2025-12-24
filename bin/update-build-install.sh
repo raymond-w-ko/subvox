@@ -15,5 +15,6 @@ popd
 pushd ~/src/pi-mono
 git fetch up
 git merge up/main
+git push
 ./make.sh
 popd
