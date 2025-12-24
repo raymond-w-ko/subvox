@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.27.6",
+  "lastChangelogVersion": "0.27.9",
   "defaultProvider": "openrouter",
   "defaultModel": "google/gemini-3-flash-preview",
   "theme": "light",
