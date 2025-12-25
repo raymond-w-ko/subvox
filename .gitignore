@@ -8,6 +8,10 @@ kanata/*.exe
 
 home/.config/ghostty/config-local.ghostty
 
+# obsolete
 home/.pi/agent/oauth.json
+# obsolete, backup of above
+home/.pi/agent/oauth.json.migrated
+home/.pi/agent/auth.json
 home/.pi/agent/sessions
 home/.pi/agent/tools
