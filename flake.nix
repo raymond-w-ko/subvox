@@ -35,6 +35,7 @@
           git
           gh
           lazygit
+          gdb
           neovim
           htop
           curl
