@@ -63,6 +63,8 @@
 
           go
 
+          zig
+
           perl
 
           codex
