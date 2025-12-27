@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.29.0",
+  "lastChangelogVersion": "0.30.2",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-4-5",
   "theme": "light",
@@ -9,6 +9,6 @@
   "terminal": {
     "showImages": true
   },
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "hideThinkingBlock": false
 }

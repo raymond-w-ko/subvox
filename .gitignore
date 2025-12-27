@@ -15,3 +15,4 @@ home/.pi/agent/oauth.json.migrated
 home/.pi/agent/auth.json
 home/.pi/agent/sessions
 home/.pi/agent/tools
+home/.pi/agent/*.jsonl
