@@ -33,4 +33,17 @@ vim.keymap.set({"n", "v"}, "/", "/\\v")
 
 vim.o.guicursor = ""
 
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = vim.api.nvim_create_augroup('LeapColorTweaks', {}),
+  callback = function ()
+    if vim.g.colors_name == 'solarized' then
+      require('leap').init_hl(true)
+    elseif vim.g.colors_name == 'selenized' then
+      vim.cmd 'hi! LeapLabel guifg=#000000 guibg=#ffff00'
+    end
+    vim.cmd 'hi! link LeapMatch None'
+    require('leap').init_hl()
+  end
+})
+
 require("config.lazy")

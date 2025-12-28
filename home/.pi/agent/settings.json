@@ -9,6 +9,6 @@
   "terminal": {
     "showImages": true
   },
-  "defaultThinkingLevel": "off",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": false
 }

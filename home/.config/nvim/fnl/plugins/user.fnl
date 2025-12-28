@@ -11,7 +11,7 @@
  ;                   (tset _G.vim.g :selenized_variant "normal")
  ;                   (tset _G.vim.o :background "light")
  ;                   (vim.cmd.colorscheme "selenized"))})
- (uu.tx :calind/selenized.nvim
+ (uu.tx :raymond-w-ko/selenized.nvim
         {:config (fn []
                    (vim.cmd "colorscheme selenized"))})
 
@@ -32,7 +32,7 @@
                            (builtin.find_files {:hidden true}))]
                 ["<leader>/" (fn []
                                (local builtin (require "telescope.builtin"))
-                           (builtin.live_grep {:hidden true}))]]
+                           (builtin.live_grep {:additional_args ["--hidden"]}))]]
          :tag "v0.2.0"})
  
  (uu.tx "https://codeberg.org/andyg/leap.nvim.git"
@@ -42,7 +42,7 @@
                 {1 "gs" 2 "<Plug>(leap-from-window)" :mode "n"}]})
  
  (uu.tx :nvim-lualine/lualine.nvim
-        {:dependencies [:calind/selenized.nvim
+        {:dependencies [:raymond-w-ko/selenized.nvim
                         :nvim-tree/nvim-web-devicons]
          :config (fn []
                    (local lualine (require "lualine"))
