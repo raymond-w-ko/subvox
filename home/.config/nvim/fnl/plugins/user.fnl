@@ -24,8 +24,16 @@
 
  (uu.tx :nvim-telescope/telescope.nvim
         {:dependencies [:nvim-lua/plenary.nvim]
-         :keys [["<C-p>" "<cmd>Telescope find_files find_command=rg,--files,--hidden,--iglob,!.git prompt_prefix=🔍<cr>"]]
-         :tag "0.1.8"})
+         :config (fn []
+                   (local telescope (require "telescope"))
+                   (telescope.setup {:defaults {:file_ignore_patterns ["^.git/"]}}))
+         :keys [["<C-p>" (fn []
+                           (local builtin (require "telescope.builtin"))
+                           (builtin.find_files {:hidden true}))]
+                ["<leader>/" (fn []
+                               (local builtin (require "telescope.builtin"))
+                           (builtin.live_grep {:hidden true}))]]
+         :tag "v0.2.0"})
  
  (uu.tx "https://codeberg.org/andyg/leap.nvim.git"
         {:dependencies [:tpope/vim-repeat]

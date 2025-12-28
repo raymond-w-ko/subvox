@@ -8,7 +8,19 @@ local function _2_()
   return MiniPairs.setup()
 end
 local function _3_()
+  local telescope = require("telescope")
+  return telescope.setup({defaults = {file_ignore_patterns = {"^.git/"}}})
+end
+local function _4_()
+  local builtin = require("telescope.builtin")
+  return builtin.find_files({hidden = true})
+end
+local function _5_()
+  local builtin = require("telescope.builtin")
+  return builtin.live_grep({hidden = true})
+end
+local function _6_()
   local lualine = require("lualine")
   return lualine.setup({theme = "selenized"})
 end
-return {uu.tx("Olical/nfnl", {priority = 9001, ft = {"fennel"}}), uu.tx("bakpakin/fennel.vim"), uu.tx("calind/selenized.nvim", {config = _1_}), uu.tx("echasnovski/mini.pairs", {config = _2_, version = false}), uu.tx("nvim-telescope/telescope.nvim", {dependencies = {"nvim-lua/plenary.nvim"}, keys = {{"<C-p>", "<cmd>Telescope find_files find_command=rg,--files,--hidden,--iglob,!.git prompt_prefix=\240\159\148\141<cr>"}}, tag = "0.1.8"}), uu.tx("https://codeberg.org/andyg/leap.nvim.git", {dependencies = {"tpope/vim-repeat"}, keys = {{"s", "<Plug>(leap-forward)", mode = {"n", "x", "o"}}, {"S", "<Plug>(leap-backward)", mode = {"n", "x", "o"}}, {"gs", "<Plug>(leap-from-window)", mode = "n"}}}), uu.tx("nvim-lualine/lualine.nvim", {dependencies = {"calind/selenized.nvim", "nvim-tree/nvim-web-devicons"}, config = _3_})}
+return {uu.tx("Olical/nfnl", {priority = 9001, ft = {"fennel"}}), uu.tx("bakpakin/fennel.vim"), uu.tx("calind/selenized.nvim", {config = _1_}), uu.tx("echasnovski/mini.pairs", {config = _2_, version = false}), uu.tx("nvim-telescope/telescope.nvim", {dependencies = {"nvim-lua/plenary.nvim"}, config = _3_, keys = {{"<C-p>", _4_}, {"<leader>/", _5_}}, tag = "v0.2.0"}), uu.tx("https://codeberg.org/andyg/leap.nvim.git", {dependencies = {"tpope/vim-repeat"}, keys = {{"s", "<Plug>(leap-forward)", mode = {"n", "x", "o"}}, {"S", "<Plug>(leap-backward)", mode = {"n", "x", "o"}}, {"gs", "<Plug>(leap-from-window)", mode = "n"}}}), uu.tx("nvim-lualine/lualine.nvim", {dependencies = {"calind/selenized.nvim", "nvim-tree/nvim-web-devicons"}, config = _6_})}
