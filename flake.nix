@@ -51,8 +51,10 @@
           eza
           tmux
           ncdu
+          imagemagick
 
           nodejs_24
+          tsx
           bun
 
           python314
