@@ -3,8 +3,10 @@ return {
   -- Colorscheme
   {
     "raymond-w-ko/selenized.nvim",
+    lazy = false,
     priority = 1000,
     config = function()
+      vim.o.background = "light"
       vim.cmd("colorscheme selenized")
     end,
   },
@@ -58,6 +60,30 @@ return {
       { "S", "<Plug>(leap-backward)", mode = { "n", "x", "o" }, desc = "Leap backward" },
       { "gs", "<Plug>(leap-from-window)", mode = "n", desc = "Leap from window" },
     },
+    init = function()
+      -- Set up autocmd before plugin loads (for colorscheme changes)
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("LeapColorTweaks", {}),
+        callback = function()
+          -- Only run if leap is loaded
+          local ok, leap = pcall(require, "leap")
+          if not ok then return end
+          if vim.g.colors_name == "selenized" then
+            vim.cmd("hi! LeapLabel guifg=#000000 guibg=#ffff00")
+          end
+          vim.cmd("hi! link LeapMatch None")
+          leap.init_hl()
+        end,
+      })
+    end,
+    config = function()
+      -- Apply highlights immediately when plugin loads
+      if vim.g.colors_name == "selenized" then
+        vim.cmd("hi! LeapLabel guifg=#000000 guibg=#ffff00")
+      end
+      vim.cmd("hi! link LeapMatch None")
+      require("leap").init_hl()
+    end,
   },
 
   -- Status line
