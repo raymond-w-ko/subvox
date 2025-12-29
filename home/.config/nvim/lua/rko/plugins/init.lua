@@ -13,8 +13,8 @@ return {
 
   -- Auto pairs
   {
-    "echasnovski/mini.pairs",
-    version = false,
+    "nvim-mini/mini.pairs",
+    branch = "main",
     event = "InsertEnter",
     config = function()
       require("mini.pairs").setup()
@@ -24,7 +24,7 @@ return {
   -- Fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.8",
+    branch = "master",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       require("telescope").setup({
