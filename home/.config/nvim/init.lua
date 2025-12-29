@@ -46,4 +46,4 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   end
 })
 
-require("config.lazy")
+require("rko.lazy")
