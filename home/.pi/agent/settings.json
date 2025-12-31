@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.30.2",
-  "defaultProvider": "openrouter",
-  "defaultModel": "z-ai/glm-4.7",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-5",
   "theme": "light",
   "compaction": {
     "enabled": true
