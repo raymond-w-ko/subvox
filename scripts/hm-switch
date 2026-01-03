@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Detect OS and architecture
+os="$(uname -s)"
+arch="$(uname -m)"
+
+case "${os}-${arch}" in
+  Linux-x86_64)
+    config="rko@linux"
+    ;;
+  Linux-aarch64)
+    config="rko@linux-arm"
+    ;;
+  Darwin-arm64)
+    config="rko@macos"
+    ;;
+  *)
+    printf "error: unsupported platform: %s-%s\n" "${os}" "${arch}" >&2
+    exit 1
+    ;;
+esac
+
+printf "Switching to homeConfiguration: %s\n" "${config}"
+home-manager switch --flake ".#${config}" "$@"
