@@ -344,6 +344,7 @@
 
               oc = "opencode";
               cx = "codex";
+              yc = "claude --dangerously-skip-permissions"
 
               ".." = "__zoxide_z ..";
               "..." = "__zoxide_z ../..";
