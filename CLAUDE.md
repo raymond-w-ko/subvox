@@ -1,37 +1,44 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-- `flake.nix` and `flake.lock` define inputs (nixpkgs, home-manager, nix-darwin, NixOS-WSL) and outputs for each host.
-- `profiles/common.nix` holds shared system defaults (packages, shells, home-manager wiring).
-- `hosts/` contains host-specific NixOS/Darwin modules (currently `wsl2.nix`; add `vm.nix`/`darwin.nix` before enabling those outputs).
-- `home/` keeps user-level home-manager modules (e.g., `home/rko.nix`).
+## Structure
+- `flake.nix` - single-file NixOS/nix-darwin config with all modules inline
+- `home/` - dotfiles symlinked via home-manager (.config/nvim, .config/ghostty, etc.)
+- `pkgs/` - custom package overlays (claude-code, raycast, kanata)
+- `scripts/` - helper scripts for building/switching systems
+- `bin/` - user scripts added to PATH
+- `kanata/` - keyboard remapping configs
 
-## Build, Test, and Development Commands
-- Validate flake and eval consistency: `nix flake check`.
-- Build without applying for quick safety: `nix build .#nixosConfigurations.wsl2.config.system.build.toplevel` (swap host attr as needed).
-- Apply NixOS changes on WSL: `sudo nixos-rebuild switch --flake .#wsl2`.
-- Apply on macOS (darwin output): `darwin-rebuild switch --flake .#darwin` once `hosts/darwin.nix` exists.
-- Update inputs carefully: `nix flake update`; commit resulting `flake.lock` with a dedicated message.
+## Flake Outputs
+- `nixosConfigurations.wsl2` - WSL2 NixOS (x86_64-linux)
+- `darwinConfigurations.macos` - nix-darwin (aarch64-darwin)
 
-## Coding Style & Naming Conventions
-- Nix files use 2-space indentation, trailing semicolons on attr sets, and concise comments explaining non-obvious choices.
-- Keep host module names aligned with flake outputs (`wsl2`, `vm`, `darwin`) and place per-host overrides in `hosts/<name>.nix`.
-- Prefer small reusable options in `profiles/`; keep secrets and machine-specific paths inside host files.
-- Run a formatter before pushing (`nix fmt` if configured, otherwise `nixpkgs-fmt`/`alejandra`).
+## Commands
+```sh
+# validate
+nix flake check
 
-## Testing Guidelines
-- Always run `nix flake check` before opening a PR or switching a system.
-- For risky changes, build each target you affect (e.g., `.#nixosConfigurations.vm` or `.#darwinConfigurations.darwin`) to catch eval errors early.
-- Name tests and modules after the machine or feature they configure to simplify diff review.
+# build without applying
+nix build .#nixosConfigurations.wsl2.config.system.build.toplevel
+nix build .#darwinConfigurations.macos.config.system.build.toplevel
 
-## Commit & Pull Request Guidelines
-- Follow conventional commits (e.g., `chore: pin nixpkgs`, `feat(wsl2): enable graphics`). Keep commits focused on related files.
-- Include `flake.lock` changes in the same commit that updated inputs; avoid mixing with unrelated edits.
-- PRs should state the host(s) impacted, commands run (`nix flake check`, builds), and any manual steps required after merge.
-- Avoid destructive git commands (`git reset --hard`, force-pushing without `--force-with-lease`).
-- Do not add secrets or machine-specific tokens; `.env` and similar files stay user-owned.
+# apply changes
+./scripts/linux-switch   # or: sudo nixos-rebuild switch --flake .#wsl2
+./scripts/darwin-switch  # or: darwin-rebuild switch --flake .#macos
 
-## Agent-Specific Notes
-- Coordinate before removing files; prefer refactors over deletions when other agents may be editing adjacent code.
-- Never edit environment variable files or undo others’ work; ask first if a conflicting change appears.
-- Use `rg` for searches and keep edits minimal and purposeful.
+# format
+nix fmt
+
+# update inputs
+nix flake update
+```
+
+## Style
+- 2-space indent, trailing semicolons
+- Keep modules inline in flake.nix unless complexity warrants extraction
+- Run `nix fmt` after editing nix files
+- Run `nix flake check` before committing
+
+## Commits
+- Conventional commits: `feat:`, `fix:`, `chore:`
+- Include `flake.lock` changes with input updates
+- No secrets or tokens in repo
