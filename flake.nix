@@ -12,7 +12,6 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
   };
 
   outputs =
@@ -27,228 +26,69 @@
     let
       user = "rko";
 
-      myPackages =
-        pkgs: with pkgs; [
-          nixpkgs-review
-          nix-update
+      # Overlay for custom packages
+      customOverlay = final: prev: {
+        raycast = prev.callPackage ./pkgs/raycast/default.nix { };
+        claude-code = prev.callPackage ./pkgs/claude-code/default.nix { };
+      };
 
-          git
-          gh
-          lazygit
-          gdb
-          neovim
-          htop
-          curl
-          wget
-          ripgrep
-          fzf
-          fd
-          jq
-          bash
-          zsh
-          fish
-          zoxide
-          eza
-          tmux
-          ncdu
-          imagemagick
+      # Unfree packages we allow
+      allowedUnfree = [
+        "claude-code"
+        "raycast"
+      ];
 
-          nodejs_24
-          tsx
-          bun
+      # Create pkgs for a given system with our overlays
+      mkPkgs =
+        system:
+        import nixpkgs {
+          inherit system;
+          overlays = [ customOverlay ];
+          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) allowedUnfree;
+        };
 
-          python314
-          uv
-
-          javaPackages.compiler.openjdk25
-          babashka
-
-          go
-
-          zig
-
-          perl
-
-          codex
-          claude-code
+      # Shared nix settings
+      nixSettings = {
+        nix.settings.experimental-features = [
+          "nix-command"
+          "flakes"
         ];
-      myFontPackages =
-        pkgs: with pkgs; [
-          noto-fonts
-          noto-fonts-cjk-sans
-          noto-fonts-color-emoji
-          liberation_ttf
-          fira-code
-          fira-code-symbols
-          mplus-outline-fonts.githubRelease
-          dina-font
-          iosevka
-          aporetic
-          jetbrains-mono
-        ];
-      myLinuxPackages =
-        pkgs: with pkgs; [
-          perf
-          adwaita-icon-theme
-          ghostty
-          # one of these is needed for ghostty playing bell
-          gst_all_1.gstreamer
-          gst_all_1.gst-plugins-base
-          gst_all_1.gst-plugins-good
-          gst_all_1.gst-plugins-ugly
-          gst_all_1.gst-plugins-bad
-          gst_all_1.gst-libav
-          gst_all_1.gst-vaapi
-        ];
-      myMacosPackages =
-        pkgs: with pkgs; [
-          kanata
-          aerospace
-          sketchybar
-          raycast
-        ];
-
-      globalConfig =
-        { lib, pkgs, ... }:
-        {
-          nixpkgs.overlays = [
-            (final: prev: {
-              raycast = prev.callPackage ./pkgs/raycast/default.nix { };
-              claude-code = prev.callPackage ./pkgs/claude-code/default.nix { };
-            })
-          ];
-          nixpkgs.config.allowUnfreePredicate =
-            pkg:
-            builtins.elem (lib.getName pkg) [
-              "claude-code"
-              "raycast"
-            ];
-          nix.settings.experimental-features = [
-            "nix-command"
-            "flakes"
-          ];
-
-          nix.gc = {
-            automatic = true;
-            options = "--delete-older-than 30d";
-          };
-
-          time.timeZone = "America/New_York";
-
-          environment.systemPackages = myPackages pkgs;
-          # this pulls in termbench-pro, which does not compile
-          # environment.enableAllTerminfo = true;
-          security.sudo.keepTerminfo = true;
-          fonts = {
-            packages = myFontPackages pkgs;
-          };
-
-          programs.fish.enable = true;
-
-          users.users."${user}" = {
-            shell = pkgs.fish;
-          };
-          home-manager.users."${user}" = homeManagerConfig;
+        nix.gc = {
+          automatic = true;
+          options = "--delete-older-than 30d";
         };
-      linuxConfig =
+      };
+
+      # Shared nixpkgs config (for NixOS/darwin modules)
+      nixpkgsConfig =
+        { lib, ... }:
+        {
+          nixpkgs.overlays = [ customOverlay ];
+          nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfree;
+        };
+
+      # Font configuration (system-level)
+      fontConfig =
         { pkgs, ... }:
+        let
+          myPkgs = import ./packages.nix { inherit pkgs; };
+        in
         {
-          nix.settings.trusted-users = [ "${user}" ];
-          nix.gc.dates = "weekly";
-          environment.localBinInPath = true;
-
-          programs.nix-ld.enable = true;
-
-          # services.openssh.enable = true;
-
-          users.users."${user}".isNormalUser = true;
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users."${user}" = linuxHomeManagerConfig;
-        };
-      wsl2Config =
-        { pkgs, ... }:
-        {
-          wsl.enable = true;
-          wsl.defaultUser = user;
-          wsl.useWindowsDriver = true;
-
-          # This value determines the NixOS release from which the default
-          # settings for stateful data, like file locations and database versions
-          # on your system were taken. It's perfectly fine and recommended to leave
-          # this value at the release version of the first install of this system.
-          # Before changing this value read the documentation for this option
-          # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-          system.stateVersion = "25.05"; # Did you read the comment?
-
-          hardware.graphics.enable = true;
-          hardware.graphics.enable32Bit = true;
-          environment.systemPackages = with pkgs; [
-            mesa
-            mesa-demos
-            glmark2
-          ];
-          environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
-          environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
-          environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
-          environment.sessionVariables.GDK_BACKEND = "x11";
-        };
-      macosConfig =
-        { pkgs, ... }:
-        {
-          nix.gc.interval = {
-            Weekday = 0;
-            Hour = 0;
-            Minute = 0;
-          };
-          system.configurationRevision = self.rev or self.dirtyRev or null;
-          system.stateVersion = 6;
-          nixpkgs.hostPlatform = "aarch64-darwin";
-          nix.enable = true;
-
-          system.primaryUser = "${user}";
-          system.defaults.NSGlobalDomain.NSWindowShouldDragOnGesture = true;
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-        };
-      linuxOnlyPackages =
-        { pkgs, ... }:
-        {
-          environment.systemPackages = myLinuxPackages pkgs;
-
-          fonts = {
-            fontDir.enable = true;
-            fontconfig.useEmbeddedBitmaps = true;
-            enableDefaultPackages = true;
-          };
-
-          # environment.variables = {
-          #   GST_PLUGIN_SYSTEM_PATH_1_0 = "/run/current-system/sw/lib/gstreamer-1.0/";
-          #   GST_PLUGIN_SYSTEM_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
-          #   GST_PLUGIN_PATH = "/run/current-system/sw/lib/gstreamer-1.0/";
-          # };
-        };
-      macosOnlyPackages =
-        { pkgs, ... }:
-        {
-          environment.systemPackages = myMacosPackages pkgs;
-          environment.shells = with pkgs; [
-            bash
-            fish
-            zsh
-          ];
+          fonts.packages = myPkgs.fonts;
         };
 
+      # Core home-manager config (shared across all platforms)
       homeManagerConfig =
         { pkgs, config, ... }:
         let
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
+          myPkgs = import ./packages.nix { inherit pkgs; };
         in
         {
+          # Install packages via home-manager
+          home.packages = myPkgs.forHome;
+
           # Disable manual generation to avoid builtins.toFile warning
-          # See: https://github.com/nix-community/home-manager/issues/7935
           manual.manpages.enable = false;
 
           xdg.enable = true;
@@ -269,7 +109,6 @@
             nix-direnv.enable = true;
             enableBashIntegration = true;
             enableZshIntegration = true;
-            # enableFishIntegration = true;
           };
 
           programs.zoxide = {
@@ -295,7 +134,6 @@
           };
           programs.fish = {
             enable = true;
-            binds = { };
             interactiveShellInit = ''
               set fish_greeting
               set -gx fish_prompt_pwd_dir_length 3
@@ -382,10 +220,8 @@
                   set -g status-left-length 100
                   set -g status-left ""
                   set -g status-right "#{E:@catppuccin_status_application}"
-                  # set -agF status-right "#{E:@catppuccin_status_cpu}"
                   set -ag status-right "#{E:@catppuccin_status_session}"
                   set -ag status-right "#{E:@catppuccin_status_uptime}"
-                  # set -agF status-right "#{E:@catppuccin_status_battery}"
                 '';
               }
             ];
@@ -446,15 +282,12 @@
             enable = true;
           };
         };
+
+      # Linux-specific home-manager additions
       linuxHomeManagerConfig =
         { pkgs, config, ... }:
-        let
-          dotfilesDir = "${config.home.homeDirectory}/subvox/home";
-        in
         {
-          home.packages = [
-            pkgs.dconf
-          ];
+          home.packages = [ pkgs.dconf ];
 
           dconf = {
             enable = true;
@@ -465,6 +298,93 @@
             };
           };
         };
+
+      # NixOS/darwin shared system config
+      systemConfig =
+        { lib, pkgs, ... }:
+        {
+          time.timeZone = "America/New_York";
+          security.sudo.keepTerminfo = true;
+          programs.fish.enable = true;
+          users.users."${user}".shell = pkgs.fish;
+        };
+
+      # Linux-specific system config
+      linuxSystemConfig =
+        { pkgs, ... }:
+        {
+          nix.settings.trusted-users = [ "${user}" ];
+          nix.gc.dates = "weekly";
+          environment.localBinInPath = true;
+          programs.nix-ld.enable = true;
+          users.users."${user}".isNormalUser = true;
+
+          fonts = {
+            fontDir.enable = true;
+            fontconfig.useEmbeddedBitmaps = true;
+            enableDefaultPackages = true;
+          };
+
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users."${user}" = {
+            imports = [
+              homeManagerConfig
+              linuxHomeManagerConfig
+            ];
+          };
+        };
+
+      # WSL2-specific config
+      wsl2Config =
+        { pkgs, ... }:
+        {
+          wsl.enable = true;
+          wsl.defaultUser = user;
+          wsl.useWindowsDriver = true;
+          system.stateVersion = "25.05";
+
+          hardware.graphics.enable = true;
+          hardware.graphics.enable32Bit = true;
+          environment.systemPackages = with pkgs; [
+            mesa
+            mesa-demos
+            glmark2
+          ];
+          environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
+          environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
+          environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
+          environment.sessionVariables.GDK_BACKEND = "x11";
+        };
+
+      # macOS-specific system config
+      macosSystemConfig =
+        { pkgs, ... }:
+        {
+          nix.gc.interval = {
+            Weekday = 0;
+            Hour = 0;
+            Minute = 0;
+          };
+          system.configurationRevision = self.rev or self.dirtyRev or null;
+          system.stateVersion = 6;
+          nixpkgs.hostPlatform = "aarch64-darwin";
+          nix.enable = true;
+
+          system.primaryUser = "${user}";
+          system.defaults.NSGlobalDomain.NSWindowShouldDragOnGesture = true;
+
+          environment.shells = with pkgs; [
+            bash
+            fish
+            zsh
+          ];
+
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users."${user}" = homeManagerConfig;
+        };
+
     in
     {
       ########################
@@ -482,13 +402,13 @@
           modules = [
             nixos-wsl.nixosModules.default
             home-manager.nixosModules.home-manager
-            globalConfig
-            linuxOnlyPackages
-            linuxConfig
+            nixpkgsConfig
+            nixSettings
+            systemConfig
+            fontConfig
+            linuxSystemConfig
             wsl2Config
-            {
-              home-manager.users."${user}".home.stateVersion = "26.05";
-            }
+            { home-manager.users."${user}".home.stateVersion = "26.05"; }
           ];
         };
       };
@@ -500,14 +420,60 @@
         macos = nix-darwin.lib.darwinSystem {
           modules = [
             home-manager.darwinModules.home-manager
-            globalConfig
-            macosOnlyPackages
-            macosConfig
+            nixpkgsConfig
+            nixSettings
+            systemConfig
+            fontConfig
+            macosSystemConfig
             {
               users.users.${user}.home = "/Users/${user}";
-              home-manager.users.${user}.home = {
-                stateVersion = "26.05";
-              };
+              home-manager.users.${user}.home.stateVersion = "26.05";
+            }
+          ];
+        };
+      };
+
+      ########################
+      # standalone home-manager
+      ########################
+      homeConfigurations = {
+        # Generic Linux (non-NixOS)
+        "${user}@linux" = home-manager.lib.homeManagerConfiguration {
+          pkgs = mkPkgs "x86_64-linux";
+          modules = [
+            homeManagerConfig
+            linuxHomeManagerConfig
+            {
+              home.username = user;
+              home.homeDirectory = "/home/${user}";
+              home.stateVersion = "26.05";
+            }
+          ];
+        };
+
+        # Generic macOS (without nix-darwin)
+        "${user}@macos" = home-manager.lib.homeManagerConfiguration {
+          pkgs = mkPkgs "aarch64-darwin";
+          modules = [
+            homeManagerConfig
+            {
+              home.username = user;
+              home.homeDirectory = "/Users/${user}";
+              home.stateVersion = "26.05";
+            }
+          ];
+        };
+
+        # ARM Linux (e.g., Raspberry Pi, ARM server)
+        "${user}@linux-arm" = home-manager.lib.homeManagerConfiguration {
+          pkgs = mkPkgs "aarch64-linux";
+          modules = [
+            homeManagerConfig
+            linuxHomeManagerConfig
+            {
+              home.username = user;
+              home.homeDirectory = "/home/${user}";
+              home.stateVersion = "26.05";
             }
           ];
         };
