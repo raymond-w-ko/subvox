@@ -12,6 +12,10 @@
 - `nixosConfigurations.wsl2` - WSL2 NixOS (x86_64-linux)
 - `darwinConfigurations.macos` - nix-darwin (aarch64-darwin)
 
+## macOS Applications
+- GUI apps installed via `home.packages` appear in `~/Applications/Home Manager Apps/`
+- GUI apps in `environment.systemPackages` appear in `/Applications/Nix Apps/`
+
 ## Commands
 ```sh
 # validate
