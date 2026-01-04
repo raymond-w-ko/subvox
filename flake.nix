@@ -182,7 +182,7 @@
 
               oc = "opencode";
               yc = "claude --dangerously-skip-permissions";
-              yx = "codex --dangerously-skip-permissions";
+              yx = "codex --yolo";
 
               ".." = "__zoxide_z ..";
               "..." = "__zoxide_z ../..";
