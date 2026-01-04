@@ -181,8 +181,8 @@
               tl = "tmux list-sessions";
 
               oc = "opencode";
-              cx = "codex";
               yc = "claude --dangerously-skip-permissions";
+              yx = "codex --dangerously-skip-permissions";
 
               ".." = "__zoxide_z ..";
               "..." = "__zoxide_z ../..";
