@@ -80,6 +80,7 @@ let
   ];
 
   darwin = with pkgs; [
+    mactop
     kanata
     aerospace
     sketchybar
