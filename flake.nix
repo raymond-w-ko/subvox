@@ -28,9 +28,9 @@
 
       # Overlay for custom packages
       customOverlay = final: prev: {
-        mactop = prev.callPackage ./pkgs/mactop/default.nix { };
-        raycast = prev.callPackage ./pkgs/raycast/default.nix { };
-        claude-code = prev.callPackage ./pkgs/claude-code/default.nix { };
+        mactop = prev.callPackage ./pkgs/mactop/package.nix { };
+        raycast = prev.callPackage ./pkgs/raycast/package.nix { };
+        claude-code = prev.callPackage ./pkgs/claude-code/package.nix { };
       };
 
       # Unfree packages we allow
