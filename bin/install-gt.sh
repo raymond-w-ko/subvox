@@ -3,6 +3,7 @@
 
 REPO_NAME="gt"
 REPO_DIR=~/"$REPO_NAME"
+GH_USER="${1:-$(gh api user --jq .login)}"
 
 cd ~
 if [[ -d "$REPO_NAME" ]]; then
@@ -21,6 +22,5 @@ gt install "$REPO_DIR" --git
 cd "$REPO_DIR"
 git add .
 git commit -m "Initial Gas Town HQ"
-GH_USER=$(gh api user --jq .login)
 gh repo view "$GH_USER/$REPO_NAME" &>/dev/null && gh repo delete "$GH_USER/$REPO_NAME"
 gt git-init --github "$GH_USER/$REPO_NAME"
