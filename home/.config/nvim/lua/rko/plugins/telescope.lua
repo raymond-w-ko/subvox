@@ -4,9 +4,18 @@ return {
   branch = "master",
   dependencies = { "nvim-lua/plenary.nvim" },
   config = function()
+    local actions = require("telescope.actions")
     require("telescope").setup({
       defaults = {
         file_ignore_patterns = { "^.git/" },
+        mappings = {
+          i = {
+            ["<space>"] = actions.to_fuzzy_refine,
+          },
+          n = {
+            ["<space>"] = actions.to_fuzzy_refine,
+          },
+        },
       },
     })
   end,
