@@ -282,6 +282,10 @@
           programs.uv = {
             enable = true;
           };
+
+          programs.gpg = {
+            enable = true;
+          };
         };
 
       # Linux-specific home-manager additions
