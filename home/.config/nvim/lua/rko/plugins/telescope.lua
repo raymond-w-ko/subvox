@@ -21,7 +21,7 @@ return {
   end,
   keys = {
     {
-      "<C-p>",
+      "<leader>f",
       function()
         require("telescope.builtin").find_files({ hidden = true })
       end,
