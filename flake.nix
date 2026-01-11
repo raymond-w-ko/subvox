@@ -31,6 +31,7 @@
         mactop = prev.callPackage ./pkgs/mactop/package.nix { };
         raycast = prev.callPackage ./pkgs/raycast/package.nix { };
         claude-code = prev.callPackage ./pkgs/claude-code/package.nix { };
+        codex = prev.callPackage ./pkgs/codex/package.nix { };
       };
 
       # Unfree packages we allow
