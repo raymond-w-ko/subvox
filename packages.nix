@@ -13,6 +13,7 @@ let
     # core utils
     gh
     gdb
+    gnumake
     htop
     curl
     wget
