@@ -27,6 +27,9 @@ let
     zsh
     eza
 
+    # c / c++
+    gcc
+
     # javascript
     nodejs_24
     tsx
