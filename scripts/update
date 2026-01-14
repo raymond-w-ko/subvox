@@ -5,3 +5,4 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 nix flake update "$@"
+git commit flake.lock -m "chore: update inputs"
