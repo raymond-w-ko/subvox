@@ -27,9 +27,6 @@ let
     zsh
     eza
 
-    # c / c++
-    gcc
-
     # javascript
     nodejs_24
     tsx
@@ -75,6 +72,9 @@ let
   ];
 
   linux = with pkgs; [
+    # c / c++
+    gcc
+
     perf
     adwaita-icon-theme
     ghostty
