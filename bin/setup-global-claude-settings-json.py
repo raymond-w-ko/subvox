@@ -13,6 +13,18 @@ SESSION_START_HOOKS = [
     {"hooks": [{"command": "bd prime", "type": "command"}], "matcher": ""},
 ]
 
+PRE_TOOL_USE_HOOKS = [
+    {"hooks": [{"command": "dcg", "type": "command"}], "matcher": "Bash"},
+]
+
+
+def dcg_exists() -> bool:
+    """Check if dcg command exists in PATH or at ~/bin/dcg."""
+    import shutil
+    if shutil.which("dcg"):
+        return True
+    return (Path.home() / "bin" / "dcg").exists()
+
 
 def deep_merge(base: dict, override: dict) -> dict:
     """Deep merge override into base, returning a new dict."""
@@ -90,6 +102,12 @@ def main():
             existing_hooks.get("SessionStart", []), SESSION_START_HOOKS
         ),
     }
+
+    # Conditionally add PreToolUse hooks if dcg exists
+    if dcg_exists():
+        merged["hooks"]["PreToolUse"] = append_hooks(
+            existing_hooks.get("PreToolUse", []), PRE_TOOL_USE_HOOKS
+        )
 
     # Write merged settings
     settings_path.write_text(json.dumps(merged, indent=2) + "\n")
