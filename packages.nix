@@ -47,6 +47,10 @@ let
     # zig
     zig
 
+    # rust
+    rustc
+    cargo
+
     # perl
     perl
 
