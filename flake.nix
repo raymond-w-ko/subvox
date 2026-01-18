@@ -322,6 +322,7 @@
           nix.settings.trusted-users = [ "${user}" ];
           nix.gc.dates = "weekly";
           environment.localBinInPath = true;
+          environment.sessionVariables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
           programs.nix-ld.enable = true;
           users.users."${user}".isNormalUser = true;
 
