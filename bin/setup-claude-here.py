@@ -22,9 +22,7 @@ HOME_SETTINGS = {
 # =============================================================================
 # Project Directory Settings (<project>/.claude/settings.json)
 # =============================================================================
-PROJECT_SETTINGS = {
-    "enabledPlugins": {},
-}
+PROJECT_SETTINGS = {}
 
 # Hook entries for project directories (not user home)
 PRE_COMPACT_HOOKS = [
