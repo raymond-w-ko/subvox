@@ -5,7 +5,28 @@ import json
 import sys
 from pathlib import Path
 
-# Hook entries to append (not replace)
+# =============================================================================
+# User Home Settings (~/.claude/settings.json)
+# =============================================================================
+HOME_SETTINGS = {
+    "env": {
+        "ENABLE_TOOL_SEARCH": "true",
+    },
+    "statusLine": {
+        "type": "command",
+        "command": "~/subvox/bin/claude-statusline.sh",
+        "padding": 0,
+    },
+}
+
+# =============================================================================
+# Project Directory Settings (<project>/.claude/settings.json)
+# =============================================================================
+PROJECT_SETTINGS = {
+    "enabledPlugins": {},
+}
+
+# Hook entries for project directories (not user home)
 PRE_COMPACT_HOOKS = [
     {"hooks": [{"command": "bd prime", "type": "command"}], "matcher": ""},
 ]
@@ -57,39 +78,10 @@ def append_hooks(existing: list, desired: list) -> list:
     return result
 
 
-def get_desired_settings() -> dict:
-    """Return the desired Claude settings (excluding hooks)."""
-    return {
-        "env": {
-            "ENABLE_TOOL_SEARCH": "true",
-        },
-        "enabledPlugins": {},
-        "statusLine": {
-            "type": "command",
-            "command": "~/subvox/bin/claude-statusline.sh",
-            "padding": 0,
-        },
-    }
-
-
-def main():
-    # Parse optional directory argument
-    if len(sys.argv) > 1:
-        target_dir = Path(sys.argv[1]).resolve()
-    else:
-        target_dir = Path.home()
-
-    # Warn if target is home directory (global settings)
-    if target_dir == Path.home():
-        print(f"Warning: Target is home directory ({target_dir})")
-        print("This will modify global Claude settings (~/.claude/settings.json)")
-
-    settings_path = target_dir / ".claude" / "settings.json"
-
-    # Ensure .claude directory exists
+def setup_home_settings(settings_path: Path) -> None:
+    """Setup minimal settings for user home directory."""
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Load existing settings if present
     existing = {}
     if settings_path.exists():
         try:
@@ -99,11 +91,27 @@ def main():
             print(f"Warning: Could not parse existing settings: {e}")
             print("Starting with empty settings")
 
-    # Merge desired settings into existing
-    desired = get_desired_settings()
-    merged = deep_merge(existing, desired)
+    merged = deep_merge(existing, HOME_SETTINGS)
+    settings_path.write_text(json.dumps(merged, indent=2) + "\n")
+    print(f"Wrote home settings to {settings_path}")
 
-    # Handle hooks separately - append to existing arrays
+
+def setup_project_settings(settings_path: Path) -> None:
+    """Setup full settings for project directory including hooks."""
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing = {}
+    if settings_path.exists():
+        try:
+            existing = json.loads(settings_path.read_text())
+            print(f"Loaded existing settings from {settings_path}")
+        except json.JSONDecodeError as e:
+            print(f"Warning: Could not parse existing settings: {e}")
+            print("Starting with empty settings")
+
+    merged = deep_merge(existing, PROJECT_SETTINGS)
+
+    # Handle hooks - append to existing arrays
     existing_hooks = existing.get("hooks", {})
     merged["hooks"] = {
         **existing_hooks,
@@ -121,9 +129,26 @@ def main():
             existing_hooks.get("PreToolUse", []), PRE_TOOL_USE_HOOKS
         )
 
-    # Write merged settings
     settings_path.write_text(json.dumps(merged, indent=2) + "\n")
-    print(f"Wrote merged settings to {settings_path}")
+    print(f"Wrote project settings to {settings_path}")
+
+
+def main():
+    # Parse optional directory argument
+    if len(sys.argv) > 1:
+        target_dir = Path(sys.argv[1]).resolve()
+    else:
+        target_dir = Path.home()
+
+    settings_path = target_dir / ".claude" / "settings.json"
+    is_home = target_dir == Path.home()
+
+    if is_home:
+        print(f"Setting up home directory settings ({settings_path})")
+        setup_home_settings(settings_path)
+    else:
+        print(f"Setting up project directory settings ({settings_path})")
+        setup_project_settings(settings_path)
 
 
 if __name__ == "__main__":
