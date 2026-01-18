@@ -78,6 +78,8 @@ let
     pkg-config
 
     perf
+    kcov
+
     adwaita-icon-theme
     ghostty
     # gstreamer plugins for ghostty bell
