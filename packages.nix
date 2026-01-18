@@ -74,6 +74,7 @@ let
   linux = with pkgs; [
     # c / c++
     gcc
+    openssl
 
     perf
     adwaita-icon-theme
