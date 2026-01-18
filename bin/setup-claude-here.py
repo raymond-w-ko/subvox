@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Setup global Claude settings by merging into existing ~/.claude/settings.json."""
+"""Setup Claude settings by merging into existing settings.json."""
 
 import json
+import sys
 from pathlib import Path
 
 # Hook entries to append (not replace)
@@ -72,7 +73,18 @@ def get_desired_settings() -> dict:
 
 
 def main():
-    settings_path = Path.home() / ".claude" / "settings.json"
+    # Parse optional directory argument
+    if len(sys.argv) > 1:
+        target_dir = Path(sys.argv[1]).resolve()
+    else:
+        target_dir = Path.home()
+
+    # Warn if target is home directory (global settings)
+    if target_dir == Path.home():
+        print(f"Warning: Target is home directory ({target_dir})")
+        print("This will modify global Claude settings (~/.claude/settings.json)")
+
+    settings_path = target_dir / ".claude" / "settings.json"
 
     # Ensure .claude directory exists
     settings_path.parent.mkdir(parents=True, exist_ok=True)
