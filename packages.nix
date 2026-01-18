@@ -75,6 +75,7 @@ let
     # c / c++
     gcc
     openssl
+    pkg-config
 
     perf
     adwaita-icon-theme
