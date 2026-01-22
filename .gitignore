@@ -17,4 +17,5 @@ home/.pi/agent/sessions
 home/.pi/agent/tools
 home/.pi/agent/*.jsonl
 
-.claude/settings.json
+.claude/**
+.codex/**

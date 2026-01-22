@@ -2,6 +2,7 @@
 """Setup Claude settings by merging into existing settings.json."""
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -101,8 +102,34 @@ def has_bd_prime(settings: dict) -> bool:
     return False
 
 
-def setup_project_settings(settings_path: Path) -> None:
+def setup_project_settings(settings_path: Path, target_dir: Path) -> None:
     """Setup full settings for project directory including hooks."""
+    # Run MCP Agent Mail integration script first
+    integrate_script = Path.home() / "src" / "mcp_agent_mail" / "scripts" / "automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh"
+    if integrate_script.exists():
+        print("Running MCP Agent Mail integration script...")
+        subprocess.run(["bash", str(integrate_script), "--project-dir", str(target_dir)], check=False)
+    else:
+        print(f"Note: MCP Agent Mail integration script not found at {integrate_script}")
+
+    # Remove old MCP config files that are now managed by the integration script
+    old_mcp_files = [
+        target_dir / ".mcp.json",
+        target_dir / ".vscode" / "mcp.json",
+        target_dir / "cline.mcp.json",
+        target_dir / "codex.mcp.json",
+        target_dir / "windsurf.mcp.json",
+    ]
+    for mcp_file in old_mcp_files:
+        if mcp_file.exists():
+            mcp_file.unlink()
+            print(f"Removed old MCP config: {mcp_file}")
+    # Remove .vscode dir if empty
+    vscode_dir = target_dir / ".vscode"
+    if vscode_dir.exists() and not any(vscode_dir.iterdir()):
+        vscode_dir.rmdir()
+        print(f"Removed empty directory: {vscode_dir}")
+
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
     existing = {}
@@ -159,7 +186,7 @@ def main():
         setup_home_settings(settings_path)
     else:
         print(f"Setting up project directory settings ({settings_path})")
-        setup_project_settings(settings_path)
+        setup_project_settings(settings_path, target_dir)
 
 
 if __name__ == "__main__":

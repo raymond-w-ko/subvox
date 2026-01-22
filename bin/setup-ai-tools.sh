@@ -153,7 +153,8 @@ build_am() {
   ensure_repo "$src_dir" "$repo_url"
   pushd "$src_dir"
   git stash
-  git pull
+  git fetch --all
+  git checkout v0.3.0
   git stash pop
   [[ -d .venv ]] || uv venv -p 3.14
   source .venv/bin/activate
