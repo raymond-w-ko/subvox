@@ -139,11 +139,33 @@ build_am() {
   [[ -d .venv ]] || uv venv -p 3.14
   source .venv/bin/activate
   uv sync
+  ./scripts/automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh
   popd
 }
 
-build_prompt() {
-  :
+create_template() {
+  claude \
+    --print \
+    --dangerously-skip-permissions \
+    "$(cat <<'EOF'
+# Instructions
+
+- read ~/src/beads_rust/AGENTS.md
+- extract the following major sections (a major section is usually denoted by --- and then ##):
+  - RULE 0
+  - RULE NUMBER 1
+  - Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
+  - ## (Your Project Info Here)
+  - MCP Agent Mail — Multi-Agent Coordination
+  - Beads Rust (br) — Dependency-Aware Issue Tracking
+  - bv — Graph-Aware Triage Engine
+  - Beads Workflow Integration
+  - Landing the Plane (Session Completion)
+  - Note for Codex/GPT-5.2
+  - Note on Built-in TODO Functionality
+- write to ~/subvox/ai/agents-template.md in the above order **VERBATIM** except for the "Your Project Info Here", which is a placeholder.
+EOF
+)"
 }
 
 main() {
@@ -159,7 +181,7 @@ main() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -s|--skip-existing) SKIP_EXISTING=true; shift ;;
-    build-prompt) build_prompt; exit 0 ;;
+    create-template) create_template; exit 0 ;;
     *) break ;;
   esac
 done
