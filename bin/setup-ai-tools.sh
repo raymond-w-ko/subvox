@@ -152,7 +152,7 @@ build_am() {
   uv python install 3.14
   ensure_repo "$src_dir" "$repo_url"
   pushd "$src_dir"
-  git stash
+  git stash --include-untracked
   git fetch --all
   git checkout main
   git pull
