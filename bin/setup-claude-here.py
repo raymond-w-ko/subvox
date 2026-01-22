@@ -86,6 +86,12 @@ def setup_home_settings(settings_path: Path) -> None:
             print(f"Warning: Could not parse existing settings: {e}")
             print("Starting with empty settings")
 
+    # Warn about deprecated bd prime usage
+    if has_bd_prime(existing):
+        print("\033[1;31mWARNING: Found 'bd prime' in existing hooks.\033[0m")
+        print("\033[1;31m'bd' (beads) is deprecated. Please migrate to beads_rust (br).\033[0m")
+        print("\033[1;31mSee: https://github.com/Dicklesworthstone/beads_rust\033[0m")
+
     merged = deep_merge(existing, HOME_SETTINGS)
     settings_path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote home settings to {settings_path}")
