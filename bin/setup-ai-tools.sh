@@ -129,6 +129,25 @@ build_am() {
   local binary="am"
   local repo_url="https://github.com/Dicklesworthstone/mcp_agent_mail.git"
 
+  # Check if mcp_agent_mail serve-http is running (uv spawns child processes)
+  local pids=()
+  mapfile -t pids < <(pgrep -f "mcp_agent_mail.cli serve-http" || true)
+  if [[ ${#pids[@]} -gt 0 ]]; then
+    echo "mcp_agent_mail serve-http is running (PIDs: ${pids[*]})"
+    read -rp "Kill it before updating? [y/N] " answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+      kill "${pids[@]}" 2>/dev/null || true
+      echo "Sent SIGTERM, waiting 5s..."
+      sleep 5
+      for pid in "${pids[@]}"; do
+        if kill -0 "$pid" 2>/dev/null; then
+          echo "PID $pid still running, sending SIGKILL..."
+          kill -9 "$pid" 2>/dev/null || true
+        fi
+      done
+    fi
+  fi
+
   section "Building $binary"
   uv python install 3.14
   ensure_repo "$src_dir" "$repo_url"
