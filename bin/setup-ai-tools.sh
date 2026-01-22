@@ -154,8 +154,9 @@ build_am() {
   pushd "$src_dir"
   git stash
   git fetch --all
-  git checkout v0.3.0
-  git stash pop
+  git checkout main
+  git pull
+  git stash pop || true
   [[ -d .venv ]] || uv venv -p 3.14
   source .venv/bin/activate
   uv sync
