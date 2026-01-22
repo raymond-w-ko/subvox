@@ -25,13 +25,9 @@ HOME_SETTINGS = {
 PROJECT_SETTINGS = {}
 
 # Hook entries for project directories (not user home)
-PRE_COMPACT_HOOKS = [
-    {"hooks": [{"command": "bd prime", "type": "command"}], "matcher": ""},
-]
+PRE_COMPACT_HOOKS = []
 
-SESSION_START_HOOKS = [
-    {"hooks": [{"command": "bd prime", "type": "command"}], "matcher": ""},
-]
+SESSION_START_HOOKS = []
 
 PRE_TOOL_USE_HOOKS = [
     {"hooks": [{"command": "dcg", "type": "command"}], "matcher": "Bash"},
@@ -94,6 +90,17 @@ def setup_home_settings(settings_path: Path) -> None:
     print(f"Wrote home settings to {settings_path}")
 
 
+def has_bd_prime(settings: dict) -> bool:
+    """Check if settings contain 'bd prime' in any hooks."""
+    hooks = settings.get("hooks", {})
+    for hook_list in hooks.values():
+        for entry in hook_list:
+            for hook in entry.get("hooks", []):
+                if hook.get("command") == "bd prime":
+                    return True
+    return False
+
+
 def setup_project_settings(settings_path: Path) -> None:
     """Setup full settings for project directory including hooks."""
     settings_path.parent.mkdir(parents=True, exist_ok=True)
@@ -106,6 +113,12 @@ def setup_project_settings(settings_path: Path) -> None:
         except json.JSONDecodeError as e:
             print(f"Warning: Could not parse existing settings: {e}")
             print("Starting with empty settings")
+
+    # Warn about deprecated bd prime usage
+    if has_bd_prime(existing):
+        print("\033[1;31mWARNING: Found 'bd prime' in existing hooks.\033[0m")
+        print("\033[1;31m'bd' (beads) is deprecated. Please migrate to beads_rust (br).\033[0m")
+        print("\033[1;31mSee: https://github.com/Dicklesworthstone/beads_rust\033[0m")
 
     merged = deep_merge(existing, PROJECT_SETTINGS)
 
