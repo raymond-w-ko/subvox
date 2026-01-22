@@ -76,6 +76,20 @@ build_br() {
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
+build_dcg() {
+  local src_dir="$HOME/src/destructive_command_guard"
+  local binary="dcg"
+  local repo_url="https://github.com/Dicklesworthstone/destructive_command_guard.git"
+
+  skip_if_exists "$binary" && return
+  section "Building $binary"
+  ensure_repo "$src_dir" "$repo_url"
+  pkill -x "$binary" || true
+  git -C "$src_dir" pull
+  cd $src_dir && cargo build --release
+  cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
+}
+
 build_bv() {
   local src_dir="$HOME/src/beads_viewer"
   local binary="bv"
@@ -115,12 +129,13 @@ build_am() {
   local binary="am"
   local repo_url="https://github.com/Dicklesworthstone/mcp_agent_mail.git"
 
-  skip_if_exists "$binary" && return
   section "Building $binary"
-  ensure_repo "$src_dir" "$repo_url"
-  git -C "$src_dir" pull
-  pushd "$src_dir"
   uv python install 3.14
+  ensure_repo "$src_dir" "$repo_url"
+  pushd "$src_dir"
+  git stash
+  git pull
+  git stash pop
   [[ -d .venv ]] || uv venv -p 3.14
   source .venv/bin/activate
   uv sync
@@ -133,11 +148,12 @@ build_prompt() {
 
 main() {
   check_dependencies
-  build_am
+  build_dcg
   build_bd
   build_br
   build_bv
   build_gt
+  build_am # must be last due to git stash pop merge conflicts
 }
 
 while [[ $# -gt 0 ]]; do
