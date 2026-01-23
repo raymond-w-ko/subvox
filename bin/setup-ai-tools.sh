@@ -204,7 +204,8 @@ EOF
 main() {
   check_dependencies
   build_dcg
-  build_bd
+  # we are using br for now instead of bd until gastown is stable
+  # build_bd
   build_br
   build_bv
   build_gt
