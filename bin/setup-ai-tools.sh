@@ -34,6 +34,12 @@ ensure_repo() {
 
   if [[ ! -d "$src_dir" ]]; then
     git clone "$repo_url" "$src_dir"
+  else
+    local current_url
+    current_url=$(git -C "$src_dir" remote get-url origin 2>/dev/null || true)
+    if [[ "$current_url" != "$repo_url" ]]; then
+      git -C "$src_dir" remote set-url origin "$repo_url"
+    fi
   fi
 }
 
