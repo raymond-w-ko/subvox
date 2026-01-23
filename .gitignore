@@ -19,3 +19,6 @@ home/.pi/agent/*.jsonl
 
 .claude/**
 .codex/**
+
+*.mcp.json
+opencode.json
