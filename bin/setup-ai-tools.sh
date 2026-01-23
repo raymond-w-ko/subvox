@@ -172,6 +172,7 @@ build_am() {
   source .venv/bin/activate
   uv sync
   ./scripts/automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh
+  ./am doctor prune-stale-agents
   popd
 }
 
