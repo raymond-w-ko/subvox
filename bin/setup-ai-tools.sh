@@ -127,7 +127,8 @@ build_gt() {
 build_am() {
   local src_dir="$HOME/src/mcp_agent_mail"
   local binary="am"
-  local repo_url="https://github.com/Dicklesworthstone/mcp_agent_mail.git"
+  local repo_url="git@github.com:raymond-w-ko/mcp_agent_mail.git"
+  local upstream_url="https://github.com/Dicklesworthstone/mcp_agent_mail.git"
 
   # Check if mcp_agent_mail serve-http is running (uv spawns child processes)
   local pids=()
@@ -151,10 +152,14 @@ build_am() {
   section "Building $binary"
   uv python install 3.14
   ensure_repo "$src_dir" "$repo_url"
+  ensure_upstream "$src_dir" "$upstream_url"
   pushd "$src_dir"
   git stash --include-untracked
-  git fetch --all
   git checkout main
+  git -C "$src_dir" pull
+  git -C "$src_dir" fetch upstream
+  git -C "$src_dir" merge upstream/main
+  git -C "$src_dir" push
   git pull
   git stash pop || true
   [[ -d .venv ]] || uv venv -p 3.14
