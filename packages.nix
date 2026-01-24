@@ -53,7 +53,7 @@ let
 
     # ai tools
     codex
-    claude-code
+    claude-code-bun
   ];
 
   fonts = with pkgs; [
