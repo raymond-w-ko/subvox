@@ -54,6 +54,34 @@ ensure_upstream() {
   fi
 }
 
+build_tru() {
+  local src_dir="$HOME/src/toon_rust"
+  local binary="tru"
+  local repo_url="https://github.com/Dicklesworthstone/toon_rust.git"
+
+  skip_if_exists "$binary" && return
+  section "Building $binary"
+  ensure_repo "$src_dir" "$repo_url"
+  pkill -x "$binary" || true
+  git -C "$src_dir" pull
+  cd $src_dir && cargo build --release
+  cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
+}
+
+build_dcg() {
+  local src_dir="$HOME/src/destructive_command_guard"
+  local binary="dcg"
+  local repo_url="https://github.com/Dicklesworthstone/destructive_command_guard.git"
+
+  skip_if_exists "$binary" && return
+  section "Building $binary"
+  ensure_repo "$src_dir" "$repo_url"
+  pkill -x "$binary" || true
+  git -C "$src_dir" pull
+  cd $src_dir && cargo build --release
+  cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
+}
+
 build_bd() {
   local src_dir="$HOME/src/beads"
   local binary="bd"
@@ -72,20 +100,6 @@ build_br() {
   local src_dir="$HOME/src/beads_rust"
   local binary="br"
   local repo_url="https://github.com/Dicklesworthstone/beads_rust.git"
-
-  skip_if_exists "$binary" && return
-  section "Building $binary"
-  ensure_repo "$src_dir" "$repo_url"
-  pkill -x "$binary" || true
-  git -C "$src_dir" pull
-  cd $src_dir && cargo build --release
-  cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
-}
-
-build_dcg() {
-  local src_dir="$HOME/src/destructive_command_guard"
-  local binary="dcg"
-  local repo_url="https://github.com/Dicklesworthstone/destructive_command_guard.git"
 
   skip_if_exists "$binary" && return
   section "Building $binary"
@@ -172,7 +186,8 @@ build_am() {
   source .venv/bin/activate
   uv sync
   ./scripts/automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh
-  ./am doctor prune-stale-agents
+  # this probably causes too much issues on reinstall? (agent name missing in DB)
+  # ./am doctor prune-stale-agents
   popd
 }
 
@@ -204,8 +219,12 @@ EOF
 main() {
   check_dependencies
   build_dcg
+  build_tru
+
   # we are using br for now instead of bd until gastown is stable
+  [[ -f ~/bin/bd ]] && rm ~/bin/bd
   # build_bd
+ 
   build_br
   build_bv
   build_gt

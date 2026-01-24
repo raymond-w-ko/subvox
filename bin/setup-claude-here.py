@@ -118,24 +118,6 @@ def setup_project_settings(settings_path: Path, target_dir: Path) -> None:
     else:
         print(f"Note: MCP Agent Mail integration script not found at {integrate_script}")
 
-    # Remove old MCP config files that are now managed by the integration script
-    old_mcp_files = [
-        target_dir / ".mcp.json",
-        target_dir / ".vscode" / "mcp.json",
-        target_dir / "cline.mcp.json",
-        target_dir / "codex.mcp.json",
-        target_dir / "windsurf.mcp.json",
-    ]
-    for mcp_file in old_mcp_files:
-        if mcp_file.exists():
-            mcp_file.unlink()
-            print(f"Removed old MCP config: {mcp_file}")
-    # Remove .vscode dir if empty
-    vscode_dir = target_dir / ".vscode"
-    if vscode_dir.exists() and not any(vscode_dir.iterdir()):
-        vscode_dir.rmdir()
-        print(f"Removed empty directory: {vscode_dir}")
-
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
     existing = {}
