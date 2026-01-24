@@ -12,6 +12,8 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    claude-code.url = "github:sadjow/claude-code-nix";
   };
 
   outputs =
@@ -21,6 +23,7 @@
       nixos-wsl,
       nix-darwin,
       home-manager,
+      claude-code,
       ...
     }:
     let
@@ -30,14 +33,13 @@
       customOverlay = final: prev: {
         mactop = prev.callPackage ./pkgs/mactop/package.nix { };
         raycast = prev.callPackage ./pkgs/raycast/package.nix { };
-        claude-code = prev.callPackage ./pkgs/claude-code/package.nix { };
-        claude-code-bun = prev.callPackage ./pkgs/claude-code/package.nix { };
         codex = prev.callPackage ./pkgs/codex/package.nix { };
       };
 
       # Unfree packages we allow
       allowedUnfree = [
         "claude-code"
+        "claude-code-bun"
         "raycast"
       ];
 
@@ -46,7 +48,9 @@
         system:
         import nixpkgs {
           inherit system;
-          overlays = [ customOverlay ];
+          overlays = [
+            customOverlay
+          ];
           config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) allowedUnfree;
         };
 
@@ -66,7 +70,10 @@
       nixpkgsConfig =
         { lib, ... }:
         {
-          nixpkgs.overlays = [ customOverlay ];
+          nixpkgs.overlays = [
+            claude-code.overlays.default
+            customOverlay
+          ];
           nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfree;
         };
 

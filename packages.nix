@@ -53,7 +53,7 @@ let
 
     # ai tools
     codex
-    claude-code-bun
+    (claude-code-bun.override { bunBinName = "claude"; })
   ];
 
   fonts = with pkgs; [
