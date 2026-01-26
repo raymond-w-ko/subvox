@@ -44,7 +44,7 @@ f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bks
 base brdown brup f3 @l_gaming f5 lrld prev pp next mute vold volu ins tab @q @w @e @r t y @u @i @o @p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc @os_lsft @a @s @d @f @g @h @j @k @l @scln @os_rsft ret lsft z x c v b n m comm . / @os_rsft fn lctl lalt lmet @spc rmet ralt up down left right )
 
 (deflayer 
-gaming f1 f2 f3 @l_base f5 lrld f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc lctrl a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet spc rmet ralt up down left right )
+gaming f1 f2 f3 @l_base f5 lrld f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc spc a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet lctrl rmet ralt up down left right )
 
 (deflayer 
 shortcut • • • • • • • • • • • • • • tab esc C-S-tab C-tab • • bspc up A-bspc • • • • • • • • • • • • • • • • • • • M-grv @d_h @p_e M-rbrc C-M-S-4 • left down right ret • • • • • • • • • • • • • @os_rsft • • • • @spc • • • • • • )

@@ -78,7 +78,7 @@
 (defn live-reload-key []
   (cond
     (is-macos?) :f6
-    (is-windows?) :rmet
+    (is-windows?) :rctrl
     :else nop))
 
 (def src-keys
@@ -220,7 +220,8 @@
             rsft :at/os_rsft]))
 
 (def qwerty-to-game-layer
-  (->hash '[caps lctrl]))
+  (->hash '[caps spc
+            spc lctrl])) 
 
 (defn gen-qwerty-to-shortcut-layer []
   (->hash `[u bspc
