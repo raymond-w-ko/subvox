@@ -64,7 +64,8 @@ build_tru() {
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
   git -C "$src_dir" fetch --all
-  git -C "$src_dir" checkout v0.1.1
+  git -C "$src_dir" checkout master
+  git -C "$src_dir" pull
   cd $src_dir && cargo build --release
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
