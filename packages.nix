@@ -12,7 +12,6 @@ let
 
     # core utils
     gh
-    gdb
     gnumake
     htop
     curl
@@ -74,6 +73,7 @@ let
   linux = with pkgs; [
     # c / c++
     gcc
+    gdb # move back to common once compilation works on darwin again
     openssl
     pkg-config
 
