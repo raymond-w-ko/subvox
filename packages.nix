@@ -1,6 +1,6 @@
 # Package definitions for home-manager and system configurations
-# Usage: import ./packages.nix { inherit pkgs; }
-{ pkgs }:
+# Usage: import ./packages.nix { inherit pkgs codex-cli-nix; }
+{ pkgs, codex-cli-nix }:
 let
   # Packages managed by home-manager programs.* (do NOT add here):
   #   neovim, git, lazygit, fzf, zoxide, bash, fish, tmux, bun, uv, direnv
@@ -52,7 +52,7 @@ let
     perl
 
     # ai tools
-    codex
+    codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     (claude-code-bun.override { bunBinName = "claude"; })
   ];
 

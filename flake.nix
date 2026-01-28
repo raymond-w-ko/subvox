@@ -14,6 +14,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     claude-code.url = "github:sadjow/claude-code-nix";
+    codex-cli-nix.url = "github:sadjow/codex-cli-nix";
   };
 
   outputs =
@@ -24,6 +25,7 @@
       nix-darwin,
       home-manager,
       claude-code,
+      codex-cli-nix,
       ...
     }:
     let
@@ -33,7 +35,6 @@
       customOverlay = final: prev: {
         mactop = prev.callPackage ./pkgs/mactop/package.nix { };
         raycast = prev.callPackage ./pkgs/raycast/package.nix { };
-        codex = prev.callPackage ./pkgs/codex/package.nix { };
       };
 
       # Unfree packages we allow
@@ -81,7 +82,7 @@
       fontConfig =
         { pkgs, ... }:
         let
-          myPkgs = import ./packages.nix { inherit pkgs; };
+          myPkgs = import ./packages.nix { inherit pkgs codex-cli-nix; };
         in
         {
           fonts.packages = myPkgs.fonts;
@@ -92,7 +93,7 @@
         { pkgs, config, ... }:
         let
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
-          myPkgs = import ./packages.nix { inherit pkgs; };
+          myPkgs = import ./packages.nix { inherit pkgs codex-cli-nix; };
         in
         {
           # Install packages via home-manager
