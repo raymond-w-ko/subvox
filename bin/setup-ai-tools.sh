@@ -54,6 +54,16 @@ ensure_upstream() {
   fi
 }
 
+build_asupersync() {
+  local src_dir="$HOME/src/asupersync"
+  local repo_url="https://github.com/Dicklesworthstone/asupersync.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  cd $src_dir && cargo build --release || true
+}
+
 build_tru() {
   local src_dir="$HOME/src/toon_rust"
   local binary="tru"
@@ -220,8 +230,11 @@ EOF
 
 main() {
   check_dependencies
-  build_dcg
+
+  build_asupersync
   build_tru
+
+  build_dcg
 
   # we are using br for now instead of bd until gastown is stable
   [[ -f ~/bin/bd ]] && rm ~/bin/bd
