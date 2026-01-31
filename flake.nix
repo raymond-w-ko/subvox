@@ -405,6 +405,8 @@
           system.primaryUser = "${user}";
           system.defaults.NSGlobalDomain.NSWindowShouldDragOnGesture = true;
 
+          environment.variables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+
           environment.shells = with pkgs; [
             bash
             fish

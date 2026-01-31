@@ -93,6 +93,9 @@ let
   ];
 
   darwin = with pkgs; [
+    openssl
+    pkg-config
+
     mactop
     kanata
     aerospace
