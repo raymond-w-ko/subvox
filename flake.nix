@@ -262,22 +262,7 @@
             shellWrapperName = "lg";
             settings = {
               gui.theme = {
-                lightTheme = true;
-                activeBorderColor = [
-                  "#40a02b"
-                  "bold"
-                ];
-                inactiveBorderColor = [ "#6c6f85" ];
-                optionsTextColor = [ "#1e66f5" ];
-                selectedLineBgColor = [ "#ccd0da" ];
-                cherryPickedCommitBgColor = [ "#bcc0cc" ];
-                cherryPickedCommitFgColor = [ "#40a02b" ];
-                unstagedChangesColor = [ "#d20f39" ];
-                defaultFgColor = [ "#4c4f69" ];
-                searchingActiveBorderColor = [ "#df8e1d" ];
-              };
-              gui.authorColors = {
-                "*" = "#7287fd";
+                lightTheme = false;
               };
             };
           };

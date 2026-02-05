@@ -5,7 +5,7 @@ window-padding-y = 6
 window-width = 180
 window-height = 45
 
-theme = Selenized Dark
+theme = Squirrelsong Dark
 
 gtk-titlebar = false
 window-theme = auto
