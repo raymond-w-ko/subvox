@@ -14,9 +14,13 @@ let
   };
   pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python313;
   poetryPkg =
-    if pkgs.stdenv.isDarwin
-    then pkgs.poetry.override { python3 = pythonDarwin; }
-    else pkgs.poetry;
+    let
+      basePoetry =
+        if pkgs.stdenv.isDarwin
+        then pkgs.poetry.override { python3 = pythonDarwin; }
+        else pkgs.poetry;
+    in
+    basePoetry.withPlugins (ps: [ ps.poetry-plugin-shell ]);
 
   # Packages managed by home-manager programs.* (do NOT add here):
   #   neovim, git, lazygit, fzf, zoxide, bash, fish, tmux, bun, uv, direnv
@@ -49,7 +53,7 @@ let
     # python
     pythonPkg
     poetryPkg
-    # poetryPlugins.poetry-plugin-shell
+    # poetry plugin: shell is included via poetryPkg
 
     # java/clojure
     javaPackages.compiler.openjdk25
