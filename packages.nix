@@ -2,7 +2,7 @@
 # Usage: import ./packages.nix { inherit pkgs codex-cli-nix; }
 { pkgs, codex-cli-nix }:
 let
-  pythonDarwin = pkgs.python312.override {
+  pythonDarwin = pkgs.python314.override {
     packageOverrides = self: super: {
       rapidfuzz = super.rapidfuzz.overridePythonAttrs (old: {
         env = (old.env or { }) // { RAPIDFUZZ_BUILD_EXTENSION = 0; };
