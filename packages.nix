@@ -2,6 +2,13 @@
 # Usage: import ./packages.nix { inherit pkgs codex-cli-nix; }
 { pkgs, codex-cli-nix }:
 let
+  pythonDarwin = pkgs.python312;
+  pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python313;
+  poetryPkg =
+    if pkgs.stdenv.isDarwin
+    then pkgs.poetry.override { python3 = pythonDarwin; }
+    else pkgs.poetry;
+
   # Packages managed by home-manager programs.* (do NOT add here):
   #   neovim, git, lazygit, fzf, zoxide, bash, fish, tmux, bun, uv, direnv
 
@@ -31,7 +38,9 @@ let
     tsx
 
     # python
-    python314
+    pythonPkg
+    poetryPkg
+    # poetryPlugins.poetry-plugin-shell
 
     # java/clojure
     javaPackages.compiler.openjdk25
