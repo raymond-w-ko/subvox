@@ -2,7 +2,16 @@
 # Usage: import ./packages.nix { inherit pkgs codex-cli-nix; }
 { pkgs, codex-cli-nix }:
 let
-  pythonDarwin = pkgs.python312;
+  pythonDarwin = pkgs.python312.override {
+    packageOverrides = self: super: {
+      rapidfuzz = super.rapidfuzz.overridePythonAttrs (old: {
+        env = (old.env or { }) // { RAPIDFUZZ_BUILD_EXTENSION = 0; };
+        doCheck = false;
+        doInstallCheck = false;
+        pythonImportsCheck = [ ];
+      });
+    };
+  };
   pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python313;
   poetryPkg =
     if pkgs.stdenv.isDarwin
