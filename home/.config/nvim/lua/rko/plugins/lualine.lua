@@ -9,6 +9,7 @@ return {
     require("lualine").setup({
       options = {
         theme = "pixel",
+        always_show_tabline = false,
       },
     })
   end,
