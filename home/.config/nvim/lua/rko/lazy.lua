@@ -20,6 +20,9 @@ require("lazy").setup({
   spec = {
     { import = "rko.plugins" },
   },
+  dev = {
+    path = "~/src",
+  },
   ui = {
     border = "rounded",
   },

@@ -35,4 +35,6 @@ vim.o.guicursor = ""
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- for pixel.nvim colorscheme
+vim.o.termguicolors = false
 require("rko.lazy")
