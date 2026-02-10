@@ -7,7 +7,6 @@
   "mini.pairs": { "branch": "main", "commit": "4089aa6ea6423e02e1a8326a7a7a00159f6f5e04" },
   "nvim-tree.lua": { "branch": "master", "commit": "037d89e60fb01a6c11a48a19540253b8c72a3c32" },
   "nvim-web-devicons": { "branch": "master", "commit": "746ffbb17975ebd6c40142362eee1b0249969c5c" },
-  "pixel.nvim": { "branch": "main", "commit": "9baec30d8db948b4efa6191270ed4c9c55c50f7a" },
   "plenary.nvim": { "branch": "master", "commit": "b9fd5226c2f76c951fc8ed5923d85e4de065e509" },
   "selenized.nvim": { "branch": "main", "commit": "03a89596c7cb470187b1edcc34cfd8d6dbc17ae7" },
   "tabs.nvim": { "branch": "main", "commit": "8113a1f7cef4e8fb9967dd02595ebb3fa3042123" },

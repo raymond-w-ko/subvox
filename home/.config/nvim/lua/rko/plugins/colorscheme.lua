@@ -1,6 +1,7 @@
 -- Colorscheme
 return {
   "raymond-w-ko/pixel.nvim",
+  dev = true,
   lazy = false,
   priority = 1000,
   config = function()
