@@ -1,7 +1,7 @@
 -- Tab line
 return {
   "raymond-w-ko/tabs.nvim",
-  -- dev = true,
+  dev = true,
   dependencies = {
     "nvim-tree/nvim-web-devicons",
     "raymond-w-ko/pixel.nvim",
