@@ -22,6 +22,7 @@ require("lazy").setup({
   },
   dev = {
     path = "~/src",
+    fallback = true,
   },
   ui = {
     border = "rounded",
