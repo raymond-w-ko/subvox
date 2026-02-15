@@ -41,6 +41,8 @@ let
     jq
     ncdu
     imagemagick
+    zip
+    unzip
 
     # shells
     zsh
