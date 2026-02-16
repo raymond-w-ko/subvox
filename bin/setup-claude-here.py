@@ -111,13 +111,13 @@ def has_bd_prime(settings: dict) -> bool:
 
 def setup_project_settings(settings_path: Path, target_dir: Path) -> None:
     """Setup full settings for project directory including hooks."""
-    # Run MCP Agent Mail integration script first
-    integrate_script = Path.home() / "src" / "mcp_agent_mail" / "scripts" / "automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh"
-    if integrate_script.exists():
-        print("Running MCP Agent Mail integration script...")
-        subprocess.run(["bash", str(integrate_script), "--project-dir", str(target_dir)], check=False)
-    else:
-        print(f"Note: MCP Agent Mail integration script not found at {integrate_script}")
+    # MCP Agent Mail integration disabled for now
+    # integrate_script = Path.home() / "src" / "mcp_agent_mail" / "scripts" / "automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh"
+    # if integrate_script.exists():
+    #     print("Running MCP Agent Mail integration script...")
+    #     subprocess.run(["bash", str(integrate_script), "--project-dir", str(target_dir)], check=False)
+    # else:
+    #     print(f"Note: MCP Agent Mail integration script not found at {integrate_script}")
 
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
