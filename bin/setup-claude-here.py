@@ -109,8 +109,33 @@ def has_bd_prime(settings: dict) -> bool:
     return False
 
 
+STALE_MCP_FILES = [
+    ".mcp.json",
+    "cline.mcp.json",
+    "codex.mcp.json",
+    "windsurf.mcp.json",
+    "cursor.mcp.json",
+]
+
+
+def cleanup_stale_mcp_files(target_dir: Path) -> None:
+    """Interactively delete stale MCP config files from the project directory."""
+    for name in STALE_MCP_FILES:
+        path = target_dir / name
+        if not path.exists():
+            continue
+        answer = input(f"Delete stale MCP config {path}? [y/N] ").strip().lower()
+        if answer == "y":
+            path.unlink()
+            print(f"  Deleted {path}")
+        else:
+            print(f"  Skipped {path}")
+
+
 def setup_project_settings(settings_path: Path, target_dir: Path) -> None:
     """Setup full settings for project directory including hooks."""
+    cleanup_stale_mcp_files(target_dir)
+
     # MCP Agent Mail integration disabled for now
     # integrate_script = Path.home() / "src" / "mcp_agent_mail" / "scripts" / "automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh"
     # if integrate_script.exists():
