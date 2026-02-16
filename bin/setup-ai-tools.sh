@@ -216,8 +216,7 @@ create_template() {
   - RULE NUMBER 1
   - Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
   - ## (Your Project Info Here)
-  - MCP Agent Mail — Multi-Agent Coordination
-  - Beads Rust (br) — Dependency-Aware Issue Tracking
+  - Beads (br) — Dependency-Aware Issue Tracking
   - bv — Graph-Aware Triage Engine
   - Beads Workflow Integration
   - Landing the Plane (Session Completion)
