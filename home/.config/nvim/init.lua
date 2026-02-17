@@ -12,6 +12,8 @@ vim.o.tabstop = 2
 vim.o.softtabstop = 2
 vim.o.shiftwidth = 2
 vim.o.expandtab = true
+vim.o.breakindent = true
+vim.o.breakindentopt = "shift:2"
 
 vim.o.modelines = 0
 vim.o.number = true
@@ -30,6 +32,8 @@ vim.o.showmatch = true
 vim.keymap.set({"n", "v"}, "/", "/\\v")
 
 vim.o.guicursor = ""
+
+vim.o.undofile = true
 
 -- Disable netrw (for nvim-tree)
 vim.g.loaded_netrw = 1
