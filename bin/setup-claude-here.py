@@ -11,8 +11,8 @@ from pathlib import Path
 # =============================================================================
 HOME_SETTINGS = {
     "env": {
-        "ENABLE_TOOL_SEARCH": "true",
-        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-5-20250929",
+        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6[1m]",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6[1m]",
     },
     "statusLine": {
         "type": "command",
