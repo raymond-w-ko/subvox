@@ -14,6 +14,7 @@ unified_exec = true
 apply_patch_freeform = true
 skills = true
 shell_snapshot = true
+multi_agent = true
 
 [projects."/home/rko/src"]
 trust_level = "trusted"
