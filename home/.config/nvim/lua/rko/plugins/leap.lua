@@ -1,6 +1,6 @@
 -- Motion plugin
 local function set_hl()
-  vim.api.nvim_set_hl(0, "LeapLabel", { fg = "#000000", bg = "#ffff00", ctermfg = 76 })
+  vim.api.nvim_set_hl(0, "LeapLabel", { fg = "#000000", bg = "#ffff00", ctermfg = 118 })
   vim.api.nvim_set_hl(0, "LeapMatch", {})
 end
 
