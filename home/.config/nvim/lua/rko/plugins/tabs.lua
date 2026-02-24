@@ -9,8 +9,8 @@ return {
   event = "VeryLazy",
   opts = {},
   init = function()
-    vim.keymap.set("n", "<A-m>", require("tabs").previous)
-    vim.keymap.set("n", "<A-,>", require("tabs").next)
+    vim.keymap.set("n", "<A-j>", require("tabs").previous)
+    vim.keymap.set("n", "<A-l>", require("tabs").next)
     vim.keymap.set("n", "<A-;>", require("tabs").open)
   end,
 }
