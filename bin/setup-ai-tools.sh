@@ -241,8 +241,8 @@ main() {
  
   build_br
   build_bv
-  build_gt
-  build_am # must be last due to git stash pop merge conflicts
+  # build_gt  # i don't use this enough to build and setup
+  # build_am  # i don't use this enough to build and setup. am is very invasive also
 }
 
 while [[ $# -gt 0 ]]; do
