@@ -94,6 +94,13 @@ def setup_home_settings(settings_path: Path) -> None:
         print("\033[1;31mSee: https://github.com/Dicklesworthstone/beads_rust\033[0m")
 
     merged = deep_merge(existing, HOME_SETTINGS)
+
+    # Remove mcp-agent-mail from global mcpServers if present
+    mcp = merged.get("mcpServers", {})
+    if "mcp-agent-mail" in mcp:
+        del mcp["mcp-agent-mail"]
+        print("Removed 'mcp-agent-mail' from mcpServers")
+
     settings_path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote home settings to {settings_path}")
 
