@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Setup Claude settings by merging into existing settings.json."""
+"""Setup Claude and Codex agent settings."""
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -103,6 +104,131 @@ def setup_home_settings(settings_path: Path) -> None:
 
     settings_path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote home settings to {settings_path}")
+
+    setup_codex_config()
+
+
+# =============================================================================
+# Codex CLI Settings (~/.codex/config.toml)
+# =============================================================================
+CODEX_SETTINGS = {
+    "model": "gpt-5.3-codex",
+    "model_reasoning_effort": "xhigh",
+    "tool_output_token_limit": 25000,
+    # Recalculate if tool_output_token_limit or context window changes:
+    # model_auto_compact_token_limit = context_window - (tool_output_token_limit + 15000)
+    # 233000 = 273000 - (25000 + 15000)
+    "model_auto_compact_token_limit": 233000,
+    "suppress_unstable_features_warning": True,
+    "personality": "friendly",
+    "web_search": "live",
+    "features": {
+        "ghost_commit": False,
+        "unified_exec": True,
+        "apply_patch_freeform": True,
+        "skills": True,
+        "shell_snapshot": True,
+        "steer": True,
+        "multi_agent": True,
+    },
+    "notice": {
+        "model_migrations": {
+            "gpt-5.2-codex": "gpt-5.3-codex",
+        },
+    },
+    "tui": {
+        "status_line": [
+            "model-with-reasoning",
+            "current-dir",
+            "project-root",
+            "git-branch",
+            "context-remaining",
+            "context-window-size",
+        ],
+        "theme": "base16",
+    },
+}
+
+
+def _toml_key(key: str) -> str:
+    """Quote a TOML key if it contains non-bare characters."""
+    if re.match(r"^[A-Za-z0-9_-]+$", key):
+        return key
+    return f'"{key}"'
+
+
+def _toml_value(value) -> str:
+    """Serialize a Python value to a TOML value string."""
+    if isinstance(value, bool):
+        return str(value).lower()
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, str):
+        return f'"{value}"'
+    if isinstance(value, list):
+        items = ", ".join(_toml_value(v) for v in value)
+        return f"[{items}]"
+    raise ValueError(f"Unsupported TOML value type: {type(value)}")
+
+
+def _dict_to_toml_lines(data: dict, path: list) -> list:
+    """Recursively convert a dict to TOML lines."""
+    lines = []
+    scalars = [(k, v) for k, v in data.items() if not isinstance(v, dict)]
+    tables = [(k, v) for k, v in data.items() if isinstance(v, dict)]
+
+    if path and scalars:
+        section = ".".join(_toml_key(p) for p in path)
+        lines.append(f"\n[{section}]")
+
+    for k, v in scalars:
+        lines.append(f"{_toml_key(k)} = {_toml_value(v)}")
+
+    for k, v in tables:
+        lines.extend(_dict_to_toml_lines(v, path + [k]))
+
+    return lines
+
+
+def dict_to_toml(data: dict) -> str:
+    """Convert a dict to a TOML string."""
+    lines = _dict_to_toml_lines(data, [])
+    return "\n".join(lines) + "\n"
+
+
+def _extract_project_sections(content: str) -> str:
+    """Extract [projects.*] sections from existing TOML content."""
+    lines = content.splitlines(keepends=True)
+    project_lines = []
+    in_project = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("[projects."):
+            in_project = True
+            project_lines.append(line)
+        elif stripped.startswith("[") and not stripped.startswith("[projects."):
+            in_project = False
+        elif in_project:
+            project_lines.append(line)
+    return "".join(project_lines)
+
+
+def setup_codex_config() -> None:
+    """Write desired settings to ~/.codex/config.toml, preserving project sections."""
+    config_path = Path.home() / ".codex" / "config.toml"
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Preserve existing project sections
+    projects = ""
+    if config_path.exists():
+        projects = _extract_project_sections(config_path.read_text())
+
+    content = dict_to_toml(CODEX_SETTINGS)
+    if projects:
+        content += "\n" + projects
+
+    config_path.write_text(content)
+    print(f"Wrote codex settings to {config_path}")
 
 
 def has_bd_prime(settings: dict) -> bool:
