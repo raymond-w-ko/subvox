@@ -61,7 +61,7 @@ build_asupersync() {
   section "Updating $src_dir"
   ensure_repo "$src_dir" "$repo_url"
   git -C "$src_dir" pull
-  cd $src_dir && cargo build --release || true
+  cd "$src_dir" && cargo build --release || true
 }
 
 build_tru() {
@@ -76,7 +76,7 @@ build_tru() {
   git -C "$src_dir" fetch --all
   git -C "$src_dir" checkout master
   git -C "$src_dir" pull
-  cd $src_dir && cargo build --release
+  cd "$src_dir" && cargo build --release
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
@@ -90,7 +90,7 @@ build_dcg() {
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
   git -C "$src_dir" pull
-  cd $src_dir && cargo build --release
+  cd "$src_dir" && cargo build --release
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
@@ -118,7 +118,7 @@ build_br() {
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
   git -C "$src_dir" pull
-  cd $src_dir && cargo build --release
+  cd "$src_dir" && cargo build --release
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
