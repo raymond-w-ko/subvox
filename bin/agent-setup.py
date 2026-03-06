@@ -114,11 +114,9 @@ def setup_home_settings(settings_path: Path) -> None:
 CODEX_SETTINGS = {
     "model": "gpt-5.4",
     "model_reasoning_effort": "xhigh",
-    "tool_output_token_limit": 100000,
-    # Recalculate if tool_output_token_limit or context window changes:
-    # model_auto_compact_token_limit = context_window - (tool_output_token_limit + 15000)
-    # 885000 = 1000000 - (100000 + 15000)
-    "model_auto_compact_token_limit": 885000,
+    "model_context_window": 1000000,
+    "tool_output_token_limit": 250000,
+    "model_auto_compact_token_limit": 900000,
     "suppress_unstable_features_warning": True,
     "personality": "friendly",
     "web_search": "live",
