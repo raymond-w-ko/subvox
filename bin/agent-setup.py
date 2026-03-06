@@ -114,6 +114,7 @@ def setup_home_settings(settings_path: Path) -> None:
 CODEX_SETTINGS = {
     "model": "gpt-5.4",
     "model_reasoning_effort": "xhigh",
+    "plan_mode_reasoning_effort": "xhigh",
     "model_context_window": 1024000,
     "tool_output_token_limit": 250000,
     "model_auto_compact_token_limit": 896000,
