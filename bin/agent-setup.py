@@ -122,7 +122,7 @@ CODEX_SETTINGS = {
     # With tool_output_token_limit=25000 ⇒ 272000 - (25000 + 15000) = 232000
     "model_auto_compact_token_limit": 232_000,
     "suppress_unstable_features_warning": True,
-    "personality": "friendly",
+    "personality": "pragmatic",
     "web_search": "live",
     "features": {
         "ghost_commit": False,
