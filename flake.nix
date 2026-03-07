@@ -102,6 +102,10 @@
           # Disable manual generation to avoid builtins.toFile warning
           manual.manpages.enable = false;
 
+          # `programs.fish` enables man caches by default, but some Home Manager
+          # profiles resolve `programs.man.package` to null (notably macOS).
+          programs.man.generateCaches = config.programs.man.package != null;
+
           xdg.enable = true;
 
           home.file.".config/nvim/".source =
@@ -192,8 +196,8 @@
               tl = "tmux list-sessions";
 
               oc = "opencode";
-              yc = "claude --dangerously-skip-permissions";
-              yx = "codex --yolo";
+              c = "claude --dangerously-skip-permissions";
+              x = "codex --yolo";
 
               ".." = "__zoxide_z ..";
               "..." = "__zoxide_z ../..";
