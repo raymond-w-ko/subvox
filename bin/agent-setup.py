@@ -111,13 +111,16 @@ def setup_home_settings(settings_path: Path) -> None:
 # =============================================================================
 # Codex CLI Settings (~/.codex/config.toml)
 # =============================================================================
+# 5.4 supports 1M but starts to get bad around 272k tokens, which is the same for 5.3 codex
 CODEX_SETTINGS = {
     "model": "gpt-5.4",
-    "model_reasoning_effort": "xhigh",
-    "plan_mode_reasoning_effort": "xhigh",
-    "model_context_window": 1000000,
-    "tool_output_token_limit": 250000,
-    "model_auto_compact_token_limit": 900000,
+    "model_reasoning_effort": "high",
+    "plan_mode_reasoning_effort": "high",
+    "model_context_window": 272_000,
+    "tool_output_token_limit": 25_000,
+    # Formula: 272000 - (tool_output_token_limit + 15000)
+    # With tool_output_token_limit=25000 ⇒ 272000 - (25000 + 15000) = 232000
+    "model_auto_compact_token_limit": 232_000,
     "suppress_unstable_features_warning": True,
     "personality": "friendly",
     "web_search": "live",
