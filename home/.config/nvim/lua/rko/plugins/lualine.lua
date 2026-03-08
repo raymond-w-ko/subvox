@@ -8,7 +8,7 @@ return {
   config = function()
     require("lualine").setup({
       options = {
-        theme = "pixel",
+        theme = "auto",
         always_show_tabline = false,
       },
     })

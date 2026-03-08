@@ -4,7 +4,6 @@ return {
   dev = true,
   dependencies = {
     "nvim-tree/nvim-web-devicons",
-    "raymond-w-ko/pixel.nvim",
   },
   event = "VeryLazy",
   opts = {},
