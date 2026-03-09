@@ -1,7 +1,17 @@
 -- Motion plugin
 local function set_hl()
-  vim.api.nvim_set_hl(0, "LeapLabel", { fg = "#000000", bg = "#ffff00", ctermfg = 118 })
+  vim.api.nvim_set_hl(0, "LeapLabel", { fg = "#000000", bg = "#ffff00", ctermfg = 84 })
   vim.api.nvim_set_hl(0, "LeapMatch", {})
+  vim.api.nvim_set_hl(0, "LeapBackdropDim", { fg = "#6c6c6c", ctermfg = 242, nocombine = true })
+end
+
+local function apply_colors()
+  local ok, leap = pcall(require, "leap")
+  if not ok then return end
+
+  set_hl()
+  leap.init_hl()
+  require("leap.user").set_backdrop_highlight("LeapBackdropDim")
 end
 
 return {
@@ -15,15 +25,11 @@ return {
     vim.api.nvim_create_autocmd("ColorScheme", {
       group = vim.api.nvim_create_augroup("LeapColorTweaks", {}),
       callback = function()
-        local ok, leap = pcall(require, "leap")
-        if not ok then return end
-        set_hl()
-        leap.init_hl()
+        apply_colors()
       end,
     })
   end,
   config = function()
-    set_hl()
-    require("leap").init_hl()
+    apply_colors()
   end,
 }
