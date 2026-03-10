@@ -1,4 +1,4 @@
-# AGENTS.MD
+ # AGENTS.MD
 
 Raymond owns this. Start: say hi + 1 motivating line.
 Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
@@ -16,7 +16,7 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 - CI: `gh run list/view` (rerun/fix til green).
 - Prefer end-to-end verify; if blocked, say what’s missing.
 - New deps: quick health check (recent releases/commits, adoption).
-- Web: search early; quote exact errors; prefer 2024–2025 sources;
+- Web: search early; quote exact errors; prefer 2024–2026 sources;
 - Style: telegraph. Drop filler/grammar. Min tokens (global AGENTS + replies).
 
 ## PR Feedback
@@ -34,7 +34,7 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 - `git checkout` ok for PR review / explicit request.
 - Branch changes require user consent.
 - Destructive ops forbidden unless explicit (`reset --hard`, `clean`, `restore`, `rm`, …).
-- Remotes under `~/Projects`: prefer HTTPS; flip SSH->HTTPS before pull/push.
+- Remotes under `~/src`: prefer HTTPS; flip SSH->HTTPS before pull/push.
 - Commit helper on PATH: `committer` (bash). Prefer it; if repo has `./scripts/committer`, use that.
 - Don’t delete/rename unexpected stuff; stop + ask.
 - No repo-wide S/R scripts; keep edits small/reviewable.
