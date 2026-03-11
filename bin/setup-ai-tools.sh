@@ -74,7 +74,7 @@ build_tru() {
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
   git -C "$src_dir" fetch --all
-  git -C "$src_dir" checkout master
+  git -C "$src_dir" checkout main
   git -C "$src_dir" pull
   cd "$src_dir" && cargo build --release
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
@@ -134,8 +134,8 @@ build_bv() {
   ensure_upstream "$src_dir" "$upstream_url"
   git -C "$src_dir" pull
   git -C "$src_dir" fetch upstream
-  git -C "$src_dir" merge upstream/main
-  git -C "$src_dir" push
+  git -C "$src_dir" checkout upstream/main
+  # git -C "$src_dir" push
   make -C "$src_dir" build
   cp "$src_dir/$binary" "$HOME/bin/$binary"
 }
@@ -230,9 +230,7 @@ EOF
 main() {
   check_dependencies
 
-  build_asupersync
   build_tru
-
   build_dcg
 
   # we are using br for now instead of bd until gastown is stable
