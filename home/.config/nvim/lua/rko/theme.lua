@@ -158,7 +158,7 @@ local dark = {
   { "RedrawDebugComposed", { "guibg=NvimDarkGreen", ctermfg(CTERM.white), ctermbg(CTERM.dark_green) } },
   { "RedrawDebugRecompose", { "guibg=NvimDarkRed", ctermfg(CTERM.white), ctermbg(CTERM.dark_red) } },
   { "Removed", { "guifg=NvimLightRed", ctermfg(CTERM.light_red) } },
-  { "Search", { "guifg=NvimLightGrey1", "guibg=NvimDarkYellow", ctermfg(CTERM.white), ctermbg(CTERM.dark_yellow) } },
+  { "Search", { "guifg=NvimLightGrey1", "guibg=NvimDarkYellow", ctermfg(CTERM.dark_yellow), ctermbg(CTERM.black) } },
   { "SignColumn", { "guifg=NvimDarkGrey4", ctermfg(CTERM.dark_grey) } },
   { "SpellBad", { "guisp=NvimLightRed", "gui=undercurl" } },
   { "SpellCap", { "guisp=NvimLightYellow", "gui=undercurl" } },
