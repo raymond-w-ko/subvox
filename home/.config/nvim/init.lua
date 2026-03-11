@@ -43,4 +43,5 @@ vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,
 
 -- for pixel.nvim colorscheme
 vim.o.termguicolors = false
+require("rko.theme")
 require("rko.lazy")
