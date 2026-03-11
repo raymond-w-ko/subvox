@@ -177,7 +177,7 @@ local dark = {
   { "Type", { "guifg=NvimLightGrey2", ctermfg(CTERM.light_grey) } },
   { "Delimiter", { "guifg=NvimLightGrey2", ctermfg(CTERM.light_grey) } },
   { "Comment", { "guifg=NvimLightGrey4", ctermfg(CTERM.dark_grey) } },
-  { "String", { "guifg=NvimLightGreen", ctermfg(CTERM.light_green) } },
+  { "String", { "guifg=NvimLightGreen", ctermfg(CTERM.dark_green) } },
   { "Identifier", { "guifg=NvimLightBlue", ctermfg(CTERM.light_blue) } },
   { "Function", { "guifg=NvimLightCyan", ctermfg(CTERM.light_cyan) } },
   { "Statement", { "guifg=NvimLightGrey2", "gui=bold", ctermfg(CTERM.light_grey), "cterm=bold" } },
