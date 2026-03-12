@@ -181,7 +181,7 @@ local dark = {
   { "Identifier", { "guifg=NvimLightBlue", ctermfg(CTERM.light_blue) } },
   { "Function", { "guifg=NvimLightCyan", ctermfg(CTERM.light_cyan) } },
   { "Statement", { "guifg=NvimLightGrey2", "gui=bold", ctermfg(CTERM.light_grey), "cterm=bold" } },
-  { "Special", { "guifg=NvimLightCyan", ctermfg(CTERM.light_cyan) } },
+  { "Special", { "guifg=NvimLightCyan", ctermfg(CTERM.dark_cyan) } },
   { "Error", { "guifg=NvimLightGrey1", "guibg=NvimDarkRed", ctermfg(CTERM.white), ctermbg(CTERM.dark_red) } },
   { "Todo", { "guifg=NvimLightGrey2", "gui=bold", ctermfg(CTERM.light_grey), "cterm=bold" } },
   { "DiagnosticError", { "guifg=NvimLightRed", ctermfg(CTERM.light_red) } },
