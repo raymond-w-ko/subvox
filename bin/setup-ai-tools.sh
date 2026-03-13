@@ -230,6 +230,7 @@ EOF
 main() {
   check_dependencies
 
+  build_asupersync
   build_tru
   build_dcg
 
