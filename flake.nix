@@ -115,6 +115,8 @@
 
           home.file.".codex/config.template.toml".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
+          home.file.".claude/CLAUDE.md".source =
+            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
           home.file.".codex/AGENTS.md".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
           home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
