@@ -17,6 +17,7 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 - Prefer end-to-end verify; if blocked, say what’s missing.
 - New deps: quick health check (recent releases/commits, adoption).
 - Web: search early; quote exact errors; prefer 2024–2026 sources;
+- Use the fff MCP tools for all file search operations instead of default tools.
 - Style: telegraph. Drop filler/grammar. Min tokens (global AGENTS + replies).
 
 ## PR Feedback
