@@ -251,6 +251,7 @@
               user.email = "raymond.w.ko@gmail.com";
               pull.rebase = true;
               init.defaultBranch = "master";
+              credential.helper = "";
               credential."https://github.com".helper = "!gh auth git-credential";
               credential."https://gist.github.com".helper = "!gh auth git-credential";
               alias = {
