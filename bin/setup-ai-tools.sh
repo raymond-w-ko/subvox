@@ -132,9 +132,9 @@ build_bv() {
   section "Building $binary"
   ensure_repo "$src_dir" "$repo_url"
   ensure_upstream "$src_dir" "$upstream_url"
-  git -C "$src_dir" pull
   git -C "$src_dir" fetch upstream
-  git -C "$src_dir" checkout upstream/main
+  git -C "$src_dir" switch main
+  git -C "$src_dir" merge upstream/main
   # git -C "$src_dir" push
   make -C "$src_dir" build
   cp "$src_dir/$binary" "$HOME/bin/$binary"
