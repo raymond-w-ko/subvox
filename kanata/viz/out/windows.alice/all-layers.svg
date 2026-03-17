@@ -414,8 +414,7 @@
 <text x="584.0000000000001" y="596" text-anchor="middle" font-size="22" fill="#80cbc4" opacity="0.7">End</text>
 <rect x="658" y="510" width="116" height="116" rx="8" fill="#4a1a5c" stroke="#7a3a8c" stroke-width="2"/>
 <text x="716" y="576" text-anchor="middle" font-size="22" fill="#ce93d8">C-rbrc</text>
-<rect x="790" y="510" width="116" height="116" rx="8" fill="#4a1a5c" stroke="#7a3a8c" stroke-width="2"/>
-<text x="848" y="576" text-anchor="middle" font-size="22" fill="#ce93d8">M-S-s</text>
+<rect x="790" y="510" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
 <rect x="922" y="510" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
 <rect x="1054" y="510" width="116" height="116" rx="8" fill="#2d2d2d" stroke="#555" stroke-width="2"/>
 <text x="1112" y="576" text-anchor="middle" font-size="22" fill="#e0e0e0">←</text>
@@ -428,7 +427,8 @@
 <rect x="1581.9999999999998" y="510" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
 <rect x="1713.9999999999998" y="510" width="266" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
 <rect x="40" y="630" width="266" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
-<rect x="322" y="630" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+<rect x="322" y="630" width="116" height="116" rx="8" fill="#4a1a5c" stroke="#7a3a8c" stroke-width="2"/>
+<text x="380" y="696" text-anchor="middle" font-size="22" fill="#ce93d8">M-S-s</text>
 <rect x="454" y="630" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
 <rect x="586.0000000000001" y="630" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
 <rect x="718" y="630" width="116" height="116" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
