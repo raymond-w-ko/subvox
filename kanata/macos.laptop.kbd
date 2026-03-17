@@ -47,7 +47,7 @@ base brdown brup f3 @l_gaming f5 lrld prev pp next mute vold volu ins tab @q @w 
 gaming f1 f2 f3 @l_base f5 lrld f7 f8 f9 f10 f11 f12 ins tab q w e r t y u i o p lbrc rbrc bksl grv 1 2 3 4 5 6 7 8 9 0 min = bspc spc a s d f g h j k l scln apos ret lsft z x c v b n m comm . / rsft fn lctl lalt lmet lctrl rmet ralt up down left right )
 
 (deflayer 
-shortcut • • • • • • • • • • • • • • tab esc C-S-tab C-tab • • bspc up A-bspc • • • • • • • • • • • • • • • • • • • M-grv @d_h @p_e M-rbrc C-M-S-4 • left down right ret • • • • • • • • • • • • • @os_rsft • • • • @spc • • • • • • )
+shortcut • • • • • • • • • • • • • • tab esc C-S-tab C-tab • • bspc up A-bspc • • • • • • • • • • • • • • • • • • • M-grv @d_h @p_e M-rbrc • • left down right ret • • • C-M-S-4 • • • • • • • • • @os_rsft • • • • @spc • • • • • • )
 
 (deflayer 
 sym1 • • • • • • • • • • • • • • S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0 • • • • • • • • • • • • • • • • • • grv S-min min bksl S-bksl • S-scln scln lbrc rbrc • • • S-grv • S-apos apos • • S-= = S-lbrc S-rbrc @os_rsft • • • • @spc • • • • • • )

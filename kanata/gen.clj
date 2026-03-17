@@ -15,7 +15,7 @@
                     (keyword x)))
     :else (keyword x)))
 
-(defmacro ->hash [xs]  
+(defmacro ->hash [xs]
   `(->> ~xs
         (map safe-keyword)
         (partition-all 2)
@@ -166,7 +166,7 @@
     :l_misc (layer-toggle misc)
     :l_num (layer-toggle num)
     :l_fn (layer-toggle fn)
-  
+
     :os_lsft ~@(one-shot-release :lsft)
     :os_rsft ~@(one-shot-release :rsft)
 
@@ -183,7 +183,7 @@
 
     ~@(tap-hold :normal :g :at/l_fn)
     ~@(tap-hold :normal :h :at/l_fn)
-    
+
     ~@(tap-hold :slow :w :lctl)
     ~@(tap-hold :normal :e :lalt)
     ~@(tap-hold :normal :r :lmet)
@@ -209,19 +209,19 @@
 (def qwerty-to-base-layer
   (->hash '[caps :at/os_lsft apos :at/os_rsft
             q :at/q p :at/p
-            
+
             w :at/w e :at/e r :at/r
             u :at/u o :at/o i :at/i
 
             a :at/a s :at/s d :at/d f :at/f g :at/g h :at/h
             j :at/j k :at/k l :at/l scln :at/scln
-            
+
             spc :at/spc
             rsft :at/os_rsft]))
 
 (def qwerty-to-game-layer
   (->hash '[caps spc
-            spc lctrl])) 
+            spc lctrl]))
 
 (defn gen-qwerty-to-shortcut-layer []
   (->hash `[u bspc
@@ -237,11 +237,11 @@
             e ~(previous-tab)
             r ~(next-tab)
             a ~(cycle-app-windows)
-            s :at/d_h ;; delete (tap) / home (hold) 
+            s :at/d_h ;; delete (tap) / home (hold)
             d :at/p_e ;; outdent (tap) / end (hold)
             f ~(indent-line)
-            g ~(screenshot-area)
-            
+            z ~(screenshot-area)
+
             spc :at/spc
             rsft :at/os_rsft]))
 
@@ -252,7 +252,7 @@
             f ~(select-to-start-of-paragraph)
             v ~(copy)
             t ~(paste)
-            
+
             spc :at/spc
             rsft :at/os_rsft]))
 
@@ -318,7 +318,7 @@
             a kp.
             g bspc
             z ret
-            
+
             spc :at/spc
             rsft :at/os_rsft]))
 
