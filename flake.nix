@@ -13,6 +13,11 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     claude-code.url = "github:sadjow/claude-code-nix";
     codex-cli-nix.url = "github:sadjow/codex-cli-nix";
   };
@@ -24,6 +29,7 @@
       nixos-wsl,
       nix-darwin,
       home-manager,
+      rust-overlay,
       claude-code,
       codex-cli-nix,
       ...
@@ -50,6 +56,7 @@
         import nixpkgs {
           inherit system;
           overlays = [
+            (import rust-overlay)
             customOverlay
           ];
           config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) allowedUnfree;
@@ -72,6 +79,7 @@
         { lib, ... }:
         {
           nixpkgs.overlays = [
+            (import rust-overlay)
             claude-code.overlays.default
             customOverlay
           ];

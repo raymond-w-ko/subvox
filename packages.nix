@@ -67,9 +67,17 @@ let
     # zig
     zig
 
-    # rust
-    rustc
-    cargo
+    # rust (nightly via rust-overlay — matches fff.nvim's toolchain)
+    (pkgs.rust-bin.nightly."2026-03-14".default.override {
+      extensions = [
+        "clippy"
+        "rustfmt"
+        "llvm-tools"
+        "miri"
+        "rust-src"
+        "rust-analyzer"
+      ];
+    })
 
     # perl
     perl
