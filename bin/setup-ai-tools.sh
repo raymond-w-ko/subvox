@@ -20,6 +20,7 @@ check_dependencies() {
 
   command -v go &>/dev/null || missing+=("go")
   command -v cargo &>/dev/null || missing+=("cargo")
+  command -v make &>/dev/null || missing+=("make")
   command -v uv &>/dev/null || missing+=("uv")
 
   if [[ ${#missing[@]} -gt 0 ]]; then
@@ -125,7 +126,7 @@ build_tru() {
   git -C "$src_dir" fetch --all
   git -C "$src_dir" checkout main
   git -C "$src_dir" pull
-  cd "$src_dir" && cargo build --release
+  (cd "$src_dir" && cargo build --release)
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
@@ -139,7 +140,7 @@ build_dcg() {
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
   git -C "$src_dir" pull
-  cd "$src_dir" && cargo build --release
+  (cd "$src_dir" && cargo build --release)
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
@@ -169,7 +170,7 @@ build_br() {
   git -C "$src_dir" restore Cargo.lock
   git -C "$src_dir" switch main
   git -C "$src_dir" pull
-  cd "$src_dir" && cargo build --release
+  (cd "$src_dir" && cargo build --release)
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
 }
 
@@ -203,7 +204,7 @@ build_mcp_agent_mail_rust() {
   git -C "$src_dir" restore Cargo.lock
   git -C "$src_dir" switch main
   git -C "$src_dir" pull
-  cd "$src_dir" && cargo build --release
+  (cd "$src_dir" && cargo build --release)
   cp "$src_dir/target/release/$binary1" "$HOME/bin/$binary1"
   cp "$src_dir/target/release/$binary2" "$HOME/bin/$binary2"
 }
@@ -273,7 +274,6 @@ main() {
   build_tru
   build_dcg
 
- 
   build_br
   build_bv
   build_mcp_agent_mail_rust
