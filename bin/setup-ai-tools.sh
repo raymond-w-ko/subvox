@@ -80,6 +80,39 @@ build_frankensqlite() {
   git -C "$src_dir" clean -fxd
 }
 
+build_frankensearch() {
+  local src_dir="$HOME/src/frankensearch"
+  local repo_url="https://github.com/Dicklesworthstone/frankensearch.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
+}
+
+build_frankentui() {
+  local src_dir="$HOME/src/frankentui"
+  local repo_url="https://github.com/Dicklesworthstone/frankentui.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
+}
+
+build_sqlmodel_rust() {
+  local src_dir="$HOME/src/sqlmodel_rust"
+  local repo_url="https://github.com/Dicklesworthstone/sqlmodel_rust.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
+}
+
 build_tru() {
   local src_dir="$HOME/src/toon_rust"
   local binary="tru"
@@ -158,6 +191,24 @@ build_bv() {
   cp "$src_dir/$binary" "$HOME/bin/$binary"
 }
 
+build_mcp_agent_mail_rust() {
+  local src_dir="$HOME/src/mcp_agent_mail_rust"
+  local binary1="am"
+  local binary2="mcp-agent-mail"
+  local repo_url="https://github.com/Dicklesworthstone/mcp_agent_mail_rust.git"
+
+  skip_if_exists "$binary2" && return
+  section "Building $binary1 + $binary2"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" restore Cargo.lock
+  git -C "$src_dir" switch main
+  git -C "$src_dir" pull
+  cd "$src_dir" && cargo build --release
+  cp "$src_dir/target/release/$binary1" "$HOME/bin/$binary1"
+  cp "$src_dir/target/release/$binary2" "$HOME/bin/$binary2"
+}
+
+
 build_gt() {
   local src_dir="$HOME/src/gastown"
   local binary="gt"
@@ -174,52 +225,9 @@ build_gt() {
   cp "$src_dir/$binary" "$HOME/bin/$binary"
 }
 
-build_am() {
-  local src_dir="$HOME/src/mcp_agent_mail"
-  local binary="am"
-  local repo_url="git@github.com:raymond-w-ko/mcp_agent_mail.git"
-  local upstream_url="https://github.com/Dicklesworthstone/mcp_agent_mail.git"
-
-  # Check if mcp_agent_mail serve-http is running (uv spawns child processes)
-  local pids=()
-  mapfile -t pids < <(pgrep -f "mcp_agent_mail.cli serve-http" || true)
-  if [[ ${#pids[@]} -gt 0 ]]; then
-    echo "mcp_agent_mail serve-http is running (PIDs: ${pids[*]})"
-    read -rp "Kill it before updating? [y/N] " answer
-    if [[ "$answer" =~ ^[Yy]$ ]]; then
-      kill "${pids[@]}" 2>/dev/null || true
-      echo "Sent SIGTERM, waiting 5s..."
-      sleep 5
-      for pid in "${pids[@]}"; do
-        if kill -0 "$pid" 2>/dev/null; then
-          echo "PID $pid still running, sending SIGKILL..."
-          kill -9 "$pid" 2>/dev/null || true
-        fi
-      done
-    fi
-  fi
-
-  section "Building $binary"
-  uv python install 3.14
-  ensure_repo "$src_dir" "$repo_url"
-  ensure_upstream "$src_dir" "$upstream_url"
-  pushd "$src_dir"
-  git stash --include-untracked
-  git checkout main
-  git -C "$src_dir" pull
-  git -C "$src_dir" fetch upstream
-  git -C "$src_dir" merge upstream/main
-  git -C "$src_dir" push
-  git pull
-  git stash pop || true
-  [[ -d .venv ]] || uv venv -p 3.14
-  source .venv/bin/activate
-  uv sync
-  ./scripts/automatically_detect_all_installed_coding_agents_and_install_mcp_agent_mail_in_all.sh
-  # this probably causes too much issues on reinstall? (agent name missing in DB)
-  # ./am doctor prune-stale-agents
-  popd
-}
+################################################################################
+################################################################################
+################################################################################
 
 create_template() {
   claude \
@@ -245,24 +253,39 @@ EOF
 )"
 }
 
+################################################################################
+################################################################################
+################################################################################
+
+build_deps() {
+  build_asupersync
+  build_frankensqlite
+  build_frankensearch
+  build_frankentui
+  build_sqlmodel_rust
+}
+
 main() {
   check_dependencies
 
-  build_asupersync
-  build_frankensqlite
+  build_deps
+
   build_tru
   build_dcg
+
+ 
+  build_br
+  build_bv
+  build_mcp_agent_mail_rust
 
   # we are using br for now instead of bd until gastown is stable
   [[ -f ~/bin/bd ]] && rm ~/bin/bd
   # build_bd
- 
-  build_br
-  build_bv
   # build_gt  # i don't use this enough to build and setup
-  # build_am  # i don't use this enough to build and setup. am is very invasive also
 }
 
+################################################################################
+################################################################################
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -s|--skip-existing) SKIP_EXISTING=true; shift ;;
