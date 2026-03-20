@@ -54,6 +54,10 @@ ensure_upstream() {
   fi
 }
 
+###############################################################################
+# libraries only, no real executables
+###############################################################################
+
 build_asupersync() {
   local src_dir="$HOME/src/asupersync"
   local repo_url="https://github.com/Dicklesworthstone/asupersync.git"
@@ -61,7 +65,19 @@ build_asupersync() {
   section "Updating $src_dir"
   ensure_repo "$src_dir" "$repo_url"
   git -C "$src_dir" pull
-  cd "$src_dir" && cargo build --release || true
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
+}
+
+build_frankensqlite() {
+  local src_dir="$HOME/src/frankensqlite"
+  local repo_url="https://github.com/Dicklesworthstone/frankensqlite.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
 }
 
 build_tru() {
@@ -117,6 +133,8 @@ build_br() {
   section "Building $binary"
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
+  git -C "$src_dir" restore Cargo.lock
+  git -C "$src_dir" switch main
   git -C "$src_dir" pull
   cd "$src_dir" && cargo build --release
   cp "$src_dir/target/release/$binary" "$HOME/bin/$binary"
@@ -231,6 +249,7 @@ main() {
   check_dependencies
 
   build_asupersync
+  build_frankensqlite
   build_tru
   build_dcg
 
