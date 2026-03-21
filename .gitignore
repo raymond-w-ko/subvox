@@ -27,3 +27,4 @@ opencode.json
 
 # Claude Code local settings (contains secrets)
 .claude/settings.local.json
+.env
