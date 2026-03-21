@@ -124,6 +124,7 @@ build_tru() {
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
   git -C "$src_dir" fetch --all
+  git -C "$src_dir" restore Cargo.lock
   git -C "$src_dir" checkout main
   git -C "$src_dir" pull
   (cd "$src_dir" && cargo build --release)
