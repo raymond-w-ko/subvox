@@ -7,7 +7,8 @@ vim.o.encoding = "utf-8"
 vim.o.hidden = true
 
 vim.o.wrap = true
-vim.o.textwidth = 99
+vim.o.textwidth = 100
+vim.o.formatoptions = "jqlnr"
 vim.o.tabstop = 2
 vim.o.softtabstop = 2
 vim.o.shiftwidth = 2

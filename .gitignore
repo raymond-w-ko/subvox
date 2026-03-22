@@ -25,6 +25,9 @@ home/.pi/agent/*.jsonl
 *.mcp.json
 opencode.json
 
+# agent_mcp_mail_rust
+storage.sqlite3*
+
 # Claude Code local settings (contains secrets)
 .claude/settings.local.json
 .env
