@@ -107,6 +107,8 @@
           # Install packages via home-manager
           home.packages = myPkgs.forHome;
 
+          home.sessionVariables.LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
+
           # Disable manual generation to avoid builtins.toFile warning
           manual.manpages.enable = false;
 

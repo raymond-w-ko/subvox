@@ -105,9 +105,11 @@ let
   linux = with pkgs; [
     # c / c++
     gcc
+    llvmPackages.libclang
     gdb # move back to common once compilation works on darwin again
     openssl
     pkg-config
+    sqlite
 
     perf
     kcov
