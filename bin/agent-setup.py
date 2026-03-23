@@ -172,6 +172,10 @@ CODEX_SETTINGS = {
     "mcp_servers": {
         "mcp_agent_mail": {
             "url": "http://127.0.0.1:8765/mcp/",
+            "startup_timeout_sec": 30.0,
+        },
+        "fff": {
+            "command": "fff-mcp",
         },
     },
     "tui": {
@@ -199,6 +203,10 @@ def _toml_value(value) -> str:
     """Serialize a Python value to a TOML value string."""
     if isinstance(value, bool):
         return str(value).lower()
+    if isinstance(value, float):
+        # Use repr to avoid trailing zeros; TOML requires decimal point
+        s = repr(value)
+        return s if "." in s else s + ".0"
     if isinstance(value, int):
         return str(value)
     if isinstance(value, str):
@@ -252,18 +260,27 @@ def _extract_project_sections(content: str) -> str:
 
 
 def setup_codex_config() -> None:
-    """Write desired settings to ~/.codex/config.toml, preserving project sections."""
+    """Deep-merge CODEX_SETTINGS into ~/.codex/config.toml, preserving existing keys."""
+    import tomllib
+
     config_path = Path.home() / ".codex" / "config.toml"
     config_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Preserve existing project sections
-    projects = ""
+    existing = {}
     if config_path.exists():
-        projects = _extract_project_sections(config_path.read_text())
+        try:
+            existing = tomllib.loads(config_path.read_text())
+            print(f"Loaded existing codex config from {config_path}")
+        except Exception as e:
+            print(f"Warning: Could not parse existing codex config: {e}")
 
-    content = dict_to_toml(CODEX_SETTINGS)
+    merged = deep_merge(existing, CODEX_SETTINGS)
+
+    # Serialize: projects go last for readability
+    projects = merged.pop("projects", {})
+    content = dict_to_toml(merged)
     if projects:
-        content += "\n" + projects
+        content += "\n" + dict_to_toml({"projects": projects})
 
     config_path.write_text(content)
     print(f"Wrote codex settings to {config_path}")
