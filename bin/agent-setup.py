@@ -50,11 +50,12 @@ def fff_mcp_path() -> str:
 
 
 def load_http_bearer_token() -> str:
-    """Load the MCP Agent Mail bearer token from ~/.env."""
-    env_path = Path.home() / ".env"
+    """Load the MCP Agent Mail bearer token from ~/.config/mcp-agent-mail/config.env."""
+    env_path = Path.home() / ".config" / "mcp-agent-mail" / "config.env"
     if not env_path.exists():
         raise RuntimeError(
-            "Missing ~/.env with HTTP_BEARER_TOKEN. Make sure `am` has bee run at least once with the cwd as ~."
+            f"Missing {env_path} with HTTP_BEARER_TOKEN. "
+            "Make sure `am` has been run at least once."
         )
 
     for raw_line in env_path.read_text().splitlines():
@@ -73,7 +74,8 @@ def load_http_bearer_token() -> str:
         break
 
     raise RuntimeError(
-        "Missing HTTP_BEARER_TOKEN in ~/.env. Make sure `am` has bee run at least once with the cwd as ~."
+        f"Missing HTTP_BEARER_TOKEN in {env_path}. "
+        "Make sure `am` has been run at least once."
     )
 
 
