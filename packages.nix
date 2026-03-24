@@ -12,7 +12,7 @@ let
       });
     };
   };
-  pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python313;
+  pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python314;
   poetryPkg =
     let
       basePoetry =
