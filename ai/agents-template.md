@@ -18,6 +18,12 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 
 ---
 
+## RULE NUMBER 2: NEVER ENABLE BROADCAST MESSAGING
+
+**YOU MUST NEVER IMPLEMENT OR ENABLE BROADCAST MESSAGING IN `send_message`.** The `broadcast` parameter exists in the schema but is INTENTIONALLY NOT SUPPORTED in the code to prevent agents from spamming each other. If you see a hardcoded block returning an error when `broadcast` is true, **DO NOT REMOVE OR "FIX" IT**. It is not a bug; it is a critical safety mechanism.
+
+---
+
 ## Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
 
 1. **Absolutely forbidden commands:** `git reset --hard`, `git clean -fd`, `rm -rf`, or any command that can delete or overwrite code/data must never be run unless the user explicitly provides the exact command and states, in the same message, that they understand and want the irreversible consequences.
@@ -30,7 +36,63 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 
 ## (Your Project Info Here)
 
-*Add project-specific toolchain, dependencies, code style, testing, and other guidelines here.*
+<!-- Replace this section with your project-specific information:
+     toolchain, architecture, testing, code style, etc. -->
+
+---
+
+## Third-Party Library Usage
+
+If you aren't 100% sure how to use a third-party library, **SEARCH ONLINE** to find the latest documentation and current best practices.
+
+---
+
+## MCP Agent Mail — Multi-Agent Coordination
+
+A mail-like layer that lets coding agents coordinate asynchronously via MCP tools and resources. Provides identities, inbox/outbox, searchable threads, and advisory file reservations with human-auditable artifacts in Git.
+
+### Why It's Useful
+
+- **Prevents conflicts:** Explicit file reservations (leases) for files/globs
+- **Token-efficient:** Messages stored in per-project archive, not in context
+- **Quick reads:** `resource://inbox/...`, `resource://thread/...`
+
+### Same Repository Workflow
+
+1. **Register identity:**
+   ```
+   ensure_project(project_key=<abs-path>)
+   register_agent(project_key, program, model)
+   ```
+
+2. **Reserve files before editing:**
+   ```
+   file_reservation_paths(project_key, agent_name, ["src/**"], ttl_seconds=3600, exclusive=true)
+   ```
+
+3. **Communicate with threads:**
+   ```
+   send_message(..., thread_id="FEAT-123")
+   fetch_inbox(project_key, agent_name)
+   acknowledge_message(project_key, agent_name, message_id)
+   ```
+
+4. **Quick reads:**
+   ```
+   resource://inbox/{Agent}?project=<abs-path>&limit=20
+   resource://thread/{id}?project=<abs-path>&include_bodies=true
+   ```
+
+### Macros vs Granular Tools
+
+- **Prefer macros for speed:** `macro_start_session`, `macro_prepare_thread`, `macro_file_reservation_cycle`, `macro_contact_handshake`
+- **Use granular tools for control:** `register_agent`, `file_reservation_paths`, `send_message`, `fetch_inbox`, `acknowledge_message`
+
+### Common Pitfalls
+
+- `"from_agent not registered"`: Always `register_agent` in the correct `project_key` first
+- `"FILE_RESERVATION_CONFLICT"`: Adjust patterns, wait for expiry, or use non-exclusive reservation
+- **Auth errors:** If JWT+JWKS enabled, include bearer token with matching `kid`
 
 ---
 
@@ -233,8 +295,6 @@ git push                # Push to remote
 - Create new issues with `br create` when you discover tasks
 - Use descriptive titles and set appropriate priority/type
 - Always `br sync --flush-only && git add .beads/` before ending session
-
-<!-- end-bv-agent-instructions -->
 
 ## Landing the Plane (Session Completion)
 

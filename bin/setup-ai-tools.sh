@@ -239,12 +239,15 @@ create_template() {
     "$(cat <<'EOF'
 # Instructions
 
-- read ~/src/beads_rust/AGENTS.md
+- read ~/src/mcp_agent_mail_rust/AGENTS.md
 - extract the following major sections (a major section is usually denoted by --- and then ##):
   - RULE 0
   - RULE NUMBER 1
+  - RULE NUMBER 2
   - Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
   - ## (Your Project Info Here)
+  - Third-Party Library Usage
+  - MCP Agent Mail — Multi-Agent Coordination
   - Beads (br) — Dependency-Aware Issue Tracking
   - bv — Graph-Aware Triage Engine
   - Beads Workflow Integration
