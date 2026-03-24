@@ -3,7 +3,6 @@
 
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 
@@ -23,16 +22,12 @@ HOME_SETTINGS = {
 }
 
 # =============================================================================
-# Global Claude Config (~/.claude.json) — mcpServers only
+# Shared MCP config
 # =============================================================================
-CLAUDE_JSON_SETTINGS = {
-    "mcpServers": {
-        "agent-mail": {
-            "type": "url",
-            "url": "http://127.0.0.1:8765/mcp/",
-        },
-    },
-}
+MCP_AGENT_MAIL_URL = "http://127.0.0.1:8765/mcp/"
+HTTP_BEARER_TOKEN_ENV_KEY = "HTTP_BEARER_TOKEN"
+CLAUDE_MCP_AGENT_MAIL_NAME = "mcp_agent_mail"
+CLAUDE_STALE_MCP_AGENT_MAIL_NAMES = ("agent-mail", "mcp-agent-mail")
 
 # =============================================================================
 # Project Directory Settings (<project>/.claude/settings.json)
@@ -47,6 +42,39 @@ SESSION_START_HOOKS = []
 PRE_TOOL_USE_HOOKS = [
     {"hooks": [{"command": "dcg", "type": "command"}], "matcher": "Bash"},
 ]
+
+
+def fff_mcp_path() -> str:
+    """Return the absolute path to the local fff-mcp binary."""
+    return str(Path.home() / "bin" / "fff-mcp")
+
+
+def load_http_bearer_token() -> str:
+    """Load the MCP Agent Mail bearer token from ~/.env."""
+    env_path = Path.home() / ".env"
+    if not env_path.exists():
+        raise RuntimeError(
+            "Missing ~/.env with HTTP_BEARER_TOKEN. Make sure `am` has bee run at least once with the cwd as ~."
+        )
+
+    for raw_line in env_path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export ") :].strip()
+        if not line.startswith(f"{HTTP_BEARER_TOKEN_ENV_KEY}="):
+            continue
+
+        _, value = line.split("=", 1)
+        value = value.strip().strip('"').strip("'")
+        if value:
+            return value
+        break
+
+    raise RuntimeError(
+        "Missing HTTP_BEARER_TOKEN in ~/.env. Make sure `am` has bee run at least once with the cwd as ~."
+    )
 
 
 def dcg_exists() -> bool:
@@ -87,8 +115,29 @@ def append_hooks(existing: list, desired: list) -> list:
     return result
 
 
-def setup_claude_json() -> None:
-    """Merge CLAUDE_JSON_SETTINGS into ~/.claude.json."""
+def build_claude_json_settings(http_bearer_token: str) -> dict:
+    """Build ~/.claude.json MCP server entries."""
+    return {
+        "mcpServers": {
+            CLAUDE_MCP_AGENT_MAIL_NAME: {
+                "type": "http",
+                "url": MCP_AGENT_MAIL_URL,
+                "headers": {
+                    "Authorization": f"Bearer {http_bearer_token}",
+                },
+            },
+            "fff": {
+                "type": "stdio",
+                "command": fff_mcp_path(),
+                "args": [],
+                "env": {},
+            },
+        },
+    }
+
+
+def setup_claude_json(http_bearer_token: str) -> None:
+    """Merge Claude MCP settings into ~/.claude.json."""
     claude_json_path = Path.home() / ".claude.json"
 
     existing = {}
@@ -100,13 +149,17 @@ def setup_claude_json() -> None:
             print(f"Warning: Could not parse existing config: {e}")
             print("Starting with empty config")
 
-    merged = deep_merge(existing, CLAUDE_JSON_SETTINGS)
+    desired_settings = build_claude_json_settings(http_bearer_token)
+    merged = deep_merge(existing, desired_settings)
 
-    # Remove stale mcp-agent-mail key if present
     mcp = merged.get("mcpServers", {})
-    if "mcp-agent-mail" in mcp:
-        del mcp["mcp-agent-mail"]
-        print("Removed 'mcp-agent-mail' from mcpServers")
+    desired_mcp = desired_settings["mcpServers"]
+    mcp[CLAUDE_MCP_AGENT_MAIL_NAME] = desired_mcp[CLAUDE_MCP_AGENT_MAIL_NAME]
+    mcp["fff"] = desired_mcp["fff"]
+    for stale_name in CLAUDE_STALE_MCP_AGENT_MAIL_NAMES:
+        if stale_name in mcp:
+            del mcp[stale_name]
+            print(f"Removed stale '{stale_name}' from mcpServers")
 
     claude_json_path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote config to {claude_json_path}")
@@ -114,6 +167,7 @@ def setup_claude_json() -> None:
 
 def setup_home_settings(settings_path: Path) -> None:
     """Setup ~/.claude/settings.json + ~/.claude.json + ~/.codex/config.toml."""
+    http_bearer_token = load_http_bearer_token()
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
     existing = {}
@@ -135,15 +189,15 @@ def setup_home_settings(settings_path: Path) -> None:
     settings_path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote home settings to {settings_path}")
 
-    setup_claude_json()
-    setup_codex_config()
+    setup_claude_json(http_bearer_token)
+    setup_codex_config(http_bearer_token)
 
 
 # =============================================================================
 # Codex CLI Settings (~/.codex/config.toml)
 # =============================================================================
 # 5.4 supports 1M but starts to get bad around 272k tokens, which is the same for 5.3 codex
-CODEX_SETTINGS = {
+CODEX_SETTINGS_BASE = {
     "model": "gpt-5.4",
     "model_reasoning_effort": "high",
     "plan_mode_reasoning_effort": "high",
@@ -169,15 +223,6 @@ CODEX_SETTINGS = {
             "gpt-5.2-codex": "gpt-5.3-codex",
         },
     },
-    "mcp_servers": {
-        "mcp_agent_mail": {
-            "url": "http://127.0.0.1:8765/mcp/",
-            "startup_timeout_sec": 30.0,
-        },
-        "fff": {
-            "command": "fff-mcp",
-        },
-    },
     "tui": {
         "status_line": [
             "model-with-reasoning",
@@ -190,6 +235,27 @@ CODEX_SETTINGS = {
         "theme": "base16",
     },
 }
+
+
+def build_codex_settings(http_bearer_token: str) -> dict:
+    """Build ~/.codex/config.toml settings."""
+    return deep_merge(
+        CODEX_SETTINGS_BASE,
+        {
+            "mcp_servers": {
+                "mcp_agent_mail": {
+                    "url": MCP_AGENT_MAIL_URL,
+                    "startup_timeout_sec": 30.0,
+                    "http_headers": {
+                        "Authorization": f"Bearer {http_bearer_token}",
+                    },
+                },
+                "fff": {
+                    "command": fff_mcp_path(),
+                },
+            },
+        },
+    )
 
 
 def _toml_key(key: str) -> str:
@@ -259,8 +325,8 @@ def _extract_project_sections(content: str) -> str:
     return "".join(project_lines)
 
 
-def setup_codex_config() -> None:
-    """Deep-merge CODEX_SETTINGS into ~/.codex/config.toml, preserving existing keys."""
+def setup_codex_config(http_bearer_token: str) -> None:
+    """Deep-merge Codex settings into ~/.codex/config.toml, preserving existing keys."""
     import tomllib
 
     config_path = Path.home() / ".codex" / "config.toml"
@@ -274,7 +340,12 @@ def setup_codex_config() -> None:
         except Exception as e:
             print(f"Warning: Could not parse existing codex config: {e}")
 
-    merged = deep_merge(existing, CODEX_SETTINGS)
+    desired_settings = build_codex_settings(http_bearer_token)
+    merged = deep_merge(existing, desired_settings)
+    desired_mcp = desired_settings["mcp_servers"]
+    merged.setdefault("mcp_servers", {})
+    merged["mcp_servers"]["mcp_agent_mail"] = desired_mcp["mcp_agent_mail"]
+    merged["mcp_servers"]["fff"] = desired_mcp["fff"]
 
     # Serialize: projects go last for readability
     projects = merged.pop("projects", {})
@@ -393,4 +464,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except RuntimeError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)

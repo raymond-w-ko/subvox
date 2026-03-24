@@ -1,6 +1,7 @@
 #!/usr/bin/env -S bash -eu
 
 SKIP_EXISTING=false
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 
 section() {
   echo -e "\033[1;36m>>> $1 <<<\033[0m"
@@ -267,6 +268,11 @@ build_deps() {
   build_sqlmodel_rust
 }
 
+setup_global_agent_configs() {
+  section "Writing Claude + Codex MCP config"
+  "$SCRIPT_DIR/agent-setup.py" "$HOME"
+}
+
 main() {
   check_dependencies
 
@@ -278,6 +284,7 @@ main() {
   build_br
   build_bv
   build_mcp_agent_mail_rust
+  setup_global_agent_configs
 
   # we are using br for now instead of bd until gastown is stable
   [[ -f ~/bin/bd ]] && rm ~/bin/bd
