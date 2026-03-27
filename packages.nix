@@ -110,6 +110,8 @@ let
     openssl
     pkg-config
     sqlite
+    sqlite.dev
+    bubblewrap
 
     perf
     kcov
