@@ -336,6 +336,7 @@
           nix.gc.dates = "weekly";
           environment.localBinInPath = true;
           environment.sessionVariables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
+          environment.sessionVariables.LIBRARY_PATH = "${pkgs.sqlite.out}/lib:${pkgs.openssl.out}/lib";
           programs.nix-ld.enable = true;
           users.users."${user}".isNormalUser = true;
 
