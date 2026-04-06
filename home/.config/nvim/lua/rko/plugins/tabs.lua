@@ -8,8 +8,16 @@ return {
   event = "VeryLazy",
   opts = {},
   init = function()
-    vim.keymap.set("n", "<A-j>", require("tabs").previous)
-    vim.keymap.set("n", "<A-l>", require("tabs").next)
-    vim.keymap.set("n", "<A-;>", require("tabs").open)
+    local tabs = require("tabs")
+    local keys = {
+      ["j"] = tabs.previous,
+      ["l"] = tabs.next,
+      [";"] = tabs.open,
+    }
+    for key, fn in pairs(keys) do
+      for _, mod in ipairs({ "A", "D" }) do
+        vim.keymap.set("n", "<" .. mod .. "-" .. key .. ">", fn)
+      end
+    end
   end,
 }
