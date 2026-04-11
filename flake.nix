@@ -38,10 +38,33 @@
       user = "rko";
 
       # Overlay for custom packages
-      customOverlay = final: prev: {
-        mactop = prev.callPackage ./pkgs/mactop/package.nix { };
-        raycast = prev.callPackage ./pkgs/raycast/package.nix { };
-      };
+      customOverlay =
+        final: prev:
+        let
+          zigPackages = prev.lib.recurseIntoAttrs (
+            final.callPackage ./pkgs/zig {
+              zigVersions = {
+                "0.15.2" = {
+                  llvmPackages = final.llvmPackages_20;
+                  hash = "sha256-u3pEMcYN71d83MJh14vtzU4DJXnMHu/Jw86d9XvwKE8=";
+                  patches = [ ./pkgs/zig/xcode-26.4-compat.patch ];
+                };
+              };
+            }
+          );
+          zig = zigPackages."0.15";
+        in
+        {
+          mactop = prev.callPackage ./pkgs/mactop/package.nix { };
+          raycast = prev.callPackage ./pkgs/raycast/package.nix { };
+
+          inherit zigPackages zig;
+          zig_0_13 = zigPackages."0.13";
+          zig_0_14 = zigPackages."0.14";
+          zig_0_15 = zig;
+
+          zigStdenv = if prev.stdenv.cc.isZig then prev.stdenv else prev.lowPrio zig.passthru.stdenv;
+        };
 
       # Unfree packages we allow
       allowedUnfree = [
