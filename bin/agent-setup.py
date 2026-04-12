@@ -201,8 +201,8 @@ def setup_home_settings(settings_path: Path) -> None:
 # 5.4 supports 1M but starts to get bad around 272k tokens, which is the same for 5.3 codex
 CODEX_SETTINGS_BASE = {
     "model": "gpt-5.4",
-    "model_reasoning_effort": "high",
-    "plan_mode_reasoning_effort": "high",
+    "model_reasoning_effort": "xhigh",
+    "plan_mode_reasoning_effort": "xhigh",
     "model_context_window": 272_000,
     "tool_output_token_limit": 25_000,
     # Formula: 272000 - (tool_output_token_limit + 15000)
@@ -212,18 +212,9 @@ CODEX_SETTINGS_BASE = {
     "personality": "pragmatic",
     "web_search": "live",
     "features": {
-        "ghost_commit": False,
         "unified_exec": True,
-        "apply_patch_freeform": True,
-        "skills": True,
         "shell_snapshot": True,
-        "steer": True,
         "multi_agent": True,
-    },
-    "notice": {
-        "model_migrations": {
-            "gpt-5.2-codex": "gpt-5.3-codex",
-        },
     },
     "tui": {
         "status_line": [
