@@ -10,9 +10,14 @@ from pathlib import Path
 # User Home Settings (~/.claude/settings.json)
 # =============================================================================
 HOME_SETTINGS = {
+    "effortLevel": "high",
     "env": {
-        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6[1m]",
-        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6[1m]",
+        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+        "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+        "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
+        "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+        "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
     },
     "statusLine": {
         "type": "command",
