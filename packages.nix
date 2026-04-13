@@ -5,7 +5,9 @@ let
   pythonDarwin = pkgs.python314.override {
     packageOverrides = self: super: {
       rapidfuzz = super.rapidfuzz.overridePythonAttrs (old: {
-        env = (old.env or { }) // { RAPIDFUZZ_BUILD_EXTENSION = 0; };
+        env = (old.env or { }) // {
+          RAPIDFUZZ_BUILD_EXTENSION = 0;
+        };
         doCheck = false;
         doInstallCheck = false;
         pythonImportsCheck = [ ];
@@ -16,9 +18,7 @@ let
   poetryPkg =
     let
       basePoetry =
-        if pkgs.stdenv.isDarwin
-        then pkgs.poetry.override { python3 = pythonDarwin; }
-        else pkgs.poetry;
+        if pkgs.stdenv.isDarwin then pkgs.poetry.override { python3 = pythonDarwin; } else pkgs.poetry;
     in
     basePoetry.withPlugins (ps: [ ps.poetry-plugin-shell ]);
 
@@ -43,6 +43,8 @@ let
     imagemagick
     zip
     unzip
+    difftastic
+    delta
 
     # shells
     zsh
