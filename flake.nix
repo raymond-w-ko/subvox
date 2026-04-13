@@ -261,6 +261,11 @@
               user.email = "raymond.w.ko@gmail.com";
               pull.rebase = true;
               init.defaultBranch = "master";
+              core = {
+                autocrlf = false;
+                eol = "lf";
+                pager = "delta";
+              };
               credential.helper = "";
               credential."https://github.com".helper = "!gh auth git-credential";
               credential."https://gist.github.com".helper = "!gh auth git-credential";
@@ -268,6 +273,9 @@
                 co = "checkout";
                 br = "branch";
                 cp = "cherry-pick";
+                dl = "-c diff.external=difft log -p --ext-diff";
+                ds = "-c diff.external=difft show --ext-diff";
+                dft = "-c diff.external=difft diff";
                 undo = "reset --soft HEAD^";
                 lg = "log --graph --full-history --pretty=format:\"%h%x09%ar%x09%d%x20%s\"";
               };
