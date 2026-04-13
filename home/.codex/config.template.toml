@@ -1,12 +1,16 @@
-model = "gpt-5.2-codex"
-model_reasoning_effort = "high"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "xhigh"
+model_context_window = 272000
 tool_output_token_limit = 25000
-# Leave room for native compaction near the 272–273k context window.
-# Formula: 273000 - (tool_output_token_limit + 15000)
-# With tool_output_token_limit=25000 ⇒ 273000 - (25000 + 15000) = 233000
-model_auto_compact_token_limit = 233000
+# Leave room for native compaction near the 272k context window.
+# Formula: 272000 - (tool_output_token_limit + 15000)
+# With tool_output_token_limit=25000 => 272000 - (25000 + 15000) = 232000
+model_auto_compact_token_limit = 232000
 web_search = "live"
 suppress_unstable_features_warning = true
+personality = "pragmatic"
+service_tier = "fast"
 
 [features]
 ghost_commit = false
@@ -14,7 +18,16 @@ unified_exec = true
 apply_patch_freeform = true
 skills = true
 shell_snapshot = true
+steer = true
 multi_agent = true
+
+[notice.model_migrations]
+"gpt-5.2-codex" = "gpt-5.3-codex"
+gpt-5-codex = "gpt-5.4"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "project-root", "git-branch", "context-remaining", "context-window-size"]
+theme = "base16"
 
 [projects."/home/rko/src"]
 trust_level = "trusted"
