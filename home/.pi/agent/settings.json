@@ -1,14 +1,14 @@
 {
-  "lastChangelogVersion": "0.31.1",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-5",
-  "theme": "light",
+  "lastChangelogVersion": "0.67.2",
+  "defaultProvider": "openrouter",
+  "defaultModel": "z-ai/glm-5.1",
+  "theme": "dark",
   "compaction": {
     "enabled": true
   },
   "terminal": {
     "showImages": true
   },
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "hideThinkingBlock": false
 }
