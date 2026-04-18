@@ -9,4 +9,4 @@ if [[ -z "${attr}" ]]; then
 fi
 
 shift || true
-sudo nixos-rebuild switch --flake ".#${attr}" "$@"
+sudo -H nixos-rebuild switch --flake ".#${attr}" "$@"
