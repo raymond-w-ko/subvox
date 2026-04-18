@@ -320,6 +320,7 @@
             enable = true;
             defaultEditor = true;
             vimAlias = true;
+            sideloadInitLua = true;
           };
           programs.bun = {
             enable = true;
