@@ -86,7 +86,7 @@ let
 
     # ai tools
     codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
-    (claude-code-bun.override { bunBinName = "claude"; })
+    claude-code
   ];
 
   fonts = with pkgs; [

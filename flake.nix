@@ -69,7 +69,6 @@
       # Unfree packages we allow
       allowedUnfree = [
         "claude-code"
-        "claude-code-bun"
         "raycast"
       ];
 
