@@ -115,6 +115,17 @@ build_sqlmodel_rust() {
   git -C "$src_dir" clean -fxd
 }
 
+build_fastmcp_rust() {
+  local src_dir="$HOME/src/fastmcp_rust"
+  local repo_url="https://github.com/Dicklesworthstone/fastmcp_rust.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
+}
+
 build_tru() {
   local src_dir="$HOME/src/toon_rust"
   local binary="tru"
@@ -169,7 +180,7 @@ build_br() {
   section "Building $binary"
   ensure_repo "$src_dir" "$repo_url"
   pkill -x "$binary" || true
-  git -C "$src_dir" restore Cargo.lock
+  # git -C "$src_dir" restore Cargo.lock
   git -C "$src_dir" switch main
   git -C "$src_dir" pull
   (cd "$src_dir" && cargo build --release)
@@ -269,6 +280,7 @@ build_deps() {
   build_frankensearch
   build_frankentui
   build_sqlmodel_rust
+  build_fastmcp_rust
 }
 
 setup_global_agent_configs() {
