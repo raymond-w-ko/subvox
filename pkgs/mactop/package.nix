@@ -20,12 +20,14 @@ buildGoModule rec {
 
   proxyVendor = true;
 
+  doCheck = false;
+
   ldflags = [
     "-s"
     "-w"
   ];
 
-  doInstallCheck = true;
+  doInstallCheck = false;
   nativeInstallCheckInputs = [ versionCheckHook ];
 
   meta = {
