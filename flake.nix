@@ -52,16 +52,18 @@
               };
             }
           );
-          zig = zigPackages."0.15";
+          zig = zigPackages."0.16";
         in
         {
           mactop = prev.callPackage ./pkgs/mactop/package.nix { };
           raycast = prev.callPackage ./pkgs/raycast/package.nix { };
+          zsh = final.callPackage ./pkgs/zsh/package.nix { zsh = prev.zsh; };
 
           inherit zigPackages zig;
           zig_0_13 = zigPackages."0.13";
           zig_0_14 = zigPackages."0.14";
-          zig_0_15 = zig;
+          zig_0_15 = zigPackages."0.15";
+          zig_0_16 = zig;
 
           zigStdenv = if prev.stdenv.cc.isZig then prev.stdenv else prev.lowPrio zig.passthru.stdenv;
         };
