@@ -2,7 +2,7 @@ node_modules
 __pycache__
 
 # symlink to result of nix build
-result
+result*
 
 kanata/*.dll
 kanata/*.exe
