@@ -205,7 +205,7 @@ def setup_home_settings(settings_path: Path) -> None:
 # =============================================================================
 # 5.4 supports 1M but starts to get bad around 272k tokens, which is the same for 5.3 codex
 CODEX_SETTINGS_BASE = {
-    "model": "gpt-5.4",
+    "model": "gpt-5.5",
     "model_reasoning_effort": "xhigh",
     "plan_mode_reasoning_effort": "xhigh",
     "model_context_window": 272_000,
