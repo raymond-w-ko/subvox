@@ -285,6 +285,7 @@ build_deps() {
 
 setup_global_agent_configs() {
   section "Writing Claude + Codex MCP config"
+  "$HOME/bin/am" setup run --agent codex --project-dir "$HOME" --no-hooks -y
   "$SCRIPT_DIR/agent-setup.py" "$HOME"
 }
 
