@@ -6,6 +6,8 @@ import re
 import sys
 from pathlib import Path
 
+from codex_config_repair import collapse_duplicate_http_headers
+
 # =============================================================================
 # User Home Settings (~/.claude/settings.json)
 # =============================================================================
@@ -306,34 +308,59 @@ def dict_to_toml(data: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _extract_project_sections(content: str) -> str:
-    """Extract [projects.*] sections from existing TOML content."""
-    lines = content.splitlines(keepends=True)
-    project_lines = []
-    in_project = False
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith("[projects."):
-            in_project = True
-            project_lines.append(line)
-        elif stripped.startswith("[") and not stripped.startswith("[projects."):
-            in_project = False
-        elif in_project:
-            project_lines.append(line)
-    return "".join(project_lines)
+def codex_dict_to_toml(data: dict) -> str:
+    """Convert Codex config to TOML, with project sections last."""
+    data = dict(data)
+    projects = data.pop("projects", {})
+    content = dict_to_toml(data)
+    if projects:
+        content += "\n" + dict_to_toml({"projects": projects})
+    return content
+
+
+def load_codex_config(config_path: Path) -> dict:
+    """Load Codex TOML, repairing duplicate http_headers tables when possible."""
+    import tomllib
+
+    content = config_path.read_text()
+    try:
+        return tomllib.loads(content)
+    except Exception:
+        repaired = collapse_duplicate_http_headers(content)
+        if repaired == content:
+            raise
+
+        data = tomllib.loads(repaired)
+        config_path.write_text(repaired)
+        print(f"Repaired duplicate Codex http_headers tables in {config_path}")
+        return data
+
+
+def repair_codex_config() -> None:
+    """Parse and rewrite ~/.codex/config.toml, collapsing duplicate http_headers."""
+    import tomllib
+
+    config_path = Path.home() / ".codex" / "config.toml"
+    if not config_path.exists():
+        print(f"No Codex config found at {config_path}")
+        return
+
+    content = config_path.read_text()
+    repaired = collapse_duplicate_http_headers(content)
+    data = tomllib.loads(repaired)
+    config_path.write_text(codex_dict_to_toml(data))
+    print(f"Parsed and rewrote Codex config at {config_path}")
 
 
 def setup_codex_config(http_bearer_token: str) -> None:
     """Deep-merge Codex settings into ~/.codex/config.toml, preserving existing keys."""
-    import tomllib
-
     config_path = Path.home() / ".codex" / "config.toml"
     config_path.parent.mkdir(parents=True, exist_ok=True)
 
     existing = {}
     if config_path.exists():
         try:
-            existing = tomllib.loads(config_path.read_text())
+            existing = load_codex_config(config_path)
             print(f"Loaded existing codex config from {config_path}")
         except Exception as e:
             print(f"Warning: Could not parse existing codex config: {e}")
@@ -345,13 +372,7 @@ def setup_codex_config(http_bearer_token: str) -> None:
     merged["mcp_servers"]["mcp_agent_mail"] = desired_mcp["mcp_agent_mail"]
     merged["mcp_servers"]["fff"] = desired_mcp["fff"]
 
-    # Serialize: projects go last for readability
-    projects = merged.pop("projects", {})
-    content = dict_to_toml(merged)
-    if projects:
-        content += "\n" + dict_to_toml({"projects": projects})
-
-    config_path.write_text(content)
+    config_path.write_text(codex_dict_to_toml(merged))
     print(f"Wrote codex settings to {config_path}")
 
 
@@ -443,6 +464,10 @@ def setup_project_settings(settings_path: Path, target_dir: Path) -> None:
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "--repair-codex-config":
+        repair_codex_config()
+        return
+
     # Parse optional directory argument
     if len(sys.argv) > 1:
         target_dir = Path(sys.argv[1]).resolve()
