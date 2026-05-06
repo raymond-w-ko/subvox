@@ -2,6 +2,7 @@
 
 SKIP_EXISTING=false
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+AGENT_MAIL_CONFIG_ENV="$HOME/.config/mcp-agent-mail/config.env"
 
 section() {
   echo -e "\033[1;36m>>> $1 <<<\033[0m"
@@ -13,6 +14,40 @@ skip_if_exists() {
     section "$binary: skipping (already exists)"
     return 0
   fi
+  return 1
+}
+
+agent_mail_has_bearer_token() {
+  [[ -f "$AGENT_MAIL_CONFIG_ENV" ]] || return 1
+
+  local line value
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+
+    [[ -z "$line" || "$line" == \#* ]] && continue
+
+    if [[ "$line" =~ ^export[[:space:]]+(.+)$ ]]; then
+      line="${BASH_REMATCH[1]}"
+      line="${line#"${line%%[![:space:]]*}"}"
+    fi
+
+    [[ "$line" == HTTP_BEARER_TOKEN=* ]] || continue
+
+    value="${line#HTTP_BEARER_TOKEN=}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+
+    if [[ "$value" == \"*\" && "$value" == *\" ]]; then
+      value="${value:1:${#value}-2}"
+    elif [[ "$value" == \'*\' ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+
+    [[ -n "$value" ]] && return 0
+    return 1
+  done < "$AGENT_MAIL_CONFIG_ENV"
+
   return 1
 }
 
@@ -286,7 +321,11 @@ build_deps() {
 setup_global_agent_configs() {
   section "Writing Claude + Codex MCP config"
   "$SCRIPT_DIR/agent-setup.py" --repair-codex-config
-  "$HOME/bin/am" setup run --agent codex --project-dir "$HOME" --no-hooks -y
+  if agent_mail_has_bearer_token; then
+    section "MCP Agent Mail setup: skipping (bearer token exists)"
+  else
+    "$HOME/bin/am" setup run --agent codex --project-dir "$HOME" --no-hooks -y
+  fi
   "$SCRIPT_DIR/agent-setup.py" "$HOME"
 }
 
