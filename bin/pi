@@ -1,23 +1,8 @@
 #!/usr/bin/env sh
 
-# Set to true to enable BD prime integration
-ENABLE_BD=false
-
-BD_ARGS=""
-if [ "$ENABLE_BD" = "true" ]; then
-  BD_PRIME="$(bd prime)"
-  if [ -n "$BD_PRIME" ]; then
-    BD_PRIME="
----
-$BD_PRIME"
-    BD_ARGS="--append-system-prompt $BD_PRIME"
-  fi
-fi
-
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
   "$HOME/src/pi-mono/packages/coding-agent/dist/cli.js" \
   --models openai-codex/gpt-5.5,openrouter/z-ai/glm-5.1,openrouter/minimax/minimax-m2.7,openrouter/moonshotai/kimi-k2.6 \
   --model openai-codex/gpt-5.5 \
   --thinking low \
-  $BD_ARGS \
   "$@"
