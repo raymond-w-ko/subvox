@@ -16,8 +16,8 @@ fi
 
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
   "$HOME/src/pi-mono/packages/coding-agent/dist/cli.js" \
-  --models openai-codex/gpt-5.4,openrouter/z-ai/glm-5.1,openrouter/minimax/minimax-m2.7,openrouter/moonshotai/kimi-k2.5 \
-  --model openai-codex/gpt-5.4 \
-  --thinking high \
+  --models openai-codex/gpt-5.5,openrouter/z-ai/glm-5.1,openrouter/minimax/minimax-m2.7,openrouter/moonshotai/kimi-k2.6 \
+  --model openai-codex/gpt-5.5 \
+  --thinking low \
   $BD_ARGS \
   "$@"

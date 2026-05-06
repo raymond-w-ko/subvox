@@ -1,14 +1,11 @@
 {
-  "lastChangelogVersion": "0.67.2",
-  "defaultProvider": "openrouter",
-  "defaultModel": "z-ai/glm-5.1",
+  "lastChangelogVersion": "0.73.0",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "theme": "dark",
   "compaction": {
     "enabled": true
   },
-  "terminal": {
-    "showImages": true
-  },
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "low",
   "hideThinkingBlock": false
 }
