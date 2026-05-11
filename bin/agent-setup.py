@@ -218,6 +218,7 @@ CODEX_SETTINGS_BASE = {
     "suppress_unstable_features_warning": True,
     "personality": "pragmatic",
     "web_search": "live",
+    "service_tier": "fast",
     "features": {
         "unified_exec": True,
         "shell_snapshot": True,
