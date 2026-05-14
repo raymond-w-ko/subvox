@@ -45,6 +45,7 @@ let
     unzip
     difftastic
     delta
+    traceroute
 
     # shells
     zsh
