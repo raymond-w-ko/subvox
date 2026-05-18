@@ -29,6 +29,8 @@ HOME = Path.home()
 SRC = HOME / "src"
 BIN = HOME / "bin"
 PRINT_LOCK = threading.Lock()
+RED = "\033[1;31m"
+RESET = "\033[0m"
 
 
 @dataclass(frozen=True)
@@ -144,6 +146,10 @@ def log(message: str) -> None:
 
 def section(message: str) -> None:
     log(f"\033[1;36m>>> {message} <<<\033[0m")
+
+
+def red(message: str) -> str:
+    return f"{RED}{message}{RESET}"
 
 
 def run(cmd: list[str] | tuple[str, ...], cwd: Path | None = None) -> str:
@@ -333,7 +339,7 @@ def run_parallel(label: str, specs: list[ProjectSpec], fn, workers: int) -> tupl
                 log(f"{name}: {results[name]}")
             except Exception as exc:
                 errors[name] = str(exc)
-                log(f"{name}: ERROR\n{errors[name]}")
+                log(red(f"{name}: ERROR\n{errors[name]}"))
     return results, errors
 
 
@@ -352,7 +358,7 @@ def full_setup(args: argparse.Namespace) -> int:
         setup_global_agent_configs()
     except Exception as exc:
         setup_error = str(exc)
-        log(f"agent config: ERROR\n{setup_error}")
+        log(red(f"agent config: ERROR\n{setup_error}"))
 
     section("Summary")
     for name, result in {**fetch_results, **build_results}.items():
@@ -361,9 +367,9 @@ def full_setup(args: argparse.Namespace) -> int:
     if setup_error:
         errors["agent config"] = setup_error
     if errors:
-        log("Errors:")
+        log(red("Errors:"))
         for name, error in errors.items():
-            log(f"- {name}: {error.splitlines()[0]}")
+            log(red(f"- {name}: {error.splitlines()[0]}"))
         return 1
     return 0
 
@@ -399,7 +405,7 @@ def main(argv: list[str]) -> int:
             return 0
         return full_setup(args)
     except RuntimeError as exc:
-        print(f"Error: {exc}", file=sys.stderr)
+        print(red(f"Error: {exc}"), file=sys.stderr)
         return 1
 
 
