@@ -172,6 +172,17 @@ build_rich_rust() {
   git -C "$src_dir" clean -fxd
 }
 
+build_franken_agent_detection() {
+  local src_dir="$HOME/src/franken_agent_detection"
+  local repo_url="https://github.com/Dicklesworthstone/franken_agent_detection.git"
+
+  section "Updating $src_dir"
+  ensure_repo "$src_dir" "$repo_url"
+  git -C "$src_dir" pull
+  git -C "$src_dir" restore Cargo.toml
+  git -C "$src_dir" clean -fxd
+}
+
 build_tru() {
   local src_dir="$HOME/src/toon_rust"
   local binary="tru"
@@ -328,6 +339,7 @@ build_deps() {
   build_sqlmodel_rust
   build_fastmcp_rust
   build_rich_rust
+  build_franken_agent_detection
 }
 
 setup_global_agent_configs() {
