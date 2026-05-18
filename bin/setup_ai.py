@@ -152,6 +152,11 @@ def red(message: str) -> str:
     return f"{RED}{message}{RESET}"
 
 
+def status_text(name: str, result: str) -> str:
+    message = f"{name}: {result}"
+    return red(message) if "blocked " in result else message
+
+
 def run(cmd: list[str] | tuple[str, ...], cwd: Path | None = None) -> str:
     argv = tuple(str(part) for part in cmd)
     proc = subprocess.run(
@@ -336,7 +341,7 @@ def run_parallel(label: str, specs: list[ProjectSpec], fn, workers: int) -> tupl
             name = pending[future]
             try:
                 results[name] = future.result()
-                log(f"{name}: {results[name]}")
+                log(status_text(name, results[name]))
             except Exception as exc:
                 errors[name] = str(exc)
                 log(red(f"{name}: ERROR\n{errors[name]}"))
@@ -362,7 +367,7 @@ def full_setup(args: argparse.Namespace) -> int:
 
     section("Summary")
     for name, result in {**fetch_results, **build_results}.items():
-        log(f"{name}: {result}")
+        log(status_text(name, result))
     errors = {**fetch_errors, **build_errors}
     if setup_error:
         errors["agent config"] = setup_error
