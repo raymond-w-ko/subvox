@@ -30,6 +30,7 @@ SRC = HOME / "src"
 BIN = HOME / "bin"
 PRINT_LOCK = threading.Lock()
 RED = "\033[1;31m"
+GRAY = "\033[90m"
 RESET = "\033[0m"
 
 
@@ -152,9 +153,17 @@ def red(message: str) -> str:
     return f"{RED}{message}{RESET}"
 
 
+def gray(message: str) -> str:
+    return f"{GRAY}{message}{RESET}"
+
+
 def status_text(name: str, result: str) -> str:
     message = f"{name}: {result}"
-    return red(message) if "blocked " in result else message
+    if "blocked " in result:
+        return red(message)
+    if result in {"fetched; up to date", "skipped; up to date"}:
+        return gray(message)
+    return message
 
 
 def run(cmd: list[str] | tuple[str, ...], cwd: Path | None = None) -> str:
@@ -201,6 +210,10 @@ def tracked_clean(src_dir: Path) -> bool:
     return run(("git", "status", "--porcelain", "--untracked-files=no"), cwd=src_dir) == ""
 
 
+def current_commit(src_dir: Path) -> str:
+    return run(("git", "rev-parse", "HEAD"), cwd=src_dir)
+
+
 def current_branch(src_dir: Path) -> str:
     return run(("git", "branch", "--show-current"), cwd=src_dir)
 
@@ -221,6 +234,11 @@ def switch_branch(src_dir: Path, branch: str) -> None:
         run(("git", "switch", branch), cwd=src_dir)
     else:
         run(("git", "switch", "-c", branch, f"origin/{branch}"), cwd=src_dir)
+
+
+def restore_cargo_lock_if_present(spec: ProjectSpec) -> None:
+    if spec.outputs and (spec.src_dir / "Cargo.lock").exists():
+        run(("git", "restore", "Cargo.lock"), cwd=spec.src_dir)
 
 
 def ensure_repo(spec: ProjectSpec) -> str:
@@ -244,16 +262,23 @@ def ensure_repo(spec: ProjectSpec) -> str:
             cwd=spec.src_dir,
         )
 
+    restore_cargo_lock_if_present(spec)
+
     if current_branch(spec.src_dir) != spec.branch:
         if not tracked_clean(spec.src_dir):
             return "fetched; skipped branch switch due tracked changes"
         switch_branch(spec.src_dir, spec.branch)
+        restore_cargo_lock_if_present(spec)
 
     if not tracked_clean(spec.src_dir):
         return "fetched; skipped fast-forward due tracked changes"
 
+    before = current_commit(spec.src_dir)
     run(("git", "merge", "--ff-only", f"{spec.update_remote}/{spec.branch}"), cwd=spec.src_dir)
-    return "cloned + updated" if cloned else "updated"
+    after = current_commit(spec.src_dir)
+    if cloned:
+        return "cloned + updated" if before != after else "cloned"
+    return "updated" if before != after else "fetched; up to date"
 
 
 def commit_timestamp(src_dir: Path) -> float:
