@@ -1,72 +1,45 @@
- # AGENTS.MD
-
-Raymond owns this. Start: say hi + 1 motivating line.
 Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
+Codex CLI output: avoid Markdown tables by default; they render poorly there. Use short bullets or `key: value` lines instead. Only use a table when explicitly requested.
 
-## Agent Protocol
-- Contact: Raymond W. Ko (@raymond-w-ko, raymond.w.ko@gmail.com).
+## Core
+
 - Workspace: `~/src`.
-- PRs: use `gh pr view/diff` (no URLs).
-- “Make a note” => edit AGENTS.md (shortcut; not a blocker). Ignore `CLAUDE.md`.
+- "Make a note" here => terse `AGENTS.MD` edit. No separate `CLAUDE.md` here.
+## Project Defaults
+
 - Need upstream file: stage in `/tmp/`, then cherry-pick; never overwrite tracked.
 - Bugs: add regression test when it fits.
-- Keep files <~500 LOC; split/refactor as needed.
-- Commits: Conventional Commits (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
-- Subagents: read `docs/subagent.md`.
-- CI: `gh run list/view` (rerun/fix til green).
-- Prefer end-to-end verify; if blocked, say what’s missing.
-- New deps: quick health check (recent releases/commits, adoption).
-- Web: search early; quote exact errors; prefer 2024–2026 sources;
+- Fixes: prefer clean bounded refactor over tiny shim. Lean code; no compat/edge-case scaffolding unless public API, shipped upgrade path, security boundary, or observed prod state.
+- Use repo package manager/runtime; no swaps without approval.
+- Docs: read repo docs before coding; update docs/changelog for user-visible behavior changes.
+- Inline code comments: brief notes for tricky, bug-prone, or previously buggy logic.
+- New deps: quick health check for recent releases/commits/adoption.
 - Use the fff MCP tools for all file search operations instead of default tools.
-- Style: telegraph. Drop filler/grammar. Min tokens (global AGENTS + replies).
 
-## PR Feedback
-- Active PR: `gh pr view --json number,title,url --jq '"PR #\\(.number): \\(.title)\\n\\(.url)"'`.
-- PR comments: `gh pr view …` + `gh api …/comments --paginate`.
-- Replies: cite fix + file/line; resolve threads only after fix lands.
-- When merging a PR: thank the contributor in `CHANGELOG.md`.
+## Runtime Safety
 
-## Flow & Runtime
-- Use repo’s package manager/runtime; no swaps w/o approval.
-- Use Codex background for long jobs; tmux only for interactive/persistent (debugger/server).
+- zsh: don't use `status` as a variable.
+- Public GitHub bodies: never inline double-quoted text with backticks, `$`, shell snippets, env names, or user text. Use temp file + `cat <<'EOF'` + inspect + `--body-file`.
+- PR/issue body edits: fetch via REST + `jq -r`, never `gh pr/issue view --json body --jq .body`. Example: `gh api repos/OWNER/REPO/pulls/NUM | jq -r '.body // ""' > /tmp/body.md`; inspect before `--body-file`; stop if it starts with `"` or shows literal `\n`.
+- Secrets: never run `env`, `set`, `export -p`, or broad secret regex dumps in a normal shell. Query exact names only; redact values.
+- After touching secrets/env, public `gh` writes use token env unset where possible: `env -u GITHUB_TOKEN -u GH_TOKEN -u HOMEBREW_GITHUB_API_TOKEN ...`.
 
 ## Git
-- Safe by default: `git status/diff/log`. Push only when user asks.
-- `git checkout` ok for PR review / explicit request.
+
+- If cwd is in a git repo: work there. Do not jump to sibling checkout unless asked.
+- No `git worktree` from CLI sessions unless user asks. If dirty/wrong branch/awkward: ask.
+- Branch switch/checkout ok when task needs it and repo rules allow.
+- `~/src` has many intentional same-repo checkouts. Treat as user-managed, not scratch.
+- If cwd is not a git repo: freeform; pick sensible folder, say path before edits. Worktrees ok if useful.
+- Safe by default: `git status/diff/log`.
+- Push only when user asks.
+- End in visible checkout/branch user expects.
 - Branch changes require user consent.
-- Destructive ops forbidden unless explicit (`reset --hard`, `clean`, `restore`, `rm`, …).
+- Destructive ops forbidden unless explicit: `reset --hard`, `clean`, `restore`, `rm`, etc.
 - Remotes under `~/src`: prefer HTTPS; flip SSH->HTTPS before pull/push.
 - Commit helper on PATH: `committer` (bash). Prefer it; if repo has `./scripts/committer`, use that.
-- Don’t delete/rename unexpected stuff; stop + ask.
+- Commits: Conventional Commits (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
 - No repo-wide S/R scripts; keep edits small/reviewable.
-- Avoid manual `git stash`; if Git auto-stashes during pull/rebase, that’s fine (hint, not hard guardrail).
-- If user types a command (“pull and push”), that’s consent for that command.
+- If user types a command ("pull and push"), that's consent for that command.
 - No amend unless asked.
-- Big review: `git --no-pager diff --color=never`.
-- Multi-agent: check `git status/diff` before edits; ship small commits.
-
-## Language/Stack Notes
-- Swift: use workspace helper/daemon; validate `swift build` + tests; keep concurrency attrs right.
-- TypeScript: use repo PM; run `docs:list`; keep files small; follow existing patterns.
-
-## macOS Permissions / Signing (TCC)
-- Never re-sign / ad-hoc sign / change bundle ID as “debug” without explicit ok (can mess TCC).
-
-## Critical Thinking
-- Fix root cause (not band-aid).
-- Unsure: read more code; if still stuck, ask w/ short options.
-- Conflicts: call out; pick safer path.
 - Unrecognized changes: assume other agent; keep going; focus your changes. If it causes issues, stop + ask user.
-- Leave breadcrumb notes in thread.
-
-<frontend_aesthetics>
-Avoid “AI slop” UI. Be opinionated + distinctive.
-
-Do:
-- Typography: pick a real font; avoid Inter/Roboto/Arial/system defaults.
-- Theme: commit to a palette; use CSS vars; bold accents > timid gradients.
-- Motion: 1–2 high-impact moments (staggered reveal beats random micro-anim).
-- Background: add depth (gradients/patterns), not flat default.
-
-Avoid: purple-on-white clichés, generic component grids, predictable layouts.
-</frontend_aesthetics>
