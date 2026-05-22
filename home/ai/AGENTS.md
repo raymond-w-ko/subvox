@@ -5,6 +5,7 @@ Codex CLI output: avoid Markdown tables by default; they render poorly there. Us
 
 - Workspace: `~/src`.
 - "Make a note" here => terse `AGENTS.MD` edit. No separate `CLAUDE.md` here.
+
 ## Project Defaults
 
 - Need upstream file: stage in `/tmp/`, then cherry-pick; never overwrite tracked.
