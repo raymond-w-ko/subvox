@@ -45,7 +45,6 @@ let
     unzip
     difftastic
     delta
-    traceroute
 
     # shells
     zsh
@@ -100,7 +99,7 @@ let
     fira-code-symbols
     mplus-outline-fonts.githubRelease
     dina-font
-    iosevka
+    iosevka-bin
     aporetic
     jetbrains-mono
   ];
@@ -115,6 +114,7 @@ let
     sqlite
     sqlite.dev
     bubblewrap
+    traceroute
 
     perf
     kcov
