@@ -1,88 +1,85 @@
-"""Repair helpers for Codex TOML config."""
+"""Surgical repair helpers for Codex TOML config."""
 
-from collections import Counter, OrderedDict
+from __future__ import annotations
+
 import re
+import tomllib
 
 
 TABLE_RE = re.compile(r"^\s*\[([^\[\]\n]+)\]\s*(?:#.*)?$")
 KEY_VALUE_RE = re.compile(r"^\s*([^=\s][^=]*?)\s*=")
+DUPLICATE_DECL_RE = re.compile(r"Cannot declare \(([^)]+)\) twice")
+MAX_REPAIR_ITERATIONS = 16
 
 
-def _table_name(line: str) -> str | None:
-    match = TABLE_RE.match(line)
+def _dotted_path(path_repr: str) -> list[str]:
+    return [part.strip().strip("'\"") for part in path_repr.split(",") if part.strip()]
+
+
+def repair_duplicate_declaration(content: str, error_message: str) -> str | None:
+    """Detect a ``Cannot declare (...) twice`` TOML error and drop the inline duplicate.
+
+    Triggered by configs such as::
+
+        [mcp_servers.mcp_agent_mail]
+        http_headers = { Authorization = "Bearer …" }
+        [mcp_servers.mcp_agent_mail.http_headers]
+        Authorization = "Bearer …"
+
+    The inline assignment is removed; the dedicated table is preserved.
+    Returns ``None`` if the error does not match this pattern or both
+    declarations cannot be located.
+    """
+    match = DUPLICATE_DECL_RE.search(error_message)
     if not match:
         return None
-    return match.group(1).strip()
 
+    parts = _dotted_path(match.group(1))
+    if len(parts) < 2:
+        return None
 
-def _is_http_headers_table(name: str | None) -> bool:
-    return bool(name and name.endswith(".http_headers"))
+    full_table = ".".join(parts)
+    parent_table = ".".join(parts[:-1])
+    key = parts[-1]
 
+    lines = content.splitlines()
+    inline_idx: int | None = None
+    table_idx: int | None = None
+    current_table = ""
 
-def _split_sections(content: str) -> list[dict]:
-    sections = []
-    current = {"name": None, "header": None, "body": []}
-
-    for line in content.splitlines():
-        name = _table_name(line)
-        if name is not None:
-            sections.append(current)
-            current = {"name": name, "header": line.strip(), "body": []}
-        else:
-            current["body"].append(line)
-
-    sections.append(current)
-    return sections
-
-
-def collapse_duplicate_http_headers(content: str) -> str:
-    """Collapse duplicate *.http_headers TOML tables, keeping the last key value."""
-    sections = _split_sections(content)
-    counts = Counter(
-        section["name"]
-        for section in sections
-        if _is_http_headers_table(section["name"])
-    )
-    duplicate_names = {name for name, count in counts.items() if count > 1}
-    if not duplicate_names:
-        return content
-
-    merged = {name: OrderedDict() for name in duplicate_names}
-    for section in sections:
-        name = section["name"]
-        if name not in duplicate_names:
+    for i, line in enumerate(lines):
+        table_match = TABLE_RE.match(line)
+        if table_match:
+            current_table = table_match.group(1).strip()
+            if current_table == full_table and table_idx is None:
+                table_idx = i
             continue
+        if current_table == parent_table and inline_idx is None:
+            kv_match = KEY_VALUE_RE.match(line)
+            if kv_match and kv_match.group(1).strip() == key:
+                inline_idx = i
 
-        for line in section["body"]:
-            stripped = line.strip()
-            if not stripped or stripped.startswith("#"):
-                continue
+    if inline_idx is None or table_idx is None:
+        return None
 
-            match = KEY_VALUE_RE.match(line)
-            if not match:
-                continue
+    del lines[inline_idx]
+    trailing = "\n" if content.endswith("\n") else ""
+    return "\n".join(lines) + trailing
 
-            key = match.group(1).strip()
-            merged[name][key] = stripped
 
-    emitted = set()
-    output = []
-    for section in sections:
-        name = section["name"]
-        if name is None:
-            output.extend(section["body"])
-            continue
+def parse_with_repair(content: str) -> tuple[dict, str]:
+    """Parse Codex TOML, surgically removing inline/table duplicates as needed.
 
-        if name in duplicate_names:
-            if name in emitted:
-                continue
-            emitted.add(name)
-            output.append(f"[{name}]")
-            output.extend(merged[name].values())
-            continue
-
-        output.append(section["header"])
-        output.extend(section["body"])
-
-    trailing_newline = "\n" if content.endswith("\n") else ""
-    return "\n".join(output).rstrip("\n") + trailing_newline
+    Returns ``(data, repaired_content)``. Re-raises the original TOML error if
+    the configuration cannot be repaired heuristically.
+    """
+    repaired = content
+    for _ in range(MAX_REPAIR_ITERATIONS):
+        try:
+            return tomllib.loads(repaired), repaired
+        except tomllib.TOMLDecodeError as exc:
+            attempt = repair_duplicate_declaration(repaired, str(exc))
+            if attempt is None or attempt == repaired:
+                raise
+            repaired = attempt
+    raise RuntimeError("codex config repair exceeded iteration limit")

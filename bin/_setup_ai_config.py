@@ -8,7 +8,7 @@ import re
 import shutil
 import subprocess
 
-from codex_config_repair import collapse_duplicate_http_headers
+from codex_config_repair import parse_with_repair
 
 
 HOME = Path.home()
@@ -193,29 +193,20 @@ def codex_dict_to_toml(data: dict) -> str:
 
 
 def load_codex_config(config_path: Path) -> dict:
-    import tomllib
-
     content = config_path.read_text()
-    try:
-        return tomllib.loads(content)
-    except Exception:
-        repaired = collapse_duplicate_http_headers(content)
-        if repaired == content:
-            raise
-        data = tomllib.loads(repaired)
+    data, repaired = parse_with_repair(content)
+    if repaired != content:
         config_path.write_text(repaired)
-        print(f"Repaired duplicate Codex http_headers tables in {config_path}")
-        return data
+        print(f"Repaired duplicate Codex declaration in {config_path}")
+    return data
 
 
 def repair_codex_config() -> None:
-    import tomllib
-
     config_path = HOME / ".codex" / "config.toml"
     if not config_path.exists():
         print(f"No Codex config found at {config_path}")
         return
-    data = tomllib.loads(collapse_duplicate_http_headers(config_path.read_text()))
+    data, _ = parse_with_repair(config_path.read_text())
     config_path.write_text(codex_dict_to_toml(data))
     print(f"Parsed and rewrote Codex config at {config_path}")
 
