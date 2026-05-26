@@ -218,6 +218,23 @@ def current_branch(src_dir: Path) -> str:
     return run(("git", "branch", "--show-current"), cwd=src_dir)
 
 
+def commit_count(src_dir: Path, revspec: str) -> int:
+    return int(run(("git", "rev-list", "--count", revspec), cwd=src_dir))
+
+
+def branch_ahead_of_remote(src_dir: Path, remote: str, branch: str) -> bool:
+    return commit_count(src_dir, f"{remote}/{branch}..HEAD") > 0
+
+
+def push_origin_if_needed(spec: ProjectSpec) -> str:
+    if not spec.upstream:
+        return ""
+    if branch_ahead_of_remote(spec.src_dir, "origin", spec.branch):
+        run(("git", "push", "origin", f"HEAD:{spec.branch}"), cwd=spec.src_dir)
+        return " + pushed"
+    return ""
+
+
 def local_branch_exists(src_dir: Path, branch: str) -> bool:
     proc = subprocess.run(
         ("git", "rev-parse", "--verify", f"refs/heads/{branch}"),
@@ -283,9 +300,10 @@ def ensure_repo(spec: ProjectSpec, force_reset: bool = False) -> str:
     before = current_commit(spec.src_dir)
     run(("git", "merge", "--ff-only", f"{spec.update_remote}/{spec.branch}"), cwd=spec.src_dir)
     after = current_commit(spec.src_dir)
+    pushed = push_origin_if_needed(spec)
     if cloned:
-        return "cloned + updated" if before != after else "cloned"
-    return "updated" if before != after else "fetched; up to date"
+        return f"cloned + updated{pushed}" if before != after else f"cloned{pushed}"
+    return f"updated{pushed}" if before != after else f"fetched; up to date{pushed}"
 
 
 def commit_timestamp(src_dir: Path) -> float:
