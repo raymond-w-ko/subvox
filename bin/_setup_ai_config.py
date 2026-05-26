@@ -330,6 +330,7 @@ def create_template() -> None:
   - RULE 0
   - RULE NUMBER 1
   - Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
+  - Third-Party Library Usage
 - write to ~/subvox/ai/AGENTS.template.md in the above order. 
 """
     run(("claude", "--print", "--dangerously-skip-permissions", prompt))
