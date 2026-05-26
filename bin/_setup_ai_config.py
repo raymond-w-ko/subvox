@@ -326,19 +326,10 @@ def create_template() -> None:
 
 - read ~/src/mcp_agent_mail_rust/AGENTS.md
 - extract the following major sections (a major section is usually denoted by --- and then ##):
+  - the very first line: `# AGENTS.md — __PROJECT_NAME__`
   - RULE 0
   - RULE NUMBER 1
-  - RULE NUMBER 2
-  - Irreversible Git & Filesystem Actions \u2014 DO NOT EVER BREAK GLASS
-  - ## (Your Project Info Here)
-  - Third-Party Library Usage
-  - MCP Agent Mail \u2014 Multi-Agent Coordination
-  - Beads (br) \u2014 Dependency-Aware Issue Tracking
-  - bv \u2014 Graph-Aware Triage Engine
-  - Beads Workflow Integration
-  - Landing the Plane (Session Completion)
-  - Note for Codex/GPT-5.2
-  - Note on Built-in TODO Functionality
-- write to ~/subvox/ai/agents-template.md in the above order **VERBATIM** except for the "Your Project Info Here", which is a placeholder.
+  - Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
+- write to ~/subvox/ai/AGENTS.template.md in the above order. 
 """
     run(("claude", "--print", "--dangerously-skip-permissions", prompt))
