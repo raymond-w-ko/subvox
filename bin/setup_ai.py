@@ -32,6 +32,7 @@ PRINT_LOCK = threading.Lock()
 RED = "\033[1;31m"
 GRAY = "\033[90m"
 RESET = "\033[0m"
+MCP_AGENT_MAIL_ENABLED = False
 
 
 @dataclass(frozen=True)
@@ -401,13 +402,20 @@ def run_parallel(label: str, specs: list[ProjectSpec], fn, workers: int) -> tupl
 def full_setup(args: argparse.Namespace) -> int:
     require_commands(("git",))
     force_reset_names = {"asupersync"} if args.reset_asupersync else set()
+    disable_mcp_agent_mail = not MCP_AGENT_MAIL_ENABLED
     fetch_results, fetch_errors = run_parallel(
         "Fetching repos",
         list(PROJECTS),
         lambda spec: ensure_repo(spec, force_reset=spec.name in force_reset_names),
         args.fetch_jobs,
     )
-    build_specs = [spec for spec in PROJECTS if spec.outputs and spec.name not in fetch_errors]
+    build_specs = [
+        spec
+        for spec in PROJECTS
+        if spec.outputs and spec.name not in fetch_errors and not (disable_mcp_agent_mail and spec.name == "mcp_agent_mail_rust")
+    ]
+    if disable_mcp_agent_mail and "mcp_agent_mail_rust" not in fetch_errors:
+        fetch_results["mcp_agent_mail_rust"] = f"{fetch_results.get('mcp_agent_mail_rust', 'fetched')}; build disabled"
     build_results, build_errors = run_parallel(
         "Building binaries",
         build_specs,
@@ -416,7 +424,7 @@ def full_setup(args: argparse.Namespace) -> int:
     )
     setup_error = ""
     try:
-        setup_global_agent_configs()
+        setup_global_agent_configs(disable_agent_mail=disable_mcp_agent_mail)
     except Exception as exc:
         setup_error = str(exc)
         log(red(f"agent config: ERROR\n{setup_error}"))
@@ -465,7 +473,7 @@ def main(argv: list[str]) -> int:
         if args.command == "config":
             target_dir = Path(args.target_dir).resolve()
             if target_dir == HOME:
-                setup_home_settings()
+                setup_home_settings(disable_agent_mail=not MCP_AGENT_MAIL_ENABLED)
             else:
                 setup_project_settings(target_dir)
             return 0

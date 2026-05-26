@@ -235,12 +235,15 @@ def warn_bd_prime(settings: dict) -> None:
         print("\033[1;31mWARNING: Found 'bd prime'; migrate to beads_rust (br).\033[0m")
 
 
-def setup_claude_json(token: str) -> None:
+def setup_claude_json(token: str | None, disable_agent_mail: bool = False) -> None:
     path = HOME / ".claude.json"
-    desired = build_claude_json_settings(token)
+    desired = build_claude_json_settings(token) if token else {"mcpServers": {"fff": {"type": "stdio", "command": fff_mcp_path(), "args": [], "env": {}}}}
     merged = deep_merge(load_json(path), desired)
     mcp = merged.setdefault("mcpServers", {})
-    mcp[CLAUDE_MCP_AGENT_MAIL_NAME] = desired["mcpServers"][CLAUDE_MCP_AGENT_MAIL_NAME]
+    if disable_agent_mail:
+        mcp.pop(CLAUDE_MCP_AGENT_MAIL_NAME, None)
+    else:
+        mcp[CLAUDE_MCP_AGENT_MAIL_NAME] = desired["mcpServers"][CLAUDE_MCP_AGENT_MAIL_NAME]
     mcp["fff"] = desired["mcpServers"]["fff"]
     for stale in CLAUDE_STALE_MCP_AGENT_MAIL_NAMES:
         mcp.pop(stale, None)
@@ -248,29 +251,35 @@ def setup_claude_json(token: str) -> None:
     print(f"Wrote config to {path}")
 
 
-def setup_codex_config(token: str) -> None:
+def setup_codex_config(token: str | None, disable_agent_mail: bool = False) -> None:
     path = HOME / ".codex" / "config.toml"
     path.parent.mkdir(parents=True, exist_ok=True)
     existing = load_codex_config(path) if path.exists() else {}
-    desired = build_codex_settings(token)
+    desired = build_codex_settings(token) if token else deep_merge(CODEX_SETTINGS_BASE, {"mcp_servers": {"fff": {"command": fff_mcp_path()}}})
     merged = deep_merge(existing, desired)
     merged.setdefault("mcp_servers", {})
-    merged["mcp_servers"]["mcp_agent_mail"] = desired["mcp_servers"]["mcp_agent_mail"]
+    if disable_agent_mail:
+        merged["mcp_servers"].pop("mcp_agent_mail", None)
+    else:
+        merged["mcp_servers"]["mcp_agent_mail"] = desired["mcp_servers"]["mcp_agent_mail"]
     merged["mcp_servers"]["fff"] = desired["mcp_servers"]["fff"]
     path.write_text(codex_dict_to_toml(merged))
     print(f"Wrote codex settings to {path}")
 
 
-def setup_home_settings() -> None:
-    token = load_http_bearer_token()
+def setup_home_settings(disable_agent_mail: bool = False) -> None:
+    token = None if disable_agent_mail else load_http_bearer_token()
     path = HOME / ".claude" / "settings.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     existing = load_json(path)
     warn_bd_prime(existing)
-    path.write_text(json.dumps(deep_merge(existing, HOME_SETTINGS), indent=2) + "\n")
+    merged = deep_merge(existing, HOME_SETTINGS)
+    if disable_agent_mail:
+        merged.setdefault("mcpServers", {}).pop("mcp-agent-mail", None)
+    path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote home settings to {path}")
-    setup_claude_json(token)
-    setup_codex_config(token)
+    setup_claude_json(token, disable_agent_mail=disable_agent_mail)
+    setup_codex_config(token, disable_agent_mail=disable_agent_mail)
 
 
 def setup_project_settings(target_dir: Path) -> None:
@@ -295,10 +304,12 @@ def setup_project_settings(target_dir: Path) -> None:
     print(f"Wrote project settings to {settings_path}")
 
 
-def setup_global_agent_configs() -> None:
+def setup_global_agent_configs(disable_agent_mail: bool = False) -> None:
     print("\033[1;36m>>> Writing Claude + Codex MCP config <<<\033[0m")
     repair_codex_config()
-    if agent_mail_has_bearer_token():
+    if disable_agent_mail:
+        print("MCP Agent Mail setup: disabled")
+    elif agent_mail_has_bearer_token():
         print("MCP Agent Mail setup: skipping; bearer token exists")
     else:
         am = BIN / "am"
@@ -306,7 +317,7 @@ def setup_global_agent_configs() -> None:
         if not am_cmd:
             raise RuntimeError("missing am; cannot create MCP Agent Mail bearer token")
         run((am_cmd, "setup", "run", "--agent", "codex", "--project-dir", str(HOME), "--no-hooks", "-y"))
-    setup_home_settings()
+    setup_home_settings(disable_agent_mail=disable_agent_mail)
 
 
 def create_template() -> None:
