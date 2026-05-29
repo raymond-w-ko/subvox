@@ -4,6 +4,7 @@
 
 import { readFileSync, mkdirSync, writeFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { parseKbd } from './parse.js';
 import { buildLayout, getKeyboardBounds } from './layout.js';
@@ -27,7 +28,8 @@ const bounds = getKeyboardBounds(layout);
 
 // Output directory
 const kbdName = basename(kbdPath, '.kbd');
-const outDir = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1')), 'out', kbdName);
+const moduleDir = dirname(fileURLToPath(import.meta.url));
+const outDir = join(moduleDir, 'out', kbdName);
 mkdirSync(outDir, { recursive: true });
 
 console.log(`Parsing ${kbdPath}: ${defsrc.length} keys, ${layers.length} layers`);

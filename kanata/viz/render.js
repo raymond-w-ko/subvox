@@ -6,15 +6,19 @@ const SCALE = 120; // pixels per key-unit (2x for high-res)
 const PAD = 40;
 const KEY_R = 8; // border radius
 const KEY_PAD = 4; // inner padding
+const FONT_STACK = "'JetBrains Mono', 'Cascadia Mono', 'Consolas', 'Menlo', monospace";
+const BASE_FONT_SIZE = 22;
+const MIN_FONT_SIZE = 12;
+const CHAR_WIDTH_RATIO = 0.62;
 
 const COLORS = {
-  'normal':       { bg: '#2d2d2d', fg: '#e0e0e0', border: '#555' },
-  'nop':          { bg: '#1a1a1a', fg: '#444',     border: '#333' },
-  'modifier':     { bg: '#1a3a5c', fg: '#7cb7ff',  border: '#3a6a9c' },
-  'layer-toggle': { bg: '#5c3a1a', fg: '#ffb74d',  border: '#9c6a2a' },
-  'layer-switch': { bg: '#3a5c1a', fg: '#a5d66f',  border: '#6a9c2a' },
-  'combo':        { bg: '#4a1a5c', fg: '#ce93d8',  border: '#7a3a8c' },
-  'tap-hold':     { bg: '#1a4a4a', fg: '#80cbc4',  border: '#2a7a7a' },
+  'normal':       { bg: '#303033', fg: '#f0f0f0', border: '#606064' },
+  'nop':          { bg: '#151617', fg: '#33363a', border: '#27292d' },
+  'modifier':     { bg: '#123c66', fg: '#9fd0ff', border: '#3e7db4' },
+  'layer-toggle': { bg: '#67410f', fg: '#ffd07a', border: '#b77a24' },
+  'layer-switch': { bg: '#315f12', fg: '#b8ea7c', border: '#6dab33' },
+  'combo':        { bg: '#5c1a6e', fg: '#efa7ff', border: '#9744aa' },
+  'tap-hold':     { bg: '#14535a', fg: '#9de7e0', border: '#358f96' },
 };
 
 function escXml(s) {
@@ -23,16 +27,31 @@ function escXml(s) {
 
 function truncate(s, maxLen) {
   if (s.length <= maxLen) return s;
-  return s.slice(0, maxLen - 1) + '…';
+  if (maxLen <= 3) return s.slice(0, maxLen);
+  return s.slice(0, maxLen - 3) + '...';
 }
 
-function fontSizeForWidth(text, keyWidthPx) {
-  const available = keyWidthPx - KEY_PAD * 2 - 8;
-  const charW = 13; // approximate char width at 22px font
-  const needed = text.length * charW;
-  if (needed <= available) return 22;
-  const scaled = Math.floor(22 * available / needed);
-  return Math.max(14, scaled);
+function fitLabel(text, keyWidthPx, preferredSize = BASE_FONT_SIZE) {
+  const available = Math.max(12, keyWidthPx - KEY_PAD * 2 - 12);
+  if (!text) return { text: '', fontSize: preferredSize };
+
+  const preferredWidth = text.length * preferredSize * CHAR_WIDTH_RATIO;
+  if (preferredWidth <= available) {
+    return { text, fontSize: preferredSize };
+  }
+
+  const scaledSize = Math.floor(available / (text.length * CHAR_WIDTH_RATIO));
+  if (scaledSize >= MIN_FONT_SIZE) {
+    return { text, fontSize: scaledSize };
+  }
+
+  const maxChars = Math.max(1, Math.floor(available / (MIN_FONT_SIZE * CHAR_WIDTH_RATIO)));
+  return { text: truncate(text, maxChars), fontSize: MIN_FONT_SIZE };
+}
+
+function renderText(x, y, label, fontSize, fill, extra = '') {
+  return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}" fill="${fill}"${extra}>${escXml(label)}</text>
+`;
 }
 
 function renderKeysSvg(defsrc, layerKeys, aliases, layout, titleOffset) {
@@ -47,38 +66,42 @@ function renderKeysSvg(defsrc, layerKeys, aliases, layout, titleOffset) {
 
     const info = classifyKey(dstKey, aliases);
     const colors = COLORS[info.type] || COLORS.normal;
+    const inactive = info.type === 'nop';
 
     const x = PAD + pos.x * SCALE;
     const y = titleOffset + PAD + pos.y * SCALE;
     const w = pos.w * SCALE - 4;
     const h = pos.h * SCALE - 4;
+    const strokeWidth = inactive ? 1.5 : 2;
 
-    // Key background
-    svg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${KEY_R}" fill="${colors.bg}" stroke="${colors.border}" stroke-width="2"/>
+    svg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${KEY_R}" fill="${colors.bg}" stroke="${colors.border}" stroke-width="${strokeWidth}"/>
 `;
 
     if (info.hold) {
-      // Tap-hold: tap on top, hold on bottom
-      const tapLabel = truncate(info.tap, Math.floor(w / 11));
-      const holdLabel = truncate(info.hold, Math.floor(w / 11));
-      const tapSize = fontSizeForWidth(tapLabel, w);
-      const holdSize = fontSizeForWidth(holdLabel, w);
+      const tap = fitLabel(info.tap, w, BASE_FONT_SIZE);
+      const hold = fitLabel(info.hold, w, BASE_FONT_SIZE - 2);
+      const tapY = y + h * 0.34;
+      const holdY = y + h * 0.69;
 
-      // Divider line
-      svg += `<line x1="${x + 8}" y1="${y + h / 2}" x2="${x + w - 8}" y2="${y + h / 2}" stroke="${colors.border}" stroke-width="1" stroke-dasharray="4,4"/>
+      svg += `<line x1="${x + 10}" y1="${y + h / 2}" x2="${x + w - 10}" y2="${y + h / 2}" stroke="${colors.border}" stroke-width="1" stroke-dasharray="4,4" opacity="0.75"/>
 `;
-      svg += `<text x="${x + w / 2}" y="${y + h / 2 - 12}" text-anchor="middle" font-size="${tapSize}" fill="${colors.fg}">${escXml(tapLabel)}</text>
-`;
-      svg += `<text x="${x + w / 2}" y="${y + h / 2 + 28}" text-anchor="middle" font-size="${holdSize}" fill="${colors.fg}" opacity="0.7">${escXml(holdLabel)}</text>
-`;
+      svg += renderText(x + w / 2, tapY, tap.text, tap.fontSize, colors.fg, ' font-weight="700"');
+      svg += renderText(x + w / 2, holdY, hold.text, hold.fontSize, colors.fg, ' opacity="0.78"');
     } else if (info.tap) {
-      const label = truncate(info.tap, Math.floor(w / 9));
-      const fontSize = fontSizeForWidth(label, w);
-      svg += `<text x="${x + w / 2}" y="${y + h / 2 + 8}" text-anchor="middle" font-size="${fontSize}" fill="${colors.fg}">${escXml(label)}</text>
-`;
+      const label = fitLabel(info.tap, w);
+      svg += renderText(x + w / 2, y + h / 2, label.text, label.fontSize, colors.fg, ' font-weight="600"');
     }
   }
   return svg;
+}
+
+function renderSvgDefs() {
+  return `<defs>
+  <style>
+    text { font-family: ${FONT_STACK}; letter-spacing: 0; }
+  </style>
+</defs>
+`;
 }
 
 export function renderLayerSvg(layerName, defsrc, layerKeys, aliases, layout, bounds) {
@@ -87,14 +110,8 @@ export function renderLayerSvg(layerName, defsrc, layerKeys, aliases, layout, bo
   const H = Math.ceil(bounds.height * SCALE + PAD * 2 + TITLE_H);
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-<defs>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
-    text { font-family: 'JetBrains Mono', 'Consolas', monospace; }
-  </style>
-</defs>
-<rect width="${W}" height="${H}" fill="#111" rx="12"/>
-<text x="${W / 2}" y="52" text-anchor="middle" font-size="36" font-weight="bold" fill="#e0e0e0">${escXml(layerName)}</text>
+${renderSvgDefs()}<rect width="${W}" height="${H}" fill="#101113" rx="12"/>
+<text x="${W / 2}" y="52" text-anchor="middle" dominant-baseline="middle" font-size="34" font-weight="700" fill="#e6e6e6">${escXml(layerName)}</text>
 `;
 
   svg += renderKeysSvg(defsrc, layerKeys, aliases, layout, TITLE_H);
@@ -104,28 +121,21 @@ export function renderLayerSvg(layerName, defsrc, layerKeys, aliases, layout, bo
 
 export function renderAllLayersSvg(defsrc, layers, aliases, layout, bounds) {
   const TITLE_H = 80;
+  const LAYER_GAP = 28;
   const singleH = Math.ceil(bounds.height * SCALE + PAD * 2 + TITLE_H);
   const W = Math.ceil(bounds.width * SCALE + PAD * 2);
-  const totalH = singleH * layers.length + 40;
+  const totalH = singleH * layers.length + LAYER_GAP * (layers.length + 1);
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${totalH}" viewBox="0 0 ${W} ${totalH}">
-<defs>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
-    text { font-family: 'JetBrains Mono', 'Consolas', monospace; }
-  </style>
-</defs>
-<rect width="${W}" height="${totalH}" fill="#111" rx="12"/>
+${renderSvgDefs()}<rect width="${W}" height="${totalH}" fill="#101113" rx="12"/>
 `;
 
   for (let li = 0; li < layers.length; li++) {
     const layer = layers[li];
-    const yOff = li * singleH + 20;
+    const yOff = LAYER_GAP + li * (singleH + LAYER_GAP);
 
     svg += `<g transform="translate(0, ${yOff})">`;
-
-    // Title
-    svg += `<text x="${W / 2}" y="52" text-anchor="middle" font-size="36" font-weight="bold" fill="#e0e0e0">${escXml(layer.name)}</text>
+    svg += `<text x="${W / 2}" y="52" text-anchor="middle" dominant-baseline="middle" font-size="34" font-weight="700" fill="#e6e6e6">${escXml(layer.name)}</text>
 `;
 
     svg += renderKeysSvg(defsrc, layer.keys, aliases, layout, TITLE_H);
@@ -150,14 +160,14 @@ export function renderLegendSvg() {
   const W = 600;
   const H = entries.length * 56 + 50;
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-<rect width="${W}" height="${H}" fill="#111" rx="10"/>
-<text x="${W / 2}" y="36" text-anchor="middle" font-size="26" fill="#e0e0e0" font-family="monospace">Legend</text>
+${renderSvgDefs()}<rect width="${W}" height="${H}" fill="#101113" rx="10"/>
+<text x="${W / 2}" y="32" text-anchor="middle" dominant-baseline="middle" font-size="26" fill="#e6e6e6" font-weight="700">Legend</text>
 `;
   entries.forEach(([type, label], i) => {
     const c = COLORS[type];
     const y = 60 + i * 56;
-    svg += `<rect x="20" y="${y}" width="44" height="38" rx="6" fill="${c.bg}" stroke="${c.border}" stroke-width="2"/>`;
-    svg += `<text x="80" y="${y + 27}" font-size="24" fill="${c.fg}" font-family="monospace">${label}</text>
+    svg += `<rect x="20" y="${y}" width="44" height="38" rx="6" fill="${c.bg}" stroke="${c.border}" stroke-width="${type === 'nop' ? 1.5 : 2}"/>`;
+    svg += `<text x="80" y="${y + 19}" dominant-baseline="middle" font-size="24" fill="${c.fg}" font-weight="600">${label}</text>
 `;
   });
   svg += '</svg>';

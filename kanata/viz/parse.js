@@ -111,7 +111,7 @@ export function resolveAlias(name, aliases) {
 
     if (fn === 'tap-hold' || fn === 'tap-hold-press' || fn === 'tap-hold-release') {
       const tap = resolveKeyLabel(val[3]);
-      const hold = resolveKeyLabel(val[4]);
+      const hold = resolveHoldLabel(val[4], aliases);
       const holdType = classifyHold(val[4]);
       return { tap, hold, type: holdType };
     }
@@ -122,7 +122,7 @@ export function resolveAlias(name, aliases) {
     }
 
     if (fn === 'layer-switch') {
-      return { tap: `→${val[1]}`, hold: null, type: 'layer-switch' };
+      return { tap: `-> ${val[1]}`, hold: null, type: 'layer-switch' };
     }
 
     if (fn === 'layer-toggle') {
@@ -131,6 +131,19 @@ export function resolveAlias(name, aliases) {
   }
 
   return { tap: resolveKeyLabel(val), hold: null, type: 'normal' };
+}
+
+function resolveHoldLabel(val, aliases) {
+  if (typeof val !== 'string' || !val.startsWith('@')) {
+    return resolveKeyLabel(val);
+  }
+
+  const alias = aliases[val.slice(1)];
+  if (Array.isArray(alias) && (alias[0] === 'layer-toggle' || alias[0] === 'layer-switch')) {
+    return resolveKeyLabel(alias[1]);
+  }
+
+  return resolveKeyLabel(val);
 }
 
 function classifyHold(val) {
