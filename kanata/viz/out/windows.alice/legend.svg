@@ -1,11 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="442">
-<rect width="600" height="442" fill="#111" rx="10"/>
-<text x="300" y="36" text-anchor="middle" font-size="26" fill="#e0e0e0" font-family="monospace">Legend</text>
-<rect x="20" y="60" width="44" height="38" rx="6" fill="#2d2d2d" stroke="#555" stroke-width="2"/><text x="80" y="87" font-size="24" fill="#e0e0e0" font-family="monospace">Normal key</text>
-<rect x="20" y="116" width="44" height="38" rx="6" fill="#1a3a5c" stroke="#3a6a9c" stroke-width="2"/><text x="80" y="143" font-size="24" fill="#7cb7ff" font-family="monospace">Modifier / One-shot</text>
-<rect x="20" y="172" width="44" height="38" rx="6" fill="#5c3a1a" stroke="#9c6a2a" stroke-width="2"/><text x="80" y="199" font-size="24" fill="#ffb74d" font-family="monospace">Layer toggle (hold)</text>
-<rect x="20" y="228" width="44" height="38" rx="6" fill="#3a5c1a" stroke="#6a9c2a" stroke-width="2"/><text x="80" y="255" font-size="24" fill="#a5d66f" font-family="monospace">Layer switch</text>
-<rect x="20" y="284" width="44" height="38" rx="6" fill="#4a1a5c" stroke="#7a3a8c" stroke-width="2"/><text x="80" y="311" font-size="24" fill="#ce93d8" font-family="monospace">Shift/Ctrl combo</text>
-<rect x="20" y="340" width="44" height="38" rx="6" fill="#1a4a4a" stroke="#2a7a7a" stroke-width="2"/><text x="80" y="367" font-size="24" fill="#80cbc4" font-family="monospace">Tap-hold (dual role)</text>
-<rect x="20" y="396" width="44" height="38" rx="6" fill="#1a1a1a" stroke="#333" stroke-width="2"/><text x="80" y="423" font-size="24" fill="#444" font-family="monospace">No action</text>
+<defs>
+  <style>
+    text { font-family: 'JetBrains Mono', 'Cascadia Mono', 'Consolas', 'Menlo', monospace; letter-spacing: 0; }
+  </style>
+</defs>
+<rect width="600" height="442" fill="#101113" rx="10"/>
+<text x="300" y="32" text-anchor="middle" dominant-baseline="middle" font-size="26" fill="#e6e6e6" font-weight="700">Legend</text>
+<rect x="20" y="60" width="44" height="38" rx="6" fill="#303033" stroke="#606064" stroke-width="2"/><text x="80" y="79" dominant-baseline="middle" font-size="24" fill="#f0f0f0" font-weight="600">Normal key</text>
+<rect x="20" y="116" width="44" height="38" rx="6" fill="#123c66" stroke="#3e7db4" stroke-width="2"/><text x="80" y="135" dominant-baseline="middle" font-size="24" fill="#9fd0ff" font-weight="600">Modifier / One-shot</text>
+<rect x="20" y="172" width="44" height="38" rx="6" fill="#67410f" stroke="#b77a24" stroke-width="2"/><text x="80" y="191" dominant-baseline="middle" font-size="24" fill="#ffd07a" font-weight="600">Layer toggle (hold)</text>
+<rect x="20" y="228" width="44" height="38" rx="6" fill="#315f12" stroke="#6dab33" stroke-width="2"/><text x="80" y="247" dominant-baseline="middle" font-size="24" fill="#b8ea7c" font-weight="600">Layer switch</text>
+<rect x="20" y="284" width="44" height="38" rx="6" fill="#5c1a6e" stroke="#9744aa" stroke-width="2"/><text x="80" y="303" dominant-baseline="middle" font-size="24" fill="#efa7ff" font-weight="600">Shift/Ctrl combo</text>
+<rect x="20" y="340" width="44" height="38" rx="6" fill="#14535a" stroke="#358f96" stroke-width="2"/><text x="80" y="359" dominant-baseline="middle" font-size="24" fill="#9de7e0" font-weight="600">Tap-hold (dual role)</text>
+<rect x="20" y="396" width="44" height="38" rx="6" fill="#151617" stroke="#27292d" stroke-width="1.5"/><text x="80" y="415" dominant-baseline="middle" font-size="24" fill="#33363a" font-weight="600">No action</text>
 </svg>
