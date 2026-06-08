@@ -33,7 +33,7 @@ HOME_SETTINGS = {
 }
 CODEX_SETTINGS_BASE = {
     "model": "gpt-5.5",
-    "model_reasoning_effort": "low",
+    "model_reasoning_effort": "high",
     "plan_mode_reasoning_effort": "xhigh",
     "model_context_window": 272_000,
     "tool_output_token_limit": 25_000,
