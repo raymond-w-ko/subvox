@@ -57,7 +57,6 @@
         {
           mactop = prev.callPackage ./pkgs/mactop/package.nix { };
           raycast = prev.callPackage ./pkgs/raycast/package.nix { };
-          zsh = final.callPackage ./pkgs/zsh/package.nix { zsh = prev.zsh; };
 
           inherit zigPackages zig;
           zig_0_13 = zigPackages."0.13";
