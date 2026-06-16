@@ -72,8 +72,8 @@
 (def nop (keyword "•"))
 (defn layer-switch-key []
   (cond
-    (is-macos?) :f4
-    (is-windows?) :ins
+    (is-macos?) :grv
+    (is-windows?) :grv
     :else nop))
 (defn live-reload-key []
   (cond
