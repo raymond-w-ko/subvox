@@ -259,6 +259,41 @@ def restore_cargo_lock_if_present(spec: ProjectSpec) -> None:
         run(("git", "restore", "Cargo.lock"), cwd=spec.src_dir)
 
 
+def git_state_path(src_dir: Path, name: str) -> Path:
+    path = Path(run(("git", "rev-parse", "--git-path", name), cwd=src_dir))
+    return path if path.is_absolute() else src_dir / path
+
+
+def merge_in_progress(src_dir: Path) -> bool:
+    return git_state_path(src_dir, "MERGE_HEAD").exists()
+
+
+def run_merge_command(cmd: tuple[str, ...], cwd: Path) -> None:
+    try:
+        run(cmd, cwd=cwd)
+    except CommandError as exc:
+        abort_error = ""
+        if merge_in_progress(cwd):
+            try:
+                run(("git", "merge", "--abort"), cwd=cwd)
+            except RuntimeError as abort_exc:
+                abort_error = f"\nmerge abort failed: {abort_exc}"
+        if not tracked_clean(cwd):
+            raise RuntimeError(f"{exc}\nrepository is not clean after failed merge{abort_error}") from exc
+        if abort_error:
+            raise RuntimeError(f"{exc}{abort_error}") from exc
+        raise
+
+
+def update_from_remotes(spec: ProjectSpec) -> None:
+    if not spec.upstream:
+        run(("git", "merge", "--ff-only", f"{spec.update_remote}/{spec.branch}"), cwd=spec.src_dir)
+        return
+
+    run_merge_command(("git", "pull", "--no-rebase", "--no-edit", "origin", spec.branch), cwd=spec.src_dir)
+    run_merge_command(("git", "merge", "--no-edit", f"upstream/{spec.branch}"), cwd=spec.src_dir)
+
+
 def ensure_repo(spec: ProjectSpec, force_reset: bool = False) -> str:
     SRC.mkdir(parents=True, exist_ok=True)
     cloned = False
@@ -296,10 +331,12 @@ def ensure_repo(spec: ProjectSpec, force_reset: bool = False) -> str:
         restore_cargo_lock_if_present(spec)
 
     if not tracked_clean(spec.src_dir):
+        if spec.upstream:
+            raise RuntimeError(f"{spec.name}: refusing upstream merge with tracked changes")
         return "fetched; skipped fast-forward due tracked changes"
 
     before = current_commit(spec.src_dir)
-    run(("git", "merge", "--ff-only", f"{spec.update_remote}/{spec.branch}"), cwd=spec.src_dir)
+    update_from_remotes(spec)
     after = current_commit(spec.src_dir)
     pushed = push_origin_if_needed(spec)
     if cloned:
