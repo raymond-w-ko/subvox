@@ -15,7 +15,7 @@ Codex CLI output: avoid Markdown tables by default; they render poorly there. Us
 - Docs: read repo docs before coding; update docs/changelog for user-visible behavior changes.
 - Inline code comments: brief notes for tricky, bug-prone, or previously buggy logic.
 - New deps: quick health check for recent releases/commits/adoption.
-- Use the fff MCP tools for all file search operations instead of default tools.
+- Prefer the fff MCP or ffgrep + fffind tools for all file search operations instead of default tools when available.
 
 ## Runtime Safety
 
