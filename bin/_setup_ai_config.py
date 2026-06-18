@@ -46,13 +46,17 @@ CODEX_SETTINGS_BASE = {
     "tui": {
         "status_line": [
             "model-with-reasoning",
-            "current-dir",
-            "project-root",
+            "project-name",
             "git-branch",
-            "context-remaining",
-            "context-window-size",
+            "pull-request-number",
+            "branch-changes",
+            "permissions",
+            "task-progress",
+            "run-state",
         ],
         "theme": "base16",
+        "status_line_use_colors": True,
+        "model_availability_nux": {"gpt-5.5": 4},
     },
 }
 PROJECT_SETTINGS = {}
@@ -137,6 +141,10 @@ def build_claude_json_settings(token: str) -> dict:
     }
 
 
+def build_claude_json_settings_without_agent_mail() -> dict:
+    return {"mcpServers": {"fff": {"type": "stdio", "command": fff_mcp_path(), "args": [], "env": {}}}}
+
+
 def build_codex_settings(token: str) -> dict:
     return deep_merge(
         CODEX_SETTINGS_BASE,
@@ -151,6 +159,43 @@ def build_codex_settings(token: str) -> dict:
             }
         },
     )
+
+
+def merge_codex_settings(existing: dict, token: str | None, disable_agent_mail: bool = False) -> dict:
+    desired = (
+        build_codex_settings(token)
+        if token
+        else deep_merge(CODEX_SETTINGS_BASE, {"mcp_servers": {"fff": {"command": fff_mcp_path()}}})
+    )
+    merged = deep_merge(existing, desired)
+    mcp_servers = merged.setdefault("mcp_servers", {})
+    if disable_agent_mail:
+        mcp_servers.pop("mcp_agent_mail", None)
+    elif token:
+        mcp_servers["mcp_agent_mail"] = desired["mcp_servers"]["mcp_agent_mail"]
+    mcp_servers["fff"] = desired["mcp_servers"]["fff"]
+    return merged
+
+
+def merge_claude_json_settings(existing: dict, token: str | None, disable_agent_mail: bool = False) -> dict:
+    desired = build_claude_json_settings(token) if token else build_claude_json_settings_without_agent_mail()
+    merged = deep_merge(existing, desired)
+    mcp_servers = merged.setdefault("mcpServers", {})
+    if disable_agent_mail:
+        mcp_servers.pop(CLAUDE_MCP_AGENT_MAIL_NAME, None)
+    elif token:
+        mcp_servers[CLAUDE_MCP_AGENT_MAIL_NAME] = desired["mcpServers"][CLAUDE_MCP_AGENT_MAIL_NAME]
+    mcp_servers["fff"] = desired["mcpServers"]["fff"]
+    for stale in CLAUDE_STALE_MCP_AGENT_MAIL_NAMES:
+        mcp_servers.pop(stale, None)
+    return merged
+
+
+def merge_claude_home_settings(existing: dict, disable_agent_mail: bool = False) -> dict:
+    merged = deep_merge(existing, HOME_SETTINGS)
+    if disable_agent_mail:
+        merged.setdefault("mcpServers", {}).pop("mcp-agent-mail", None)
+    return merged
 
 
 def _toml_key(key: str) -> str:
@@ -237,16 +282,7 @@ def warn_bd_prime(settings: dict) -> None:
 
 def setup_claude_json(token: str | None, disable_agent_mail: bool = False) -> None:
     path = HOME / ".claude.json"
-    desired = build_claude_json_settings(token) if token else {"mcpServers": {"fff": {"type": "stdio", "command": fff_mcp_path(), "args": [], "env": {}}}}
-    merged = deep_merge(load_json(path), desired)
-    mcp = merged.setdefault("mcpServers", {})
-    if disable_agent_mail:
-        mcp.pop(CLAUDE_MCP_AGENT_MAIL_NAME, None)
-    else:
-        mcp[CLAUDE_MCP_AGENT_MAIL_NAME] = desired["mcpServers"][CLAUDE_MCP_AGENT_MAIL_NAME]
-    mcp["fff"] = desired["mcpServers"]["fff"]
-    for stale in CLAUDE_STALE_MCP_AGENT_MAIL_NAMES:
-        mcp.pop(stale, None)
+    merged = merge_claude_json_settings(load_json(path), token, disable_agent_mail=disable_agent_mail)
     path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote config to {path}")
 
@@ -255,14 +291,7 @@ def setup_codex_config(token: str | None, disable_agent_mail: bool = False) -> N
     path = HOME / ".codex" / "config.toml"
     path.parent.mkdir(parents=True, exist_ok=True)
     existing = load_codex_config(path) if path.exists() else {}
-    desired = build_codex_settings(token) if token else deep_merge(CODEX_SETTINGS_BASE, {"mcp_servers": {"fff": {"command": fff_mcp_path()}}})
-    merged = deep_merge(existing, desired)
-    merged.setdefault("mcp_servers", {})
-    if disable_agent_mail:
-        merged["mcp_servers"].pop("mcp_agent_mail", None)
-    else:
-        merged["mcp_servers"]["mcp_agent_mail"] = desired["mcp_servers"]["mcp_agent_mail"]
-    merged["mcp_servers"]["fff"] = desired["mcp_servers"]["fff"]
+    merged = merge_codex_settings(existing, token, disable_agent_mail=disable_agent_mail)
     path.write_text(codex_dict_to_toml(merged))
     print(f"Wrote codex settings to {path}")
 
@@ -273,9 +302,7 @@ def setup_home_settings(disable_agent_mail: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     existing = load_json(path)
     warn_bd_prime(existing)
-    merged = deep_merge(existing, HOME_SETTINGS)
-    if disable_agent_mail:
-        merged.setdefault("mcpServers", {}).pop("mcp-agent-mail", None)
+    merged = merge_claude_home_settings(existing, disable_agent_mail=disable_agent_mail)
     path.write_text(json.dumps(merged, indent=2) + "\n")
     print(f"Wrote home settings to {path}")
     setup_claude_json(token, disable_agent_mail=disable_agent_mail)
