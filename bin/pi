@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
 
+case "${1:-}" in
+  install|remove|uninstall|update|list|config)
+    exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
+      "$HOME/src/pi/packages/coding-agent/dist/cli.js" \
+      "$@"
+    ;;
+esac
+
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
   "$HOME/src/pi/packages/coding-agent/dist/cli.js" \
   --models openai-codex/gpt-5.5,openrouter/z-ai/glm-5.2,openrouter/minimax/minimax-m3,openrouter/moonshotai/kimi-k2.7-code \
