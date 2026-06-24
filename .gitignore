@@ -17,6 +17,7 @@ home/.pi/agent/tools
 home/.pi/agent/bin/
 home/.pi/agent/git/
 home/.pi/agent/npm/
+home/.pi/agent/intercom/
 home/.pi/agent/*.jsonl
 
 .claude/**
