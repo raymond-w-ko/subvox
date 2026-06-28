@@ -55,6 +55,16 @@
           zig = zigPackages."0.16";
         in
         {
+          pythonPackagesExtensions =
+            prev.pythonPackagesExtensions
+            ++ prev.lib.optionals prev.stdenv.hostPlatform.isDarwin [
+              (python-final: python-prev: {
+                afdko = python-prev.afdko.overridePythonAttrs {
+                  doCheck = false;
+                };
+              })
+            ];
+
           mactop = prev.callPackage ./pkgs/mactop/package.nix { };
           raycast = prev.callPackage ./pkgs/raycast/package.nix { };
 
