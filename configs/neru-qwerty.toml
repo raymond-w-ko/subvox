@@ -95,8 +95,8 @@ enabled = false
 [recursive_grid.ui]
 font_family = "JetBrainsMonoNLNFP-Bold"
 line_width = 1
-highlight_color = "#00000000"
-text_color = "#00000000"
+highlight_color = "#66000000"
+text_color = "#FF00FF00"
 
 [recursive_grid.hotkeys]
 # disable built-in defaults
