@@ -1,6 +1,9 @@
 # QWERTY translation of y3owk1n's public Neru config.
 #
-# Source:
+# Source reference in this repo:
+# configs/neru-y3owk1n.toml
+#
+# Upstream source:
 # https://github.com/y3owk1n/nix-system-config-v2/blob/main/modules/home/packages/neru.nix
 
 [general]
@@ -96,12 +99,12 @@ highlight_color = "#00000000"
 text_color = "#00000000"
 
 [recursive_grid.hotkeys]
-# disable defaults
-"Shift+P" = "__disabled__"
+# disable built-in defaults
+"Shift+L" = "__disabled__"
+"Shift+R" = "__disabled__"
 "Shift+M" = "__disabled__"
-"Shift+G" = "__disabled__"
-"Shift+F" = "__disabled__"
-"Shift+O" = "__disabled__"
+"Shift+I" = "__disabled__"
+"Shift+U" = "__disabled__"
 "`" = "__disabled__"
 
 "Tab" = "toggle-cursor-follow-selection"
@@ -128,12 +131,12 @@ text_color = "#00000000"
 scroll_step = 100
 
 [scroll.hotkeys]
-# disable defaults
-"Shift+P" = "__disabled__"
+# disable built-in defaults
+"Shift+L" = "__disabled__"
+"Shift+R" = "__disabled__"
 "Shift+M" = "__disabled__"
-"Shift+G" = "__disabled__"
-"Shift+F" = "__disabled__"
-"Shift+O" = "__disabled__"
+"Shift+I" = "__disabled__"
+"Shift+U" = "__disabled__"
 
 "Ctrl+C" = "idle"
 "y" = "action feed ctrl+y"
