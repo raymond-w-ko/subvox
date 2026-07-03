@@ -403,8 +403,8 @@ def install_output(spec: ProjectSpec, output: OutputSpec) -> str:
     return f"installed {output.name}"
 
 
-def build_project(spec: ProjectSpec, skip_existing: bool) -> str:
-    if is_up_to_date(spec, skip_existing):
+def build_project(spec: ProjectSpec, skip_existing: bool, force_rebuild: bool) -> str:
+    if not force_rebuild and is_up_to_date(spec, skip_existing):
         return "skipped; up to date"
     require_commands(spec.build_requires)
     section(f"Building {', '.join(out.name for out in spec.outputs)}")
@@ -448,7 +448,7 @@ def full_setup(args: argparse.Namespace) -> int:
     build_results, build_errors = run_parallel(
         "Building binaries",
         build_specs,
-        lambda spec: build_project(spec, args.skip_existing),
+        lambda spec: build_project(spec, args.skip_existing, args.force_rebuild),
         args.build_jobs,
     )
     setup_error = ""
@@ -475,6 +475,7 @@ def full_setup(args: argparse.Namespace) -> int:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-s", "--skip-existing", action="store_true", help="skip builds when installed outputs exist")
+    parser.add_argument("--force-rebuild", action="store_true", help="rebuild binaries even when installed outputs are current")
     parser.add_argument("--fetch-jobs", type=int, default=8, help="parallel repo fetch/update jobs")
     parser.add_argument("--build-jobs", type=int, default=min(4, max(1, os.cpu_count() or 1)), help="parallel build jobs")
     parser.add_argument("--repair-codex-config", action="store_true", help="repair ~/.codex/config.toml and exit")
