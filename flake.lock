@@ -110,6 +110,26 @@
         "type": "github"
       }
     },
+    "neru": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783006086,
+        "narHash": "sha256-GRNJtR3L4l20+tdrfZOnPLKYVtFHKMIMrXiXfK57BTM=",
+        "owner": "y3owk1n",
+        "repo": "neru",
+        "rev": "fd77dd5e5299fb0a76ca2fcf761ed6579798b165",
+        "type": "github"
+      },
+      "original": {
+        "owner": "y3owk1n",
+        "repo": "neru",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -204,6 +224,7 @@
         "claude-code": "claude-code",
         "codex-cli-nix": "codex-cli-nix",
         "home-manager": "home-manager",
+        "neru": "neru",
         "nix-darwin": "nix-darwin",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_3",

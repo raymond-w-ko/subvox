@@ -18,6 +18,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    neru = {
+      url = "github:y3owk1n/neru";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     claude-code.url = "github:sadjow/claude-code-nix";
     codex-cli-nix.url = "github:sadjow/codex-cli-nix";
   };
@@ -30,6 +35,7 @@
       nix-darwin,
       home-manager,
       rust-overlay,
+      neru,
       claude-code,
       codex-cli-nix,
       ...
@@ -90,6 +96,7 @@
           inherit system;
           overlays = [
             (import rust-overlay)
+            neru.overlays.default
             customOverlay
           ];
           config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) allowedUnfree;
@@ -113,6 +120,7 @@
         {
           nixpkgs.overlays = [
             (import rust-overlay)
+            neru.overlays.default
             claude-code.overlays.default
             customOverlay
           ];
@@ -129,14 +137,23 @@
           fonts.packages = myPkgs.fonts;
         };
 
+      neruQwertyConfig = builtins.readFile ./configs/neru-qwerty.toml;
+
       # Core home-manager config (shared across all platforms)
       homeManagerConfig =
-        { pkgs, config, ... }:
+        {
+          lib,
+          pkgs,
+          config,
+          ...
+        }:
         let
           dotfilesDir = "${config.home.homeDirectory}/subvox/home";
           myPkgs = import ./packages.nix { inherit pkgs codex-cli-nix; };
         in
         {
+          imports = [ neru.homeManagerModules.default ];
+
           # Install packages via home-manager
           home.packages = myPkgs.forHome;
 
@@ -341,6 +358,12 @@
 
           programs.gpg = {
             enable = true;
+          };
+
+          services.neru = lib.mkIf pkgs.stdenv.isDarwin {
+            enable = true;
+            package = pkgs.neru-source;
+            config = neruQwertyConfig;
           };
         };
 
