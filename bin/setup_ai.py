@@ -294,7 +294,7 @@ def update_from_remotes(spec: ProjectSpec) -> None:
     run_merge_command(("git", "merge", "--no-edit", f"upstream/{spec.branch}"), cwd=spec.src_dir)
 
 
-def ensure_repo(spec: ProjectSpec, force_reset: bool = False) -> str:
+def ensure_repo(spec: ProjectSpec) -> str:
     SRC.mkdir(parents=True, exist_ok=True)
     cloned = False
     if not spec.src_dir.exists():
@@ -307,13 +307,6 @@ def ensure_repo(spec: ProjectSpec, force_reset: bool = False) -> str:
     ensure_remote(spec.src_dir, "origin", spec.repo)
     if spec.upstream:
         ensure_remote(spec.src_dir, "upstream", spec.upstream)
-
-    if force_reset:
-        # Workaround for repos with case-conflicting tracked files (e.g. asupersync
-        # on macOS's case-insensitive filesystem). Discards local state.
-        run(("git", "fetch", "--all"), cwd=spec.src_dir)
-        run(("git", "reset", "--hard", f"{spec.update_remote}/{spec.branch}"), cwd=spec.src_dir)
-        return "cloned + force-reset" if cloned else "force-reset"
 
     run(("git", "fetch", "origin", f"+refs/heads/{spec.branch}:refs/remotes/origin/{spec.branch}"), cwd=spec.src_dir)
     if spec.upstream:
@@ -438,12 +431,11 @@ def run_parallel(label: str, specs: list[ProjectSpec], fn, workers: int) -> tupl
 
 def full_setup(args: argparse.Namespace) -> int:
     require_commands(("git",))
-    force_reset_names = {"asupersync"} if args.reset_asupersync else set()
     disable_mcp_agent_mail = not MCP_AGENT_MAIL_ENABLED
     fetch_results, fetch_errors = run_parallel(
         "Fetching repos",
         list(PROJECTS),
-        lambda spec: ensure_repo(spec, force_reset=spec.name in force_reset_names),
+        ensure_repo,
         args.fetch_jobs,
     )
     build_specs = [
@@ -486,11 +478,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--fetch-jobs", type=int, default=8, help="parallel repo fetch/update jobs")
     parser.add_argument("--build-jobs", type=int, default=min(4, max(1, os.cpu_count() or 1)), help="parallel build jobs")
     parser.add_argument("--repair-codex-config", action="store_true", help="repair ~/.codex/config.toml and exit")
-    parser.add_argument(
-        "--reset-asupersync",
-        action="store_true",
-        help="force-reset asupersync to origin/main (workaround for case-conflicting files on macOS)",
-    )
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("create-template", help="regenerate the AGENTS template via Claude")
     config = subparsers.add_parser("config", help="write Claude/Codex settings only")
