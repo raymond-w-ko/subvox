@@ -91,6 +91,7 @@ let
 
   fonts = with pkgs; [
     nerd-fonts.droid-sans-mono
+    nerd-fonts.jetbrains-mono
     noto-fonts
     noto-fonts-cjk-sans
     noto-fonts-color-emoji
@@ -101,7 +102,6 @@ let
     dina-font
     iosevka-bin
     aporetic
-    jetbrains-mono
   ];
 
   linux = with pkgs; [
