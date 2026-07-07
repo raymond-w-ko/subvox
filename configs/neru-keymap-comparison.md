@@ -73,12 +73,12 @@ Recursive grid disabled defaults:
 
 Recursive grid actions:
 
-- Author `'` -> active `q`: move mouse.
-- Author `,` -> active `w`: move mouse center.
+- Active `q`: idle/cancel, local override for closer quit.
+- Author `'` -> active `w`: move mouse.
 - Author `.` -> active `e`: reset.
 - Author `p` -> active `r`: mouse down.
 - Author `y` -> active `t`: mouse up.
-- Result: verified physical conversion.
+- Result: mostly physical conversion, with `q` reserved as a closer quit key.
 
 Recursive grid semantic controls:
 

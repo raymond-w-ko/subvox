@@ -9,8 +9,8 @@
 [general]
 hide_overlay_in_screen_share = true
 passthrough_unbounded_keys = true
-exec_shell = "/bin/dash"
-exec_shell_args = ["-lc"]
+exec_shell = 'C:\Windows\System32\cmd.exe'
+exec_shell_args = ["/c"]
 
 [hotkeys]
 "Ctrl+Y" = "recursive_grid --cursor-selection-mode hold"
@@ -139,7 +139,7 @@ sub_key_preview_text_color = "#CC0088AA"
 "Ctrl+L" = "action scroll_right"
 
 [scroll]
-scroll_step = 100
+scroll_step = 1
 
 [scroll.hotkeys]
 # disable built-in defaults
