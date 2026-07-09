@@ -32,12 +32,12 @@ HOME_SETTINGS = {
     "statusLine": {"type": "command", "command": "~/subvox/bin/claude-statusline.sh", "padding": 0},
 }
 CODEX_SETTINGS_BASE = {
-    "model": "gpt-5.5",
+    "model": "gpt-5.6-sol",
     "model_reasoning_effort": "high",
     "plan_mode_reasoning_effort": "xhigh",
-    "model_context_window": 272_000,
-    "tool_output_token_limit": 25_000,
-    "model_auto_compact_token_limit": 232_000,
+    "model_context_window": 372_000,
+    "tool_output_token_limit": 50_000,
+    "model_auto_compact_token_limit": 334_800,
     "suppress_unstable_features_warning": True,
     "personality": "pragmatic",
     "web_search": "live",
