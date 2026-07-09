@@ -1,15 +1,55 @@
 #!/usr/bin/env sh
 
+case "$(uname -s)-$(uname -m)" in
+  Darwin-arm64)
+    PI_PLATFORM=darwin-arm64
+    PI_EXE=pi
+    ;;
+  Darwin-x86_64)
+    PI_PLATFORM=darwin-x64
+    PI_EXE=pi
+    ;;
+  Linux-x86_64)
+    PI_PLATFORM=linux-x64
+    PI_EXE=pi
+    ;;
+  Linux-aarch64|Linux-arm64)
+    PI_PLATFORM=linux-arm64
+    PI_EXE=pi
+    ;;
+  MINGW*|MSYS*|CYGWIN*)
+    case "$(uname -m)" in
+      x86_64)
+        PI_PLATFORM=windows-x64
+        ;;
+      aarch64|arm64)
+        PI_PLATFORM=windows-arm64
+        ;;
+      *)
+        echo "Unsupported Windows architecture: $(uname -m)" >&2
+        exit 1
+        ;;
+    esac
+    PI_EXE=pi.exe
+    ;;
+  *)
+    echo "Unsupported platform: $(uname -s)-$(uname -m)" >&2
+    exit 1
+    ;;
+esac
+
+PI="$HOME/src/pi/packages/coding-agent/binaries/$PI_PLATFORM/$PI_EXE"
+
 case "${1:-}" in
   install|remove|uninstall|update|list|config)
     exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
-      "$HOME/src/pi/packages/coding-agent/dist/cli.js" \
+      "$PI" \
       "$@"
     ;;
 esac
 
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
-  "$HOME/src/pi/packages/coding-agent/dist/cli.js" \
+  "$PI" \
   --models openai-codex/gpt-5.5,openrouter/z-ai/glm-5.2,openrouter/minimax/minimax-m3,openrouter/moonshotai/kimi-k2.7-code \
   --model openrouter/z-ai/glm-5.2 --thinking high \
   "$@"
