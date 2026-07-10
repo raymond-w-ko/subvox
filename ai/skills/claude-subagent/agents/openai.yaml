@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Subagent"
+  short_description: "Delegate focused reviews and debugging to Claude"
+  default_prompt: "Use $claude-subagent to review this diff for concrete correctness issues."
