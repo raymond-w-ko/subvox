@@ -19,22 +19,24 @@ Use Claude as a read-only peer by default. Keep Codex responsible for scope, val
 
 ## Invocation
 
+Pass `--model opus` on every call by default. Use another model only when the user requests it or Opus is unavailable; report any fallback.
+
 Smoke-test real inference before a long run:
 
 ```text
-claude -p --tools="" "Reply exactly OK"
+claude -p --model opus --tools="" "Reply exactly OK"
 ```
 
 Prefer read-only repository tools for contextual review:
 
 ```text
-claude -p --tools="Read,Grep,Glob" --output-format json "<self-contained review or debugging prompt>"
+claude -p --model opus --tools="Read,Grep,Glob" --output-format json "<self-contained review or debugging prompt>"
 ```
 
 For a supplied diff that needs no repository access, disable tools and pipe the diff:
 
 ```text
-git diff <base>...HEAD | claude -p --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
+git diff <base>...HEAD | claude -p --model opus --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
 ```
 
 Use `=` with variadic flags such as `--tools`, `--allowedTools`, and `--add-dir`; otherwise they may consume the prompt. For input larger than the CLI stdin limit, let Claude read named files instead of piping everything.
