@@ -33,8 +33,8 @@ HOME_SETTINGS = {
 }
 CODEX_SETTINGS_BASE = {
     "model": "gpt-5.6-sol",
-    "model_reasoning_effort": "high",
-    "plan_mode_reasoning_effort": "xhigh",
+    "model_reasoning_effort": "medium",
+    "plan_mode_reasoning_effort": "high",
     "model_context_window": 372_000,
     "tool_output_token_limit": 50_000,
     "model_auto_compact_token_limit": 334_800,
@@ -51,8 +51,6 @@ CODEX_SETTINGS_BASE = {
             "pull-request-number",
             "branch-changes",
             "permissions",
-            "task-progress",
-            "run-state",
         ],
         "theme": "base16",
         "status_line_use_colors": True,

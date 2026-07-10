@@ -59,5 +59,5 @@ models=(
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
   "$PI" \
   --models "$(IFS=,; echo "${models[*]}")" \
-  --model "${models[0]}" --thinking high \
+  --model "${models[0]}" --thinking medium \
   "$@"
