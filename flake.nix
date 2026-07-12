@@ -81,6 +81,12 @@
           zig_0_16 = zig;
 
           zigStdenv = if prev.stdenv.cc.isZig then prev.stdenv else prev.lowPrio zig.passthru.stdenv;
+        }
+        // prev.lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
+          # Temporary workaround until nixpkgs PR #536365 reaches nixos-unstable.
+          ld64 = prev.ld64.overrideAttrs {
+            hardeningDisable = [ "libcxxhardeningfast" ];
+          };
         };
 
       # Unfree packages we allow
