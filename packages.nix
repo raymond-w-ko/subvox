@@ -128,7 +128,6 @@ let
     gst_all_1.gst-plugins-ugly
     gst_all_1.gst-plugins-bad
     gst_all_1.gst-libav
-    gst_all_1.gst-vaapi
   ];
 
   darwin = with pkgs; [
