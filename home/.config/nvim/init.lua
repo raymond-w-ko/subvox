@@ -31,6 +31,10 @@ vim.o.smartcase = true
 vim.o.showmatch = true
 
 vim.keymap.set({"n", "v"}, "/", "/\\v")
+vim.keymap.set("n", "<C-k>", "<cmd>bd<cr>", {
+  desc = "delete buffer",
+  silent = true,
+})
 
 vim.o.guicursor = ""
 
