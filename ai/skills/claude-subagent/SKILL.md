@@ -12,8 +12,8 @@ Use Claude as a read-only peer by default. Keep Codex responsible for scope, val
 1. Define a bounded task: exact diff/base, files, symptom, constraints, and desired output.
 2. Check worktree state. Do not let Claude edit unless the user explicitly requested implementation.
 3. When collaboration tools exist, spawn one subagent to operate `claude -p`; keep the main agent available for validation.
-4. Run a short authenticated smoke call with a firm timeout. `claude auth status` alone does not prove inference works.
-5. Run the review with a task-sized timeout. Capture stdout, stderr, exit code, and session ID when JSON output is used.
+4. Run a short authenticated smoke call with no timeout. `claude auth status` alone does not prove inference works.
+5. Run the review with no timeout. Capture stdout, stderr, exit code, and session ID when JSON output is used.
 6. Independently verify every finding against code and tests. Discard speculative or stylistic findings.
 7. Report validated findings first. Separately report Claude authentication, timeout, or startup failures.
 
@@ -63,7 +63,7 @@ If a broad review says `no findings` but risk remains, make one targeted follow-
 - Authentication: run a real smoke prompt. A stale OAuth session or higher-priority expired `ANTHROPIC_API_KEY` can cause `401` despite appearing logged in. Never print tokens or dump the full environment.
 - Startup stall: plugins and MCP servers can start automatically. Retry once with no tools and supplied context. Use `--safe-mode` only if current `claude --help` documents it.
 - Bare mode: `--bare` skips hooks, skills, plugins, MCP, `CLAUDE.md`, OAuth, and keychain reads. Use it only with explicit API-key or `apiKeyHelper` authentication, not subscription OAuth.
-- Timeout: use a bounded timeout appropriate to task size. Track the launched process and terminate only its process tree; never kill unrelated Claude sessions.
+- Timeout: disable timeouts for every Claude invocation, including smoke calls and reviews. Let Claude run until completion or explicit user cancellation; never terminate it because elapsed time exceeds a limit.
 - Silence: normal text/JSON mode may emit nothing until completion. Use stream JSON only when progress visibility materially helps.
 
 Claude output is evidence to investigate, never authority. Reproduce bugs, inspect exact lines, and run focused tests before presenting findings or changing code.
