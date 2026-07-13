@@ -21,27 +21,20 @@ CLAUDE_STALE_MCP_AGENT_MAIL_NAMES = ("agent-mail", "mcp-agent-mail")
 
 HOME_SETTINGS = {
     "effortLevel": "high",
-    "env": {
-        "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
-        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
-        "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
-        "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
-        "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-        "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
-    },
+    "env": {},
     "statusLine": {"type": "command", "command": "~/subvox/bin/claude-statusline.sh", "padding": 0},
 }
 CODEX_SETTINGS_BASE = {
     "model": "gpt-5.6-sol",
-    "model_reasoning_effort": "medium",
+    "model_reasoning_effort": "high",
     "plan_mode_reasoning_effort": "high",
-    "model_context_window": 372_000,
+    "model_context_window": 272_000,
     "tool_output_token_limit": 50_000,
-    "model_auto_compact_token_limit": 334_800,
+    "model_auto_compact_token_limit": 244_800,
     "suppress_unstable_features_warning": True,
     "personality": "pragmatic",
     "web_search": "live",
-    "service_tier": "fast",
+    "service_tier": "default",
     "features": {"unified_exec": True, "shell_snapshot": True, "multi_agent": True, "remote_connections": True},
     "tui": {
         "status_line": [
@@ -54,7 +47,6 @@ CODEX_SETTINGS_BASE = {
         ],
         "theme": "base16",
         "status_line_use_colors": True,
-        "model_availability_nux": {"gpt-5.5": 4},
     },
 }
 PROJECT_SETTINGS = {}
