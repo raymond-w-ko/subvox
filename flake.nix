@@ -266,6 +266,8 @@
               oc = "opencode";
               c = "claude --dangerously-skip-permissions";
               x = "codex --yolo";
+              i = "pi";
+              ir = "pi --resume";
 
               ".." = "__zoxide_z ..";
               "..." = "__zoxide_z ../..";
