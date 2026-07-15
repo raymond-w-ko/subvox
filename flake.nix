@@ -68,6 +68,11 @@
                 afdko = python-prev.afdko.overridePythonAttrs {
                   doCheck = false;
                 };
+
+                # Upstream race: https://github.com/ipython/ipython/issues/12164
+                ipython = python-prev.ipython.overridePythonAttrs (old: {
+                  disabledTests = (old.disabledTests or [ ]) ++ [ "test_system_interrupt" ];
+                });
               })
             ];
 
