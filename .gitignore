@@ -14,6 +14,7 @@ home/.pi/agent/settings.json
 home/.pi/agent/trust.json
 home/.pi/agent/sessions
 home/.pi/agent/tools
+home/.pi/agent/cache/
 home/.pi/agent/bin/
 home/.pi/agent/git/
 home/.pi/agent/npm/
