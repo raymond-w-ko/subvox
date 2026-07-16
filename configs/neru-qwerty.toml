@@ -14,7 +14,7 @@ exec_shell_args = ["-lc"]
 
 [hotkeys]
 "Ctrl+Y" = "recursive_grid --cursor-selection-mode hold"
-"Ctrl+;" = ["action move_mouse --selection", "scroll"]
+"Ctrl+;" = "scroll"
 
 [hints]
 enabled = false
@@ -137,6 +137,7 @@ sub_key_preview_text_color = "#CC0088AA"
 "Ctrl+K" = "action scroll_up"
 "Ctrl+H" = "action scroll_left"
 "Ctrl+L" = "action scroll_right"
+"Ctrl+;" = ["action move_mouse --selection", "scroll"]
 
 [scroll]
 scroll_step = 100

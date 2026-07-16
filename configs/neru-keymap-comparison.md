@@ -4,6 +4,7 @@
 
 - Author Dvorak reference: `configs/neru-y3owk1n.toml`
 - Active QWERTY config: `configs/neru-qwerty.toml`
+- Active Windows QWERTY config: `configs/neru-qwerty.windows.toml`
 
 ## Conversion Rule
 
@@ -52,7 +53,7 @@ For scroll mode, `Shift+G` is a built-in go-bottom binding. It is intentionally 
 Global hotkeys:
 
 - Author `Ctrl+F` -> active `Ctrl+Y`: physical conversion.
-- Author `Ctrl+S` -> active `Ctrl+;`: physical conversion.
+- Author `Ctrl+S` -> active `Ctrl+;`: physical conversion; enters scroll mode.
 
 Hint characters:
 
@@ -84,6 +85,7 @@ Recursive grid semantic controls:
 
 - `Tab`, `Enter`, `Shift+Enter`, `Ctrl+Enter`, `Space`, `Shift+Space`, and `Ctrl+Space` are unchanged.
 - `Ctrl+C` and `Ctrl+H/J/K/L` are unchanged by the Vim precedence rule.
+- Author `Ctrl+S` -> active `Ctrl+;`: moves mouse to current selection, then enters scroll mode.
 
 Scroll disabled defaults:
 
@@ -106,3 +108,4 @@ One correction was needed after checking Neru's hardcoded defaults:
 - Active config no longer disables scroll `Shift+G`, preserving Neru's built-in go-bottom binding.
 
 The active QWERTY config preserves the author's physical key layout for actual bindings, with explicit semantic precedence for Vim `Ctrl+C` and `Ctrl+H/J/K/L` controls.
+Both QWERTY configs use global `Ctrl+;` to enter scroll mode and recursive-grid `Ctrl+;` to move to the selected cell before entering scroll mode.

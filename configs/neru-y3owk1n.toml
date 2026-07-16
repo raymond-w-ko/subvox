@@ -1,8 +1,3 @@
-# y3owk1n's public Neru config.
-#
-# Source:
-# https://github.com/y3owk1n/nix-system-config-v2/blob/main/modules/home/packages/neru.nix
-
 # ============================================================================
 # Theme
 # ============================================================================
@@ -34,7 +29,7 @@ exec_shell_args = ["-lc"]
 # ============================================================================
 [hotkeys]
 "Ctrl+F" = "recursive_grid --cursor-selection-mode hold"
-"Ctrl+S" = ["action move_mouse --selection", "scroll"]
+"Ctrl+S" = "scroll"
 
 # ============================================================================
 # Hints
@@ -70,8 +65,8 @@ clickable_roles = [
   "AXMenuItem",
   "AXCell",
   "AXRow",
-  "AXMenuButton",
-  "AXGenericElement",
+	"AXMenuButton",
+	"AXGenericElement",
 ]
 
 additional_menubar_hints_targets = [
@@ -79,8 +74,8 @@ additional_menubar_hints_targets = [
   "com.apple.controlcenter",
   "com.apple.systemuiserver",
   "com.y3owk1n.neru",
-  "com.openai.codex",
-  "com.google.antigravity",
+	"com.openai.codex",
+	"com.google.antigravity",
 ]
 
 [[hints.app_configs]]
@@ -90,11 +85,7 @@ visible_check_enabled = true
 [hints.additional_ax_support]
 enable = true
 
-additional_electron_bundles = [
-  "com.openai.codex",
-  "com.hnc.discord",
-  "com.google.antigravity",
-]
+additional_electron_bundles = ["com.openai.codex", "com.hnc.discord", "com.google.antigravity"]
 additional_chromium_bundles = []
 additional_firefox_bundles = []
 additional_webkit_bundles = []
@@ -158,6 +149,7 @@ text_color = "#00000000"
 "Ctrl+K" = "action scroll_up"
 "Ctrl+H" = "action scroll_left"
 "Ctrl+L" = "action scroll_right"
+"Ctrl+S" = ["action move_mouse --selection", "scroll"]
 
 # [[recursive_grid.app_configs]]
 # bundle_id = "com.brave.Browser"
@@ -172,6 +164,7 @@ text_color = "#00000000"
 # ============================================================================
 # Scroll
 # ============================================================================
+
 [scroll]
 scroll_step = 100
 
