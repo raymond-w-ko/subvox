@@ -20,6 +20,7 @@ home/.pi/agent/git/
 home/.pi/agent/npm/
 home/.pi/agent/intercom/
 home/.pi/agent/*.jsonl
+home/.pi/agent/models-store.json
 
 .claude/**
 .codex/**
