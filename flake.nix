@@ -159,7 +159,8 @@
           ...
         }:
         let
-          dotfilesDir = "${config.home.homeDirectory}/subvox/home";
+          repoDir = "${config.home.homeDirectory}/subvox";
+          dotfilesDir = "${repoDir}/home";
           myPkgs = import ./packages.nix { inherit pkgs codex-cli-nix; };
         in
         {
@@ -187,9 +188,8 @@
           home.file.".codex/config.template.toml".source =
             config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
           home.file.".claude/CLAUDE.md".source =
-            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
-          home.file.".codex/AGENTS.md".source =
-            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/ai/AGENTS.md";
+            config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
+          home.file.".codex/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
           home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
 
           programs.direnv = {
