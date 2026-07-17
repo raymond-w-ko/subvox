@@ -2,7 +2,6 @@
 
 case "$(uname -s)-$(uname -m)" in
   Darwin-arm64)
-    PI_PLATFORM=darwin-arm64
     PI_EXE=pi
     ;;
   Darwin-x86_64)
@@ -38,7 +37,7 @@ case "$(uname -s)-$(uname -m)" in
     ;;
 esac
 
-PI="$HOME/src/pi/packages/coding-agent/binaries/$PI_PLATFORM/$PI_EXE"
+PI="$HOME/pi/$PI_EXE"
 
 case "${1:-}" in
   install|remove|uninstall|update|list|config)
