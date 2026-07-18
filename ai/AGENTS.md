@@ -90,6 +90,7 @@ Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level p
 - Workspace: `~/src`.
 - "Make a note" here => terse `AGENTS.MD` edit. No separate `CLAUDE.md` here.
 - Use the `ask_user_question` tool to ask me clarifying questions instead of guessing.
+- `? me` => use the `ask_user_question` tool to ask the user clarifying questions about recent messages. the user will usually do this whenever they feel they need to provide you with details shaping future actions.
 
 ## Project Defaults
 
