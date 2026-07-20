@@ -478,6 +478,9 @@
             Hour = 0;
             Minute = 0;
           };
+          # Bound aggregate parallelism; auto gave each of 8 jobs all 8 cores.
+          nix.settings.max-jobs = 4;
+          nix.settings.cores = 2;
           system.configurationRevision = self.rev or self.dirtyRev or null;
           system.stateVersion = 6;
           nixpkgs.hostPlatform = "aarch64-darwin";
