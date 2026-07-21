@@ -17,7 +17,7 @@ You can preselect a group from the command line:
 ./scripts/update neru home-manager
 ```
 
-The updater writes changes to a temporary candidate lock first. **Generate candidate** shows direct and transitive revisions without changing `flake.lock`. **Validate + build** evaluates the flake and builds the macOS system against that candidate. **Apply validated lock** replaces `flake.lock` only after validation succeeds. **Commit lock** is optional and never pushes.
+The updater writes changes to a temporary candidate lock first. **Generate candidate** shows direct and transitive revisions without changing `flake.lock`. **Validate + build** evaluates the flake and builds the current platform's system against that candidate: `darwinConfigurations.macos` on macOS or `nixosConfigurations.wsl2` on Linux. **Apply validated lock** replaces `flake.lock` only after validation succeeds. **Switch system** then runs the matching `darwin-switch macos` or `linux-switch wsl2` script. **Commit lock** is optional and never pushes.
 
 `claude-code` and `codex-cli-nix` follow the repository's root `nixpkgs`. Updating either application therefore cannot silently update a private Nixpkgs revision. Update root `nixpkgs` through the core group when ready to test infrastructure changes.
 

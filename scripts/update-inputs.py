@@ -15,9 +15,11 @@ import asyncio
 import hashlib
 import json
 import os
+import platform
 import shlex
 import shutil
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +36,38 @@ GROUPS = {
     "core": CORE,
     "all": ALL_INPUTS,
 }
+
+
+@dataclass(frozen=True)
+class SystemTarget:
+    label: str
+    build_attribute: str
+    switch_script: str
+    switch_attribute: str
+
+
+SYSTEM_TARGETS = {
+    "Darwin": SystemTarget(
+        label="macOS",
+        build_attribute=".#darwinConfigurations.macos.config.system.build.toplevel",
+        switch_script="darwin-switch",
+        switch_attribute="macos",
+    ),
+    "Linux": SystemTarget(
+        label="Linux",
+        build_attribute=".#nixosConfigurations.wsl2.config.system.build.toplevel",
+        switch_script="linux-switch",
+        switch_attribute="wsl2",
+    ),
+}
+
+
+def current_system_target() -> SystemTarget:
+    system = platform.system()
+    try:
+        return SYSTEM_TARGETS[system]
+    except KeyError as error:
+        raise ValueError(f"unsupported operating system: {system}") from error
 
 
 def parse_initial_selection(arguments: list[str]) -> set[str]:
@@ -175,11 +209,15 @@ class UpdateInputsApp(App[None]):
         ("q", "quit", "Quit"),
         ("g", "generate", "Generate"),
         ("v", "validate", "Validate"),
+        ("s", "switch", "Switch"),
     ]
 
-    def __init__(self, initial_selection: set[str]) -> None:
+    def __init__(
+        self, initial_selection: set[str], system_target: SystemTarget
+    ) -> None:
         super().__init__()
         self.initial_selection = initial_selection
+        self.system_target = system_target
         self.repo = Path(__file__).resolve().parent.parent
         self.lock_file = self.repo / "flake.lock"
         self.candidate: Path | None = None
@@ -187,6 +225,7 @@ class UpdateInputsApp(App[None]):
         self.candidate_inputs: tuple[str, ...] = ()
         self.validated = False
         self.applied = False
+        self.committed = False
         self.busy = False
 
     def compose(self) -> ComposeResult:
@@ -215,11 +254,20 @@ class UpdateInputsApp(App[None]):
             yield Button(
                 "Apply validated lock", id="apply", variant="success", disabled=True
             )
+            yield Button(
+                f"Switch {self.system_target.label} system",
+                id="switch",
+                disabled=True,
+            )
             yield Button("Commit lock", id="commit", disabled=True)
         yield Footer()
 
     def on_mount(self) -> None:
         self.write_log("Tracked flake.lock remains untouched until Apply.")
+        self.write_log(
+            f"Platform: {self.system_target.label}; "
+            f"build target: {self.system_target.build_attribute}"
+        )
         self.write_log(f"Repository: {self.repo}")
 
     def selected_inputs(self) -> tuple[str, ...]:
@@ -240,7 +288,10 @@ class UpdateInputsApp(App[None]):
         self.query_one("#generate", Button).disabled = busy
         self.query_one("#validate", Button).disabled = busy or self.candidate is None
         self.query_one("#apply", Button).disabled = busy or not self.validated
-        self.query_one("#commit", Button).disabled = busy or not self.applied
+        self.query_one("#switch", Button).disabled = busy or not self.applied
+        self.query_one("#commit", Button).disabled = (
+            busy or not self.applied or self.committed
+        )
         for checkbox in self.query(Checkbox):
             checkbox.disabled = busy
 
@@ -250,8 +301,10 @@ class UpdateInputsApp(App[None]):
         self.candidate_inputs = ()
         self.validated = False
         self.applied = False
+        self.committed = False
         self.query_one("#validate", Button).disabled = True
         self.query_one("#apply", Button).disabled = True
+        self.query_one("#switch", Button).disabled = True
         self.query_one("#commit", Button).disabled = True
         self.set_status("Selection changed; generate a new candidate")
 
@@ -355,11 +408,13 @@ class UpdateInputsApp(App[None]):
                 self.set_status(f"Evaluation failed ({return_code})")
                 return
 
-            self.set_status("Building macOS system against candidate…")
+            self.set_status(
+                f"Building {self.system_target.label} system against candidate…"
+            )
             build_command = [
                 "nix",
                 "build",
-                ".#darwinConfigurations.macos.config.system.build.toplevel",
+                self.system_target.build_attribute,
                 "--no-link",
                 "--reference-lock-file",
                 str(self.candidate),
@@ -395,7 +450,8 @@ class UpdateInputsApp(App[None]):
             os.replace(temporary, self.lock_file)
             self.validated = False
             self.applied = True
-            self.set_status("Candidate applied; review or commit flake.lock")
+            self.committed = False
+            self.set_status("Candidate applied; switch system or commit flake.lock")
             self.write_log("Applied validated candidate to flake.lock.")
             await self.run_command(["git", "diff", "--stat", "--", "flake.lock"])
         except OSError as error:
@@ -404,8 +460,28 @@ class UpdateInputsApp(App[None]):
         finally:
             self.set_busy(False)
 
-    async def commit_lock(self) -> None:
+    async def switch_system(self) -> None:
         if not self.applied:
+            return
+        self.set_busy(True)
+        self.set_status(f"Switching {self.system_target.label} system…")
+        try:
+            switch_script = self.repo / "scripts" / self.system_target.switch_script
+            return_code = await self.run_command(
+                [str(switch_script), self.system_target.switch_attribute]
+            )
+            if return_code == 0:
+                self.set_status(f"Switched {self.system_target.label} system")
+            else:
+                self.set_status(f"System switch failed ({return_code})")
+        except OSError as error:
+            self.set_status("System switch failed")
+            self.write_log(f"Error: {error}")
+        finally:
+            self.set_busy(False)
+
+    async def commit_lock(self) -> None:
+        if not self.applied or self.committed:
             return
         self.set_busy(True)
         try:
@@ -415,7 +491,7 @@ class UpdateInputsApp(App[None]):
                 ["git", "commit", "-m", message, "--", "flake.lock"]
             )
             if return_code == 0:
-                self.applied = False
+                self.committed = True
                 self.set_status("Committed flake.lock; nothing was pushed")
             else:
                 self.set_status(f"Commit failed ({return_code})")
@@ -431,6 +507,7 @@ class UpdateInputsApp(App[None]):
             "generate": self.generate_candidate,
             "validate": self.validate_candidate,
             "apply": self.apply_candidate,
+            "switch": self.switch_system,
             "commit": self.commit_lock,
         }
         action = actions.get(event.button.id or "")
@@ -444,6 +521,10 @@ class UpdateInputsApp(App[None]):
     def action_validate(self) -> None:
         if not self.busy and self.candidate is not None:
             self.run_worker(self.validate_candidate(), exclusive=True, group="update")
+
+    def action_switch(self) -> None:
+        if not self.busy and self.applied:
+            self.run_worker(self.switch_system(), exclusive=True, group="update")
 
 
 def main() -> None:
@@ -459,9 +540,10 @@ def main() -> None:
     arguments = parser.parse_args()
     try:
         selected = parse_initial_selection(arguments.selection)
+        system_target = current_system_target()
     except ValueError as error:
         parser.error(str(error))
-    UpdateInputsApp(selected).run()
+    UpdateInputsApp(selected, system_target).run()
 
 
 if __name__ == "__main__":
