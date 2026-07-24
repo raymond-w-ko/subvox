@@ -17,10 +17,19 @@ let
   pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python314;
   poetryPkg =
     let
-      basePoetry =
+      poetryApplication =
         if pkgs.stdenv.isDarwin then pkgs.poetry.override { python3 = pythonDarwin; } else pkgs.poetry;
+      # Temporary workaround for https://github.com/NixOS/nixpkgs/issues/544083.
+      patchedPoetryPackage = poetryApplication.python.pkgs.poetry.overridePythonAttrs (old: {
+        disabledTests = (old.disabledTests or [ ]) ++ [
+          "test_execute_executes_a_batch_of_operations"
+          "test_execute_prints_warning_for_yanked_package"
+        ];
+      });
     in
-    basePoetry.withPlugins (ps: [ ps.poetry-plugin-shell ]);
+    poetryApplication.withPlugins (ps: [
+      (ps.poetry-plugin-shell.override { poetry = patchedPoetryPackage; })
+    ]);
 
   # Packages managed by home-manager programs.* (do NOT add here):
   #   neovim, git, lazygit, fzf, zoxide, bash, fish, tmux, bun, uv, direnv
