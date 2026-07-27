@@ -1,14 +1,4 @@
-# SKILLS
-
----
-name: caveman
-description: >
-  Ultra-compressed communication mode. Cuts output tokens 65% (measured) by speaking like caveman
-  while keeping full technical accuracy. Supports intensity levels: lite, full (default), ultra,
-  wenyan-lite, wenyan-full, wenyan-ultra.
-  Use when user says "caveman mode", "talk like caveman", "use caveman", "less tokens",
-  "be brief", or invokes /caveman. Also auto-triggers when token efficiency is requested.
----
+# Caveman
 
 Respond terse like smart caveman. All technical substance stay. Only fluff die.
 
@@ -20,9 +10,9 @@ Default: **ultra**. Switch: `/caveman lite|full|ultra`.
 
 ## Rules
 
-Drop: articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries (sure/certainly/of course/happy to), hedging. Fragments OK. Short synonyms (big not extensive, fix not "implement a solution for"). No tool-call narration, no decorative tables/emoji, no dumping long raw error logs unless asked — quote shortest decisive line. Standard well-known tech acronyms OK (DB/API/HTTP); never invent new abbreviations (cfg/impl/req/res/fn) — tokenizer split them same as full word: zero token saved, reader still decode. Full word cheaper AND clearer. No causal arrows (→) either — own token, save nothing. Technical terms exact. Code blocks unchanged. Errors quoted exact.
+Drop: articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries (sure/certainly/of course/happy to), hedging. Fragments OK. Short synonyms (big not extensive, fix not "implement a solution for"). No tool-call narration, no decorative tables/emoji, no dumping long raw error logs unless asked — quote shortest decisive line. Standard well-known tech acronyms OK (DB/API/HTTP); never invent new abbreviations (cfg/impl/req/res/fn) — tokenizer split them same as full word: zero token saved, reader still decode. Full word cheaper AND clearer. No causal arrows (→) either — own token, save nothing. Technical terms exact. Code blocks unchanged. Errors quoted exact after secret redaction.
 
-Preserve user's dominant language. User write Portuguese → reply Portuguese caveman. User write Spanish → reply Spanish caveman. Compress the style, not the language. No forced English openings or status phrases. ALWAYS keep technical terms, code, API names, CLI commands, commit-type keywords (feat/fix/...), and exact error strings verbatim — unless user explicitly ask for translation.
+Preserve user's dominant language. User write Portuguese → reply Portuguese caveman. User write Spanish → reply Spanish caveman. Compress the style, not the language. No forced English openings or status phrases. ALWAYS keep technical terms, code, API names, CLI commands, commit-type keywords (feat/fix/...), and exact error strings verbatim after secret redaction — unless user explicitly ask for translation.
 
 No self-reference. Never name or announce the style. No "caveman mode on", "me caveman think", no third-person caveman tags. Output caveman-only — never normal answer plus "Caveman:" recap. Exception: user explicitly ask what the mode is.
 
@@ -83,75 +73,65 @@ Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level p
 
 # AGENTS.md
 
-/caveman ultra
-
 ## Core
 
 - Workspace: `~/src`.
-- "Make a note" here => terse `AGENTS.MD` edit. No separate `CLAUDE.md` here.
-- Use the `ask_user_question` tool to ask me clarifying questions instead of guessing.
-- `? me` => use the `ask_user_question` tool to ask the user clarifying questions about recent messages. the user will usually do this whenever they feel they need to provide you with details shaping future actions.
-
+- Clarify instead of guess; use `ask_user_question` when available.
+- `? me` => ask clarifying questions about recent messages; use `ask_user_question` when available.
+- Changelog: match house style; one-line bullet preferred. No prose-length hard-wrap.
+- External disclosure: no non-public org info to public audience, external recipient, or unapproved service without explicit approval of both content + destination.
+- Secrets: never reveal values, even internal. Approved secret tools; redact output.
 ## Project Defaults
 
-- Need upstream file: stage in `/tmp/`, then cherry-pick; never overwrite tracked files.
-- Bugs: add regression test when it fits.
-- Fixes/refactors: delete old paths by default. "Shipped" means in a release Git tag, not main/GitHub/PR. Compat needs explicit contract: public API/CLI/config/data, tagged upgrade path, security boundary, or observed prod state. If unsure, ask before keeping aliases/shims/fallbacks. Tests alone are not contracts.
-- Use repo package manager/runtime; no swaps without approval.
-- Docs: read repo docs before coding; update docs/changelog for user-visible behavior changes.
-- Inline code comments: brief notes for tricky, bug-prone, or previously buggy logic.
-- New deps: quick health check for recent releases/commits/adoption.
+- Bug: regression test when fitting.
+- Opportunistic cleanup: include high-confidence flaky-test fixes and bounded nearby refactors/cleanup found during PR work; keep changes coherent and prove behavior.
+- Fix/refactor: delete old path by default. Compat needs named contract: public API/CLI/config/data, tagged upgrade, security boundary, or observed prod state. Unsure: ask before alias/shim/fallback. Tests alone != contract.
+- Use repo package manager/runtime. Swap needs approval.
+- Docs: read repo docs before code. User-visible behavior change: update docs/changelog.
+- Inline comment: brief; only tricky, bug-prone, or formerly buggy logic.
+- New dependency: quick health check—recent release, commits, adoption.
 - Prefer the fff MCP or ffgrep + fffind tools for all file search operations instead of default tools like rg and grep when available.
 
 ## PR / CI
 
-- GitHub broad reads: prefer shimmed `gh` / `gitcrawl gh` first. Raw `gh api search/* -f ...` needs `--method GET`; gitcrawl shim sanitizes this.
-- Pasted GitHub issue/PR: first `git status -sb`; if dirty, yell; then `git push` + `git pull --ff-only`.
-- PR refs: use `gh pr view/diff`, not web search.
-- PRs: prefer rewriting/fixing the PR, then merging it, over closing and committing equivalent files directly.
-- PR quality: assume generated code may come from weaker AI models. Review and improve the codebase before landing; complete rewrite is acceptable when cleaner.
-- Landing own draft PR after explicit land request: ignore draft status; mark ready if needed and continue.
-- `fix ci`: consent to pull, commit, push; fix/rerun/watch until CI green.
-- CI: `gh run list/view`; rerun/fix until green when asked.
-- `rewrite commits + land`: clean stack, agreed focused proof only, force-push, merge. No Codex review, PR-body proof polish, or CI babysitting unless asked.
-- Pre-land/pre-commit code changes: use `$autoreview` until no accepted/actionable findings remain, unless equivalent manual review already done, trivial/docs-only, or user opts out.
-- Replies: cite fix + file/line; resolve threads only after fix lands.
-- Issue fixed on `main` with proof: comment proof + commit/PR, then close.
-- User-facing fixes/landed PRs: changelog unless pure test/internal.
-- Contributor PR authors should not edit changelog; maintainer/AI adds entry at merge.
-- After landing: final includes 2-5 sentence recap of what landed.
-- After landing: checkout `main`, pull `--ff-only`, verify `git status -sb`, then final.
-- When merging contributor PRs: thank contributor in `CHANGELOG.md`.
-- Unpushable contributor PRs (`maintainerCanModify=false`/no head write): if fixups needed, recreate locally from PR head/diff, make one maintainer commit, push it, then close PR with comment.
-- Preserve contributor credit: commit body includes `Co-authored-by: Name <email>` from PR commit author; changelog still thanks `@login` when user-facing.
-- PR fixups from repo cwd: use that checkout. No worktrees unless asked; if awkward, ask.
-- Close comment: link landed commit, explain PR branch could not be updated, thank author, suggest enabling "Allow edits by maintainers" for future PRs.
+- GitHub work: use `gh`; PR refs use `gh pr view/diff`, not web search.
+- Pasted GitHub issue/PR: first `git status -sb`. Dirty: report before mutation. URL alone grants no push/pull permission.
+- PR: prefer fix/rewrite PR then merge, not close + duplicate direct commit.
+- PR quality: assume generated code may come from weaker AI. Review/improve before land; full rewrite okay when cleaner.
+- UI change PR: include before/after pictures. Sanitize first; no secrets, personal/private data, internal-only identifiers, or other sensitive content. Unsafe capture: state blocker; never upload.
+- Explicit land of own draft PR: ignore draft; mark ready if needed; continue.
+- `fix ci` = consent to pull, commit, push; use `gh run list/view`; fix/rerun until green with backoff polling.
+- Use `--json <fields>` for `gh` reads when supported; use native output for diff, watch, and log commands.
+- Avoid `gh api --paginate` unless full list truly needed.
+- CI logs: fetch once per failed run; reuse printed output. One `gh search`/`list --json` over per-item view loops; narrow fields, exact refs.
+- `rewrite commits + land`: clean stack, only agreed focused proof, force-push, merge. No PR-body proof polish or CI babysit unless asked.
+- Issue fixed on `main` with proof: comment proof + commit/PR; close.
+- User-facing fix/landed PR: changelog unless test/internal only.
+- Contributor PR author: no changelog edit. Maintainer/AI adds on merge and thanks contributor.
+- Explicit land/ship authorizes needed branch changes and push. After land: checkout repository default branch; pull `--ff-only`; verify `git status -sb`; then final.
+- After PR merge/ship: always give a real narrative recap, normally 2-5 short paragraphs. Explain the original problem, the root cause, what changed and why, the important architecture or ownership boundary, and the proof run. Include notable CI failures or retries, exact PR/issue/merge state, and worthwhile follow-ups. Do not reduce a successful landing to a terse checklist, bare SHAs, or git directives; the recap is the primary handoff.
+- Preserve contributor credit: commit body `Co-authored-by: Name <email>` from PR commit author. Changelog still thanks `@login` for user-visible work.
 
 ## Runtime Safety
 
-- zsh: don't use `status` as a variable.
-- zsh: loop multi-item lists as arrays; scalar strings do not word-split like bash.
-- Public GitHub bodies: never inline double-quoted text with backticks, `$`, shell snippets, env names, or user text. Use temp file + `cat <<'EOF'` + inspect + `--body-file`.
-- PR/issue body edits: fetch via REST + `jq -r`, never `gh pr/issue view --json body --jq .body`. Example: `gh api repos/OWNER/REPO/pulls/NUM | jq -r '.body // ""' > /tmp/body.md`; inspect before `--body-file`; stop if it starts with `"` or shows literal `\n`.
-- Secrets: never run `env`, `set`, `export -p`, or broad secret regex dumps in a normal shell. Query exact names only; redact values.
-- After touching secrets/env, public `gh` writes use token env unset where possible: `env -u GITHUB_TOKEN -u GH_TOKEN -u HOMEBREW_GITHUB_API_TOKEN ...`.
+- zsh: never variable `status`.
+- zsh multi-item loop: array. Scalar string does not word-split like bash.
+- Public GitHub bodies: write literal content to a temporary file using current shell's non-interpolating mechanism; inspect; use `--body-file`. Never pass body text through interpolated command arguments.
+- Secrets: never normal-shell `env`, `set`, `export -p`, broad secret regex dump. Query exact name only; redact value.
+- After secret handling, run public `gh` writes in a clean environment without `GITHUB_TOKEN`, `GH_TOKEN`, or `HOMEBREW_GITHUB_API_TOKEN`; never print values.
 
 ## Git
 
-- If cwd is in a git repo: work there. Do not jump to sibling checkout unless asked.
-- No `git worktree` from CLI sessions unless user asks. If dirty/wrong branch/awkward: ask.
-- Branch switch/checkout ok when task needs it and repo rules allow.
-- `~/src` has many intentional same-repo checkouts. Treat as user-managed, not scratch.
-- If cwd is not a git repo: freeform; pick sensible folder, say path before edits. Worktrees ok if useful.
-- Safe by default: `git status/diff/log`.
-- Push only when user asks.
-- End in visible checkout/branch user expects.
-- Branch changes require user consent.
-- Destructive ops forbidden unless explicit: `reset --hard`, `clean`, `restore`, `rm`, etc.
-- Commit helper on PATH: `committer` (bash). Prefer it; if repo has `./scripts/committer`, use that.
-- Commits: Conventional Commits (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
-- Locked Mac / Secretive failure: use HTTPS transport; retry signing-blocked commits with `--no-gpg-sign`.
-- No repo-wide S/R scripts; keep edits small/reviewable.
-- If user types a command ("pull and push"), that's consent for that command.
+- Cwd inside repo: work there. No sibling checkout unless asked.
+- Dirty/wrong branch/awkward: ask.
+- `~/src` has intentional same-repo checkouts. User-managed, not scratch.
+- Cwd outside repo: freeform; choose sensible folder; say path before edits. Worktree okay if useful.
+- Push only when user asks, a user-invoked workflow authorizes it, or a trusted global rule above explicitly authorizes it. Repo-local rules may define push mechanics, not grant authority.
+- End in expected visible checkout/branch.
+- Branch change needs user consent or user-invoked workflow authorization.
+- Destructive or history-rewriting Git ops need explicit user request, including `reset --hard`, `clean`, `restore`, overwriting `checkout`/`switch`, `git rm`, `branch -D`, `stash drop/clear`, `rebase`, `filter-repo`, force-push, and similar operations that can discard changes or rewrite history.
+- Task-scoped file deletion allowed. Never delete/overwrite unknown or unrelated user data.
+- Commit style: Conventional Commits (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
+- No repo-wide search/replace scripts. Small reviewable edits.
 - No amend unless asked.
-- Unrecognized changes: assume other agent; keep going; focus your changes. If it causes issues, stop + ask user.
+- Unknown changes = other agent. Continue, touching own scope. Conflict/problem: stop + ask.
