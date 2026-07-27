@@ -15,9 +15,10 @@ exec_shell_args = ["-lc"]
 [hotkeys]
 "Ctrl+Y" = "recursive_grid --cursor-selection-mode hold"
 "Ctrl+;" = "scroll"
+"Ctrl+Space" = ["action move_mouse --window", "hints"]
 
 [hints]
-enabled = false
+enabled = true
 visible_check_enabled = false
 
 hint_characters = "adfhjkl;rtyuioxcvbnm,./"
@@ -106,6 +107,7 @@ label_background_border_radius = 0
 label_background_border_width = 0
 sub_key_preview = true
 sub_key_preview_font_size = 10
+label_autohide_multiplier = 0
 sub_key_preview_autohide_multiplier = 1.5
 sub_key_preview_text_color = "#CC0088AA"
 
