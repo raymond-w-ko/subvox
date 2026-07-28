@@ -12,31 +12,36 @@ Use Claude as a read-only peer by default. Keep Codex responsible for scope, val
 1. Define a bounded task: exact diff/base, files, symptom, constraints, and desired output.
 2. Check worktree state. Do not let Claude edit unless the user explicitly requested implementation.
 3. When collaboration tools exist, spawn one subagent to operate `claude -p`; keep the main agent available for validation.
-4. Run a short authenticated smoke call with no timeout. `claude auth status` alone does not prove inference works.
-5. Run the review with no timeout. Capture stdout, stderr, exit code, and session ID when JSON output is used.
-6. Independently verify every finding against code and tests. Discard speculative or stylistic findings.
-7. Report validated findings first. Separately report Claude authentication, timeout, or startup failures.
+4. Confirm the user-scoped `fff` MCP server is connected with `claude mcp get fff`.
+5. Run a short authenticated smoke call with no timeout. `claude auth status` alone does not prove inference works.
+6. Run the review with no timeout. Capture stdout, stderr, exit code, and session ID when JSON output is used.
+7. Independently verify every finding against code and tests. Discard speculative or stylistic findings.
+8. Report validated findings first. Separately report Claude authentication, MCP, timeout, or startup failures.
 
 ## Invocation
 
-Pass exact model ID `--model claude-opus-5` on every call. Never use floating aliases such as `opus` and never fall back to another model. If Claude Opus 5 is unavailable, report the failure.
+Pass exact model ID `--model claude-opus-4-8` on every call. Never use floating aliases such as `opus` and never fall back to another model. If Claude Opus 4.8 is unavailable, report the failure.
+
+> **Model policy:** Claude Opus 5 is banned for now due to poor results observed after use. Do not invoke it or fall back to it. This policy also reflects concerns raised by ThePrimeagen, Theo, Steve Yegge, and Jeffrey Emanuel. Revisit only after explicit user approval.
 
 Smoke-test real inference before a long run:
 
 ```text
-claude -p --model claude-opus-5 --tools="" "Reply exactly OK"
+claude -p --model claude-opus-4-8 --tools="" "Reply exactly OK"
 ```
 
 Prefer read-only repository tools for contextual review:
 
 ```text
-claude -p --model claude-opus-5 --tools="Read,Grep,Glob" --output-format json "<self-contained review or debugging prompt>"
+claude -p --model claude-opus-4-8 --tools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --allowedTools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --output-format json "<self-contained review or debugging prompt>"
 ```
+
+Use `fff` instead of built-in `Grep` and `Glob`. Search with `mcp__fff__grep`, `mcp__fff__find_files`, or `mcp__fff__multi_grep`, then use `Read` only for identified files. `--tools` exposes the tools; matching `--allowedTools` grants non-interactive permission. Both flags are required for unattended `claude -p` calls.
 
 For a supplied diff that needs no repository access, disable tools and pipe the diff:
 
 ```text
-git diff <base>...HEAD | claude -p --model claude-opus-5 --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
+git diff <base>...HEAD | claude -p --model claude-opus-4-8 --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
 ```
 
 Use `=` with variadic flags such as `--tools`, `--allowedTools`, and `--add-dir`; otherwise they may consume the prompt. For input larger than the CLI stdin limit, let Claude read named files instead of piping everything.
@@ -61,6 +66,7 @@ If a broad review says `no findings` but risk remains, make one targeted follow-
 ## Failure Handling
 
 - Authentication: run a real smoke prompt. A stale OAuth session or higher-priority expired `ANTHROPIC_API_KEY` can cause `401` despite appearing logged in. Never print tokens or dump the full environment.
+- `fff`: verify `claude mcp get fff` reports user scope and `Connected`. If unavailable, report the failure; do not silently replace it with built-in `Grep` or `Glob`. If the tool is exposed but denied, add its exact `mcp__fff__*` name to `--allowedTools`.
 - Startup stall: plugins and MCP servers can start automatically. Retry once with no tools and supplied context. Use `--safe-mode` only if current `claude --help` documents it.
 - Bare mode: `--bare` skips hooks, skills, plugins, MCP, `CLAUDE.md`, OAuth, and keychain reads. Use it only with explicit API-key or `apiKeyHelper` authentication, not subscription OAuth.
 - Timeout: disable timeouts for every Claude invocation, including smoke calls and reviews. Let Claude run until completion or explicit user cancellation; never terminate it because elapsed time exceeds a limit.
