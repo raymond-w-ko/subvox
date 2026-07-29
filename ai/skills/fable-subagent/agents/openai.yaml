@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fable Subagent"
+  short_description: "Delegate focused reviews and debugging to Fable"
+  default_prompt: "Use $fable-subagent to review this diff for concrete correctness issues."
