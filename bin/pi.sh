@@ -49,11 +49,14 @@ esac
 
 models=(
   openai-codex/gpt-5.6-sol
+  anthropic/claude-fable-5
   openrouter/moonshotai/kimi-k3
   openrouter/x-ai/grok-4.5
   openrouter/minimax/minimax-m3
   openai-codex/gpt-5.6-terra
   openai-codex/gpt-5.6-luna
+  anthropic/claude-opus-5
+  anthropic/claude-opus-4-8
 )
 
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
