@@ -209,7 +209,9 @@ class UpdateInputsApp(App[None]):
         ("q", "quit", "Quit"),
         ("g", "generate", "Generate"),
         ("v", "validate", "Validate"),
+        ("a", "apply", "Apply"),
         ("s", "switch", "Switch"),
+        ("c", "commit", "Commit"),
     ]
 
     def __init__(
@@ -522,9 +524,17 @@ class UpdateInputsApp(App[None]):
         if not self.busy and self.candidate is not None:
             self.run_worker(self.validate_candidate(), exclusive=True, group="update")
 
+    def action_apply(self) -> None:
+        if not self.busy and self.validated:
+            self.run_worker(self.apply_candidate(), exclusive=True, group="update")
+
     def action_switch(self) -> None:
         if not self.busy and self.applied:
             self.run_worker(self.switch_system(), exclusive=True, group="update")
+
+    def action_commit(self) -> None:
+        if not self.busy and self.applied and not self.committed:
+            self.run_worker(self.commit_lock(), exclusive=True, group="update")
 
 
 def main() -> None:
