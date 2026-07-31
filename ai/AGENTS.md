@@ -76,11 +76,16 @@ Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level p
 ## Core
 
 - Workspace: `~/src`.
-- Clarify instead of guess; use `ask_user_question` when available.
-- `? me` => ask clarifying questions about recent messages; use `ask_user_question` when available.
 - Changelog: match house style; one-line bullet preferred. No prose-length hard-wrap.
 - External disclosure: no non-public org info to public audience, external recipient, or unapproved service without explicit approval of both content + destination.
 - Secrets: never reveal values, even internal. Approved secret tools; redact output.
+
+## Clarifying Questions
+
+- Clarify instead of guess.
+- Use available question tool: `ask_user_question` (Pi extension) or `request_user_input` (Codex).
+- `? me` => ask clarifying questions about recent messages with available question tool.
+
 ## Project Defaults
 
 - Bug: regression test when fitting.
