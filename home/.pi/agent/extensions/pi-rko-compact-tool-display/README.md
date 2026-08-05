@@ -87,7 +87,7 @@ just `reasoning`) because it goes through `provider.stream`.
 ## Cost-saving cache
 
 Labels are deterministic (temperature 0, pinned model), so results are cached
-in SQLite at `~/.cache/pi-rko-compact-tool-display.sqlite` (see `cache.ts`, uses
+in SQLite at `~/.cache/pi-rko-compact-tool-display.sqlite3` (see `cache.ts`, uses
 `node:sqlite` — the same driver Pi's own storage uses) keyed by
 `model|thinking|command`. Hits avoid the LLM call entirely — including across
 `/reload` and restarts. Capped at 500 rows (oldest dropped by `created_at`).
@@ -165,7 +165,7 @@ ahead of any tag).
 At module-load time (and on the resumed-transcript re-render flood),
 `registry` is still `undefined`, so every such call fails and gets cached as
 `""`. Those poison the cache. If you bump the request/key scheme, bump
-`CACHE_VERSION` in `translate.ts` (or delete `~/.cache/pi-rko-compact-tool-display.sqlite`)
+`CACHE_VERSION` in `translate.ts` (or delete `~/.cache/pi-rko-compact-tool-display.sqlite3`)
 or you'll keep returning the stale `""`.
 
 ### 8. Beware writing weird disk state: `:/ > file` truncates to 0 bytes

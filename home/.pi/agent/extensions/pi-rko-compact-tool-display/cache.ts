@@ -7,7 +7,7 @@
  * Both expose a compatible prepare/exec interface, so the same code path works.
  * If neither is available, the cache silently disables (hits always miss).
  *
- * DB: ~/.cache/pi-rko-compact-tool-display.sqlite
+ * DB: ~/.cache/pi-rko-compact-tool-display.sqlite3
  * Table: cache(key TEXT PRIMARY KEY, label TEXT, created_at INTEGER)
  * Capped at MAX_ENTRIES rows (oldest dropped by created_at).
  */
@@ -17,7 +17,7 @@ import { homedir } from "node:os";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 
-const MAX_ENTRIES = 500;
+const MAX_ENTRIES = 65536;
 
 const require = createRequire(import.meta.url);
 
@@ -59,7 +59,7 @@ function getDb(): SqliteConnection | undefined {
 		/* read-only home — sqlite just won't persist */
 	}
 	try {
-		db = new (Sqlite as any)(join(dir, "pi-rko-compact-tool-display.sqlite"));
+		db = new (Sqlite as any)(join(dir, "pi-rko-compact-tool-display.sqlite3"));
 		db.exec(
 			"CREATE TABLE IF NOT EXISTS cache(key TEXT PRIMARY KEY, label TEXT NOT NULL, created_at INTEGER NOT NULL)",
 		);
