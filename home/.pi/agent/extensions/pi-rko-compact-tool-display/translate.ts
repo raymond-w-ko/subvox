@@ -10,20 +10,24 @@
  * requests. Changing the model or thinking level produces new keys (no stale
  * labels reused).
  *
- * Env:
- *   RKO_BASH_TRANSLATOR   "1" (default) enable, "0" disable
+ * Settings are top-level constants in config.ts (no env vars).
  */
 
 import { oneShot } from "./llm.js";
 import { cacheGet, cacheSet } from "./cache.js";
+import { CONFIG } from "./config.js";
+import { log } from "./debug-log.js";
 
 const MAX_LABEL = 48;
 const TIMEOUT_MS = 4000;
 
+// Bump when the completion request or key scheme changes so stale cached
+// labels (including poisoned "" failures) are ignored and re-translated.
+const CACHE_VERSION = "1";
+
 function cacheKey(command: string): string {
-	const model = process.env.RKO_TRANSLATE_MODEL || "openrouter/google/gemini-3.5-flash-lite";
-	const thinking = process.env.RKO_TRANSLATE_THINKING || "off";
-	return `${model}|${thinking}|${command}`;
+	const thinking = CONFIG.thinking === "off" ? "low" : CONFIG.thinking;
+	return `${CACHE_VERSION}|${CONFIG.model}|${thinking}|${command}`;
 }
 
 // --- in-flight dedupe (within process) --------------------------------------
@@ -31,7 +35,9 @@ const inflight = new Map<string, Promise<string | null>>();
 
 export function translateCommand(command: string): Promise<string | null> {
 	const trimmed = (command || "").trim();
-	if (process.env.RKO_BASH_TRANSLATOR === "0" || trimmed.length < 4) {
+	log("translateCommand: ENTRY len=", trimmed.length, "cmd=", JSON.stringify(trimmed.slice(0, 50)), "at=", Date.now());
+	if (!CONFIG.enabled || trimmed.length < 4) {
+		log("translateCommand: early return (disabled=", !CONFIG.enabled, "len=", trimmed.length, ")");
 		return Promise.resolve(null);
 	}
 
@@ -39,13 +45,18 @@ export function translateCommand(command: string): Promise<string | null> {
 
 	// 1. Persistent cache hit ("" stored = known-failed, don't retry).
 	const cached = cacheGet(key);
-	if (cached !== undefined) return Promise.resolve(cached || null);
+	if (cached !== undefined) {
+		log("translateCommand: CACHE HIT key=", key, "->", JSON.stringify(cached));
+		return Promise.resolve(cached || null);
+	}
+	log("translateCommand: CACHE MISS key=", key);
 
 	// 2. In-flight dedupe.
 	const existing = inflight.get(key);
 	if (existing) return existing;
 
 	const p = doTranslate(trimmed).then((label) => {
+		log("translateCommand: store label=", JSON.stringify(label), "for", JSON.stringify(command.slice(0, 60)));
 		cacheSet(key, label ?? "");
 		return label;
 	});

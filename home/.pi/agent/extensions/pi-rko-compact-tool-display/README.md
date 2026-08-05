@@ -59,25 +59,30 @@ the tool render context: `state` (persistent per tool row) + `invalidate()`
 (redraw that row → `renderCall` re-runs with the new label).
 
 Completions run through **Pi's own provider/auth stack** (see `llm.ts`) — no raw
-HTTP, no env API keys. It captures the session's bound `Model` (from
-`ctx.getModel()` on `session_start` / `before_agent_start` / `model_select`) and
-calls `model.api.streamSimple(...)`, reusing the configured provider, stored
-credentials, base URL, headers, and provider hooks.
+HTTP, no env API keys. It captures the session's `ModelRegistry` (from
+`session_start` / `before_agent_start` / `model_select`) and calls
+`ModelRegistry.complete(model, context, options)` — the same request path pi's
+agent uses — reusing the configured provider, stored credentials, base URL,
+headers, and provider hooks. No `pi-ai/compat` usage.
 
-Model is **hardcoded** to `openrouter / google/gemini-3.5-flash-lite` (resolved
-via `modelRegistry.find`, still reusing Pi's openrouter auth).
+> Requires a pi built from `~/src/pi` main (or a release newer than 0.83.0):
+> `ModelRegistry.complete` was added on main 2026-07-31, after the 0.83.0 tag
+> (2026-07-30).
 
-Env:
+All settings are top-level constants in **`config.ts`** (no env vars). Edit
+there:
 
-| var | meaning |
-|-----|---------|
-| `RKO_TRANSLATE_MODEL` | optional `provider/id` override; default `openrouter/google/gemini-3.5-flash-lite` |
-| `RKO_TRANSLATE_THINKING` | optional thinking level; default `off` |
-| `RKO_BASH_TRANSLATOR` | `1` (default) enable, `0` disable |
+| constant | meaning |
+|----------|---------|
+| `CONFIG.enabled` | master switch for bash translation |
+| `CONFIG.model` | model (default `openrouter/google/gemini-3.5-flash-lite`) |
+| `CONFIG.thinking` | thinking level; default `low` |
+| `CONFIG.debug` | write `/tmp/rko-llm.log` diagnostics |
 
-Thinking levels (`reasoning` option): `off`, `minimal`, `low`, `medium`,
-`high`, `xhigh`, `max`. Higher = better labels, slower/more tokens; `off` =
-fastest/cheapest.
+Thinking levels: `off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`.
+Note `gemini-3.5-flash-lite` (openrouter) **requires** reasoning — `off` is
+forced to `low`. Also note `ModelRegistry.complete` needs `reasoningEffort` (not
+just `reasoning`) because it goes through `provider.stream`.
 
 ## Cost-saving cache
 
@@ -98,6 +103,97 @@ command is already shown, so a miss costs nothing).
 - `llm.ts` — Pi-native one-shot completion bridge (reuses provider/auth)
 - `translate.ts` — background bash translator + in-flight dedupe
 - `cache.ts` — persistent SQLite cache (`node:sqlite`, ~/.cache)
+- `config.ts` — personal settings as top-level constants (KISS)
+- `debug-log.ts` — /tmp diagnostics, gated by `CONFIG.debug`
 
 > Note: translation is live-only. `state` lives in memory on the tool component;
 a restored/reloaded session shows raw commands again.
+
+## Gotchas / traps (read before changing this extension)
+
+Hard-won lessons from building `llm.ts`/`translate.ts`. Future sessions: read
+this first so you don't repeat the week of debugging.
+
+### 1. `ctx.getModel()` does NOT exist on this pi's ExtensionContext
+
+`typeof ctx.getModel === "undefined"` on `session_start`/`before_agent_start`.
+Do **not** try to capture the active model that way — it silently never sets,
+and every translation returns `""`. Use `ctx.modelRegistry.find(provider, id)`
+(which is present and works) with a fallback to `registry.getAll()?.[0]`.
+
+### 2. `Model.api` is the transport *id string*, not a stream object
+
+On this build, `model.api` is e.g. `"openai-completions"`. Calling
+`model.api.streamSimple(...)` throws (string has no method) → caught → `""` with
+**no HTTP request ever sent**. The correct path is
+`registry.complete(model, ctx, opts)` on the captured `ModelRegistry`.
+
+### 3. `ModelRegistry.complete` needs `reasoningEffort`, not just `reasoning`
+
+`complete` → `provider.stream(...)`, and request building reads
+**`options.reasoningEffort`**. Only the `streamSimple` path maps
+`reasoning` → `reasoningEffort`. Passing only `reasoning:"low"` silently drops it,
+and openrouter ends up sending `effort:"none"` → 400. Pass **both** `reasoning`
+and `reasoningEffort`.
+
+### 4. gemini-3.5-flash-lite (openrouter) REQUIRES reasoning
+
+`reasoning:"off"` → HTTP 400 `{"message":"Reasoning is mandatory for this
+endpoint and cannot be disabled."}` — the completion returns instantly
+(`stopReason:"error"`, `contentLen:0`) and the DB fills with `""`. `config.ts`
+forces `off` → `low`.
+
+### 5. Live tool args stream in — first render has empty `command`
+
+`renderCall` fires once with `args.command === ""` before the real command
+arrives. If you set your "already translated" guard on that first render, the
+real command never translates (**empty-command lockout** — the #1 bug). Only
+mark done / fire when `command.trim().length >= 4`.
+
+### 6. `ModelRegistry.complete` requires a pi build newer than 0.83.0
+
+It was added to main on **2026-07-31**, a day after the 0.83.0 tag
+(2026-07-30). The live `~/pi` binary is built from `~/src/pi` via `./make.sh`
+stages `binary` + `install` (installs to `~/pi`, deps embedded in the Bun
+binary). If the installed binary predates that commit, `complete` is missing
+and `resolveModel` can't run. Verify the build is current, or the runtime API
+silently diverges from the `~/src/pi` dev checkout (which is always 296+ commits
+ahead of any tag).
+
+### 7. Commands that run before `session_start` have no captured registry
+
+At module-load time (and on the resumed-transcript re-render flood),
+`registry` is still `undefined`, so every such call fails and gets cached as
+`""`. Those poison the cache. If you bump the request/key scheme, bump
+`CACHE_VERSION` in `translate.ts` (or delete `~/.cache/pi-rko-compact-tool-display.sqlite`)
+or you'll keep returning the stale `""`.
+
+### 8. Beware writing weird disk state: `:/ > file` truncates to 0 bytes
+
+If a log file ever shows the literal text of an earlier `cat`/heredoc instead
+of fresh lines, your shell command truncated a file it didn't create (`:` is a
+no-op, so `: > file` empties it). Recreate/clear explicitly.
+
+### 9. `~/.pi` is symlinked into the git repo
+
+`~/.pi` realpaths to `~/subvox/home/.pi`. Editing `~/.pi/agent/extensions/…`
+edits the tracked repo — don't be surprised when `git status` in `~/subvox`
+shows your extension changes.
+
+### 10. Translation fires on EVERY bash call in the session
+
+Because the extension overrides the `bash` tool, any bash invocation — including
+the agent's own tool calls — goes through `translateCommand` and lands in the
+cache/DB. That's expected; just don't read a populated DB as proof of a bug.
+
+### Debug loop that actually worked
+
+When a translation silently fails (`""` everywhere), the fastest path is:
+1. Turn `CONFIG.debug` back on, `/reload`, run one simple bash command.
+2. Read `/tmp/rko-llm.log`; look for `resolveModel:` (model found?), then
+   `oneShot: calling registry.complete … THINKING=…`, then the `complete
+   resolved … stopReason=… errorMessage=… contentTypes=…` line.
+   - `stopReason="error"` + `contentLen=0` = the request was rejected (read
+     `errorMessage`).
+   - no `find`/`complete` lines = the capture or the empty-command guard is the
+     problem. Reset `CONFIG.debug` to `false` when done.

@@ -165,7 +165,10 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   if (st.translation) {
     return callLine(theme, "$", theme.fg("accent", st.translation) + timeout);
   }
-  if (!st.translationDone) {
+  // Only fire once the REAL command is available. Live bash calls stream args
+  // in, so the first render can carry an empty `command`; marking done on that
+  // empty render would lock out translation forever.
+  if (!st.translationDone && cmd.trim().length >= 4) {
     st.translationDone = true;
     const invalidate = context?.invalidate;
     translateCommand(cmd)
