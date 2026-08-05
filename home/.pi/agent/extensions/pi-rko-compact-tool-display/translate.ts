@@ -18,7 +18,7 @@ import { cacheGet, cacheSet } from "./cache.js";
 import { CONFIG } from "./config.js";
 import { log } from "./debug-log.js";
 
-const MAX_LABEL = 48;
+const MAX_LABEL = 79;
 const TIMEOUT_MS = 4000;
 
 // Bump when the completion request or key scheme changes so stale cached
