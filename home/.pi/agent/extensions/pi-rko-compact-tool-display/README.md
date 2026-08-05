@@ -94,7 +94,7 @@ in SQLite at `~/.cache/pi-rko-compact-tool-display.sqlite3` (see `cache.ts`, use
 Failed translations are stored as `""` so they're not retried. Delete the file
 to clear it.
 
-Drains: 4s hard timeout, deduped per command, silent no-op on failure (the raw
+Drains: 8s hard timeout, deduped per command, silent no-op on failure (the raw
 command is already shown, so a miss costs nothing).
 
 ## Files
