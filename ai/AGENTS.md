@@ -86,6 +86,17 @@ Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level p
 - Use available question tool: `ask_user_question` (Pi extension) or `request_user_input` (Codex).
 - `? me` => ask clarifying questions about recent messages with available question tool.
 
+## File Search (fff)
+
+Prefer fff-backed search over shell `find`, `grep`, or `rg` whenever available.
+
+- **Claude Code and Codex:** use the user-scoped `fff` MCP server and its `ffgrep` and `fffind` tools.
+- **Pi:** use the directly exposed `ffgrep` and `fffind` tools; Pi does not access them through MCP.
+- Use `ffgrep` for file contents. Prefer bare identifiers, then narrow with `path`, `exclude`, or exact case only when needed.
+- Use `fffind` for paths and globs. It matches the whole repository-relative path; use a path glob for exact filenames.
+- After one or two searches, read the strongest match instead of continuing broad searches.
+- Fall back to shell search only when fff tools are unavailable or cannot express the required operation.
+
 ## Project Defaults
 
 - Bug: regression test when fitting.
@@ -95,7 +106,6 @@ Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level p
 - Docs: read repo docs before code. User-visible behavior change: update docs/changelog.
 - Inline comment: brief; only tricky, bug-prone, or formerly buggy logic.
 - New dependency: quick health check—recent release, commits, adoption.
-- Prefer the fff MCP or ffgrep + fffind tools for all file search operations instead of default tools like rg and grep when available.
 
 ## PR / CI
 
