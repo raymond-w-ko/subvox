@@ -106,8 +106,27 @@ function getBuiltIns(cwd: string) {
 // One-line renderers
 // ============================================================================
 
+/**
+ * Tasteful per-tool name colors (all real pi theme keys). Content stays
+ * accent/dim so the NAME carries the per-tool hue and reads at a glance.
+ */
+const NAME_COLOR: Record<string, string> = {
+  read: "toolTitle",
+  grep: "accent",
+  find: "accent",
+  ls: "accent",
+  edit: "warning",
+  write: "success",
+  bash: "bashMode",
+  "$": "bashMode",
+};
+
 const callLine = (theme: any, name: string, rest: string): Text =>
-  new Text(`${theme.fg("toolTitle", theme.bold(name))} ${rest}`, 0, 0);
+  new Text(
+    `${theme.fg(NAME_COLOR[name] ?? "toolTitle", theme.bold(name))} ${rest}`,
+    0,
+    0,
+  );
 
 /** Collapsed renderResult → nothing (keeps tool block to a single line). */
 const collapsedNone = (theme: any): Text => new Text("", 0, 0);
@@ -138,7 +157,8 @@ function renderReadResult(result: any, { expanded, isPartial }: any, theme: any)
 
 // --- grep / find / ls ---
 function renderSearchCall(theme: any, name: string, pattern: string, scope: string, extra = ""): Text {
-  let rest = theme.fg("accent", pattern) + theme.fg("dim", ` in ${scope}`);
+  // Pattern neutral so the colored name (accent) doesn't collide with it.
+  let rest = theme.fg("text", pattern) + theme.fg("dim", ` in ${scope}`);
   if (extra) rest += theme.fg("dim", extra);
   return callLine(theme, name, rest);
 }
@@ -163,7 +183,7 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   // human label once a cheap background LLM call returns.
   const st = context?.state ?? {};
   if (st.translation) {
-    return callLine(theme, "$", theme.fg("accent", st.translation) + timeout);
+    return callLine(theme, "$", theme.fg("success", st.translation) + timeout);
   }
   // Only fire once the REAL command is available. Live bash calls stream args
   // in, so the first render can carry an empty `command`; marking done on that
@@ -221,11 +241,7 @@ function renderEditResult(result: any, { expanded, isPartial }: any, theme: any)
   const details = result.details as EditToolDetails | undefined;
   if (!expanded) {
     if (!details?.diff) return collapsedNone(theme);
-    return new Text(
-      theme.fg("success", "applied") + theme.fg("dim", " (ctrl+o for diff)"),
-      0,
-      0,
-    );
+    return new Text(theme.fg("success", "applied"), 0, 0);
   }
   if (details?.diff) {
     const lines = details.diff.split("\n").map((l) => {
