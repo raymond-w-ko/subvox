@@ -121,12 +121,56 @@ const NAME_COLOR: Record<string, string> = {
   "$": "bashMode",
 };
 
-const callLine = (theme: any, name: string, rest: string): Text =>
+const callLine = (theme: any, name: string, rest: string, bg?: (l: string) => string): Text =>
   new Text(
     `${theme.fg(NAME_COLOR[name] ?? "toolTitle", theme.bold(name))} ${rest}`,
     0,
     0,
+    bg,
   );
+
+// --- status-colored background (replicates the original tool box) -----------
+// The original paints the whole tool block with a background that flips
+// pending -> success/error. pi only auto-fills a full row when the Text has a
+// customBgFn (4th arg), so each call line carries one. Status is cached in
+// module scope (per tool name) and the result renderer nudges one guarded
+// invalidate so the just-computed color lands on the call line — same pattern
+// that folds the edit status onto its line, generalized to every tool.
+type ToolStatus = "pending" | "ok" | "err";
+const toolStatus: Record<string, ToolStatus | undefined> = {};
+
+function statusBg(theme: any, name: string): ((l: string) => string) | undefined {
+  const s = toolStatus[name] ?? "pending";
+  const key = s === "pending" ? "toolPendingBg" : s === "ok" ? "toolSuccessBg" : "toolErrorBg";
+  return (l: string) => theme.bg(key, l);
+}
+
+function setToolStatus(name: string, status: ToolStatus | undefined, ctx: any): void {
+  if (toolStatus[name] !== status) {
+    toolStatus[name] = status;
+    try {
+      ctx?.invalidate?.();
+    } catch {
+      /* component may be gone */
+    }
+  }
+}
+
+function resultIsError(name: string, content: string, details: any): boolean {
+  if (name === "bash") {
+    const ec = details?.exitCode;
+    if (typeof ec === "number" && ec !== 0) return true;
+  }
+  if (name === "edit" || name === "write") {
+    return (content || "").startsWith("Error");
+  }
+  const first = (content || "").split("\n")[0].trim();
+  return (
+    first.length > 0 &&
+    first.length < 200 &&
+    /^(error|could not|cannot|no such|permission denied|command not found|failed|eof)/i.test(first)
+  );
+}
 
 /** Collapsed renderResult → nothing (keeps tool block to a single line). */
 const collapsedNone = (theme: any): Text => new Text("", 0, 0);
@@ -142,12 +186,13 @@ function renderReadCall(args: any, theme: any): Text {
   }
   const pathColored = theme.fg("accent", path || "...");
   const suffixColored = suffix ? theme.fg("warning", suffix) : "";
-  return callLine(theme, "read", pathColored + suffixColored);
+  return callLine(theme, "read", pathColored + suffixColored, statusBg(theme, "read"));
 }
 
-function renderReadResult(result: any, { expanded, isPartial }: any, theme: any): Text {
+function renderReadResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "reading");
   const details = result.details as ReadToolDetails | undefined;
+  setToolStatus("read", resultIsError("read", getText(result), undefined) ? "err" : "ok", ctx);
   if (details?.truncation?.truncated) {
     return new Text(theme.fg("warning", `(truncated from ${details.truncation.totalLines} lines)`), 0, 0);
   }
@@ -160,7 +205,7 @@ function renderSearchCall(theme: any, name: string, pattern: string, scope: stri
   // Pattern neutral so the colored name (accent) doesn't collide with it.
   let rest = theme.fg("text", pattern) + theme.fg("dim", ` in ${scope}`);
   if (extra) rest += theme.fg("dim", extra);
-  return callLine(theme, name, rest);
+  return callLine(theme, name, rest, statusBg(theme, name));
 }
 
 function getScope(args: any): string {
@@ -168,8 +213,9 @@ function getScope(args: any): string {
   return p || ".";
 }
 
-function renderSearchResult(result: any, { expanded, isPartial }: any, theme: any, label: string): Text {
+function renderSearchResult(result: any, { expanded, isPartial }: any, theme: any, label: string, ctx?: any): Text {
   if (isPartial) return running(theme, label);
+  setToolStatus(label, resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
   if (!expanded) return collapsedNone(theme);
   return fullOutput(result, theme);
 }
@@ -183,7 +229,7 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   // human label once a cheap background LLM call returns.
   const st = context?.state ?? {};
   if (st.translation) {
-    return callLine(theme, "$", theme.fg("success", st.translation) + timeout);
+    return callLine(theme, "$", theme.fg("success", st.translation) + timeout, statusBg(theme, "bash"));
   }
   // Retroactive translation: show raw now, swap in a short human label once a
   // cheap background LLM call returns. Commands stream in over several renders,
@@ -215,13 +261,14 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   }
 
   const shown = cmd.length > 100 ? `${cmd.slice(0, 97)}…` : cmd;
-  return callLine(theme, "$", theme.fg("accent", shown) + timeout);
+  return callLine(theme, "$", theme.fg("accent", shown) + timeout, statusBg(theme, "bash"));
 }
 
-function renderBashResult(result: any, { expanded, isPartial }: any, theme: any): Text {
+function renderBashResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "$");
   const output = getText(result);
   const details = result.details as BashToolDetails | undefined;
+  setToolStatus("bash", resultIsError("bash", output, details) ? "err" : "ok", ctx);
   // Surface errors even when collapsed.
   if (!expanded) {
     const firstLine = output.split("\n")[0];
@@ -234,24 +281,13 @@ function renderBashResult(result: any, { expanded, isPartial }: any, theme: any)
 }
 
 // --- edit ---
-// pi renders the call and result as separate vertical rows, so a standalone
-// result line costs a second row. To compact, fold the success/error status
-// onto the CALL line: the result renderer caches the status in module scope
-// and nudges one extra render (guarded so it can't loop) for the call line to
-// pick it up. Reset to null when a new edit starts so a stale status never
-// leaks across calls.
-let editStatus: { kind: "ok" | "err" } | null = null;
-
 function renderEditCall(args: any, theme: any): Text {
   const path = shortenPath(args.path);
   const n = Array.isArray(args.edits) ? args.edits.length : args.oldText ? 1 : 0;
   const count = theme.fg("dim", ` (${n} edit${n === 1 ? "" : "s"})`);
-  const status = editStatus
-    ? editStatus.kind === "ok"
-      ? theme.fg("success", " applied")
-      : theme.fg("error", " failed")
-    : "";
-  return callLine(theme, "edit", theme.fg("accent", path || "...") + count + status);
+  const s = toolStatus["edit"] ?? "pending";
+  const word = s === "ok" ? theme.fg("success", " applied") : s === "err" ? theme.fg("error", " failed") : "";
+  return callLine(theme, "edit", theme.fg("accent", path || "...") + count + word, statusBg(theme, "edit"));
 }
 
 function renderEditResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
@@ -262,15 +298,7 @@ function renderEditResult(result: any, { expanded, isPartial }: any, theme: any,
 
   // Fold status into the call line (handled regardless of expanded state; the
   // expanded view shows diff/content as its own block below).
-  const kind: "ok" | "err" | null = isError ? "err" : details?.diff ? "ok" : null;
-  if (kind !== (editStatus?.kind ?? null)) {
-    editStatus = kind ? { kind } : null;
-    try {
-      ctx?.invalidate?.();
-    } catch {
-      /* component may be gone */
-    }
-  }
+  setToolStatus("edit", isError ? "err" : details?.diff ? "ok" : null, ctx);
 
   if (!expanded) return collapsedNone(theme);
   if (details?.diff) {
@@ -290,12 +318,13 @@ function renderWriteCall(args: any, theme: any): Text {
   const path = shortenPath(args.path);
   const lines = (args.content || "").split("\n").length;
   const count = theme.fg("dim", ` (${lines} lines)`);
-  return callLine(theme, "write", theme.fg("accent", path || "...") + count);
+  return callLine(theme, "write", theme.fg("accent", path || "...") + count, statusBg(theme, "write"));
 }
 
-function renderWriteResult(result: any, { expanded, isPartial }: any, theme: any): Text {
+function renderWriteResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "writing");
   const content = getText(result);
+  setToolStatus("write", resultIsError("write", content, undefined) ? "err" : "ok", ctx);
   if ((content || "").startsWith("Error")) {
     return new Text(theme.fg("error", content.split("\n")[0]), 0, 0);
   }
@@ -317,7 +346,6 @@ function registerBuiltin(
   pi: ExtensionAPI,
   name: "read" | "grep" | "find" | "ls" | "bash" | "edit" | "write",
   renderers: RendererSet,
-  onExecuteStart?: (params: any) => void,
 ): void {
   const details = getBuiltIns(process.cwd())[name];
   pi.registerTool({
@@ -330,7 +358,9 @@ function registerBuiltin(
     // plain container — no colored vertical padding rows, just a blank spacer.
     renderShell: renderers.renderShell ?? "self",
     async execute(toolCallId, params, signal, onUpdate, ctx) {
-      onExecuteStart?.(params);
+      // Mark this tool as running so its call line shows the pending bg; the
+      // result renderer flips it to success/error when execution finishes.
+      toolStatus[name] = "pending";
       return getBuiltIns(ctx.cwd)[name].execute(toolCallId, params as any, signal, onUpdate);
     },
     renderCall: renderers.renderCall as any,
@@ -356,9 +386,10 @@ function decorateGenericTool(pi: ExtensionAPI, tool: any, name: string): void {
 
     const label = typeof t.label === "string" ? t.label : n;
     t.renderCall = (args: any, theme: any) =>
-      callLine(theme, label, theme.fg("accent", summarizeArgs(args)));
-    t.renderResult = (result: any, { expanded, isPartial }: any, theme: any) => {
+      callLine(theme, label, theme.fg("accent", summarizeArgs(args)), statusBg(theme, label));
+    t.renderResult = (result: any, { expanded, isPartial }: any, theme: any, ctx?: any) => {
       if (isPartial) return running(theme, label);
+      setToolStatus(label, resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
       if (!expanded) return collapsedNone(theme);
       return fullOutput(result, theme);
     };
@@ -408,20 +439,18 @@ export default function (pi: ExtensionAPI): void {
   registerBuiltin(pi, "read", { renderCall: renderReadCall, renderResult: renderReadResult });
   registerBuiltin(pi, "grep", {
     renderCall: (a, t) => renderSearchCall(t, "grep", `/${a.pattern}/`, getScope(a)),
-    renderResult: (r, o, t) => renderSearchResult(r, o, t, "grep"),
+    renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "grep", c),
   });
   registerBuiltin(pi, "find", {
     renderCall: (a, t) => renderSearchCall(t, "find", a.pattern, getScope(a), a.limit !== undefined ? ` (limit ${a.limit})` : ""),
-    renderResult: (r, o, t) => renderSearchResult(r, o, t, "find"),
+    renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "find", c),
   });
   registerBuiltin(pi, "ls", {
     renderCall: (a, t) => renderSearchCall(t, "ls", getScope(a), "", a.limit !== undefined ? ` (limit ${a.limit})` : ""),
-    renderResult: (r, o, t) => renderSearchResult(r, o, t, "ls"),
+    renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "ls", c),
   });
   registerBuiltin(pi, "bash", { renderCall: renderBashCall, renderResult: renderBashResult });
-  registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult }, () => {
-    editStatus = null;
-  });
+  registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
   registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
 
   // Generic/MCP tools → one line too.
