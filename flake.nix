@@ -72,9 +72,13 @@
             prev.pythonPackagesExtensions
             ++ prev.lib.optionals prev.stdenv.hostPlatform.isDarwin [
               (python-final: python-prev: {
-                afdko = python-prev.afdko.overridePythonAttrs {
+                afdko = python-prev.afdko.overridePythonAttrs (old: {
                   doCheck = false;
-                };
+                  # pythonPackages.cmake's wrapper fails scikit-build-core's lipo probe on Darwin.
+                  env = (old.env or { }) // {
+                    CMAKE_EXECUTABLE = "${final.cmake}/bin/cmake";
+                  };
+                });
 
                 # Upstream race: https://github.com/ipython/ipython/issues/12164
                 ipython = python-prev.ipython.overridePythonAttrs (old: {
