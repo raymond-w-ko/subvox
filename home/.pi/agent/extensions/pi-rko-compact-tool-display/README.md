@@ -6,8 +6,8 @@ Codex-GUI-style compact tool rendering for Pi.
 
 Live TUI:
 
-- Every tool call renders as **ONE line** — the invocation (`read ~/x.ts:5-14`,
-  `$ git status (30s)`, `edit /tmp/a.ts (2 edits)`, `write /tmp/b.ts (N lines)`, ...).
+- Every supported tool call renders as **ONE line** — the invocation (`read ~/x.ts:5-14`,
+  `$ git status (30s)`, `edit /tmp/a.ts (2 edits)`, `ffgrep /symbol/ in src/`, `todo update #3`, ...).
 - Collapsed tool **results render nothing** extra, so each tool block stays a
   single line (errors still surface collapsed).
 - Press `ctrl+o` (`app.tools.expand`) to reveal a tool's full output inline.
@@ -27,8 +27,9 @@ Re-registers the built-in tools (`read`, `grep`, `find`, `ls`, `bash`, `edit`,
 the originals (`createReadTool(cwd)` etc., cached per-cwd) so behavior is
 unchanged, and supplies custom `renderCall` / `renderResult`.
 
-MCP / 3rd-party tools get a one-line renderer by wrapping `pi.registerTool` and
-decorating `pi.getAllTools()`.
+The external `todo`, `ffgrep`, and `fffind` tools receive renderer-only overrides
+through `pi.registerToolRenderer`, preserving their original schemas, state, and
+execution while replacing only TUI rendering.
 
 No `npm install` needed — Pi's jiti loader provides `@earendil-works/pi-*` as
 virtual modules.
@@ -65,9 +66,9 @@ HTTP, no env API keys. It captures the session's `ModelRegistry` (from
 agent uses — reusing the configured provider, stored credentials, base URL,
 headers, and provider hooks. No `pi-ai/compat` usage.
 
-> Requires a pi built from `~/src/pi` main (or a release newer than 0.83.0):
-> `ModelRegistry.complete` was added on main 2026-07-31, after the 0.83.0 tag
-> (2026-07-30).
+> Requires a current pi built from `~/src/pi` main. The extension uses both
+> `ModelRegistry.complete` (added after 0.83.0) and `pi.registerToolRenderer` for
+> external-tool rendering.
 
 All settings are top-level constants in **`config.ts`** (no env vars). Edit
 there:

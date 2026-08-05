@@ -19,8 +19,8 @@
  *
  * Mechanism: re-register built-in tools with the same name (delegating
  * execute() to the originals via create*Tool(cwd)), supplying custom
- * renderCall/renderResult. MCP/3rd-party tools are decorated by wrapping
- * pi.registerTool.
+ * renderCall/renderResult. Selected third-party tools use Pi's renderer-only
+ * override API so their original execution stays intact.
  */
 
 import type {
@@ -119,6 +119,9 @@ const NAME_COLOR: Record<string, string> = {
   write: "success",
   bash: "bashMode",
   "$": "bashMode",
+  todo: "warning",
+  ffgrep: "accent",
+  fffind: "accent",
 };
 
 const callLine = (theme: any, name: string, rest: string, bg?: (l: string) => string): Text =>
@@ -154,6 +157,13 @@ function setToolStatus(name: string, status: ToolStatus | undefined, ctx: any): 
       /* component may be gone */
     }
   }
+}
+
+function beginRenderedCall(name: string, ctx: any): void {
+  const state = ctx?.state;
+  if (!state || state.compactToolInitialized) return;
+  state.compactToolInitialized = true;
+  toolStatus[name] = "pending";
 }
 
 function resultIsError(name: string, content: string, details: any): boolean {
@@ -220,9 +230,62 @@ function getScope(args: any): string {
 
 function renderSearchResult(result: any, { expanded, isPartial }: any, theme: any, label: string, ctx?: any): Text {
   if (isPartial) return running(theme, label);
-  setToolStatus(label, resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
+  setToolStatus(label, ctx?.isError || resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
   if (!expanded) return collapsedNone(theme);
   return fullOutput(result, theme);
+}
+
+// --- external tools ---
+function renderTodoCall(args: any, theme: any, context?: any): Text {
+  beginRenderedCall("todo", context);
+  const action = String(args.action || "...");
+  let detail = "";
+  if (args.id !== undefined) detail += ` #${args.id}`;
+  if (typeof args.subject === "string" && args.subject) detail += ` ${args.subject}`;
+  if (typeof args.status === "string" && args.status) detail += ` ${args.status}`;
+  return callLine(
+    theme,
+    "todo",
+    theme.fg("accent", action) + theme.fg("dim", detail),
+    statusBg(theme, "todo"),
+  );
+}
+
+function renderTodoResult(result: any, { expanded, isPartial }: any, theme: any, context?: any): Text {
+  if (isPartial) return running(theme, "todo");
+  const content = getText(result);
+  const isError = Boolean(context?.isError || result.details?.error || resultIsError("todo", content, result.details));
+  setToolStatus("todo", isError ? "err" : "ok", context);
+  if (!expanded) return collapsedNone(theme);
+  return fullOutput(result, theme);
+}
+
+function registerExternalRenderers(pi: ExtensionAPI): void {
+  pi.registerToolRenderer("todo", {
+    renderShell: "self",
+    renderCall: renderTodoCall,
+    renderResult: renderTodoResult,
+  });
+  pi.registerToolRenderer("ffgrep", {
+    renderShell: "self",
+    renderCall: (args: any, theme: any, context?: any) => {
+      beginRenderedCall("ffgrep", context);
+      const extra = args.limit !== undefined ? ` (limit ${args.limit})` : args.cursor ? " (page)" : "";
+      return renderSearchCall(theme, "ffgrep", `/${args.pattern || ""}/`, getScope(args), extra);
+    },
+    renderResult: (result: any, options: any, theme: any, context?: any) =>
+      renderSearchResult(result, options, theme, "ffgrep", context),
+  });
+  pi.registerToolRenderer("fffind", {
+    renderShell: "self",
+    renderCall: (args: any, theme: any, context?: any) => {
+      beginRenderedCall("fffind", context);
+      const extra = args.limit !== undefined ? ` (limit ${args.limit})` : args.cursor ? " (page)" : "";
+      return renderSearchCall(theme, "fffind", args.pattern || "", getScope(args), extra);
+    },
+    renderResult: (result: any, options: any, theme: any, context?: any) =>
+      renderSearchResult(result, options, theme, "fffind", context),
+  });
 }
 
 // --- bash ---
@@ -387,66 +450,6 @@ function registerBuiltin(
   } as unknown as ToolDefinition);
 }
 
-/**
- * Decorates a non-built-in tool (MCP, custom) with a one-line renderer.
- * Mutates the already-registered tool object so the live TUI picks it up.
- */
-function decorateGenericTool(pi: ExtensionAPI, tool: any, name: string): void {
-  const wrappedNames = new Set<string>();
-
-  const apply = (t: any): void => {
-    if (!t || typeof t !== "object") return;
-    const n = typeof t.name === "string" ? t.name : undefined;
-    if (!n || wrappedNames.has(n)) return;
-    // Never clobber our own built-in overrides.
-    const own = ["read", "grep", "find", "ls", "bash", "edit", "write"];
-    if (own.includes(n)) return;
-    if (typeof t.renderCall === "function" && typeof t.renderResult === "function") return;
-
-    const label = typeof t.label === "string" ? t.label : n;
-    t.renderCall = (args: any, theme: any) =>
-      callLine(theme, label, theme.fg("accent", summarizeArgs(args)), statusBg(theme, label));
-    t.renderResult = (result: any, { expanded, isPartial }: any, theme: any, ctx?: any) => {
-      if (isPartial) return running(theme, label);
-      setToolStatus(label, resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
-      if (!expanded) return collapsedNone(theme);
-      return fullOutput(result, theme);
-    };
-    wrappedNames.add(n);
-  };
-
-  // Intercept future registrations.
-  const original = pi.registerTool.bind(pi);
-  (pi as any).registerTool = (def: any) => {
-    original(def);
-    try {
-      apply(def);
-    } catch {
-      /* ignore */
-    }
-  };
-
-  // Decorate tools already registered.
-  try {
-    const all = pi.getAllTools() as any[];
-    if (Array.isArray(all)) for (const t of all) apply(t);
-  } catch {
-    /* ignore */
-  }
-
-  if (tool && typeof tool === "object") apply(tool);
-}
-
-function summarizeArgs(args: any): string {
-  if (!args || typeof args !== "object") return "";
-  const keys = Object.keys(args);
-  if (keys.length === 0) return "";
-  const first = keys[0];
-  const v = args[first];
-  const val = typeof v === "string" ? v : JSON.stringify(v);
-  return `${first}=${val}`.slice(0, 100);
-}
-
 // ============================================================================
 // Entry
 // ============================================================================
@@ -471,7 +474,5 @@ export default function (pi: ExtensionAPI): void {
   registerBuiltin(pi, "bash", { renderCall: renderBashCall, renderResult: renderBashResult });
   registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
   registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
-
-  // Generic/MCP tools → one line too.
-  decorateGenericTool(pi, undefined, "generic");
+  registerExternalRenderers(pi);
 }
