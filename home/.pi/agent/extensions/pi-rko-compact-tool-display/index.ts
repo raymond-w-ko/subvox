@@ -230,6 +230,12 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   const cmd = String(args.command || "");
   const timeout = args.timeout ? theme.fg("dim", ` (${args.timeout}s)`) : "";
 
+  // Expanded: show the original command again (instead of the translated
+  // label), unwrapped so the full command is visible under ctrl+o.
+  if (context?.expanded) {
+    return callLine(theme, "$", theme.fg("accent", cmd) + timeout, statusBg(theme, "bash"));
+  }
+
   // Retroactive translation: show the raw command now, swap in a short
   // human label once a cheap background LLM call returns.
   const st = context?.state ?? {};
