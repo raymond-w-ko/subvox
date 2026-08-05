@@ -158,8 +158,13 @@ function setToolStatus(name: string, status: ToolStatus | undefined, ctx: any): 
 
 function resultIsError(name: string, content: string, details: any): boolean {
   if (name === "bash") {
-    const ec = details?.exitCode;
-    if (typeof ec === "number" && ec !== 0) return true;
+    // Real failures end with a status line (or an explicit Error) — never by
+    // word-matching arbitrary output (a successful grep containing "isError"
+    // must not be treated as a failed command).
+    return (
+      /Command exited with code [1-9]\d*|Command timed out|Command aborted/.test(content || "") ||
+      /^Error:/m.test(content || "")
+    );
   }
   if (name === "edit" || name === "write") {
     return (content || "").startsWith("Error");
@@ -269,11 +274,19 @@ function renderBashResult(result: any, { expanded, isPartial }: any, theme: any,
   const output = getText(result);
   const details = result.details as BashToolDetails | undefined;
   setToolStatus("bash", resultIsError("bash", output, details) ? "err" : "ok", ctx);
-  // Surface errors even when collapsed.
+  // Surface real failures when collapsed. Judge only by the trailing status
+  // line the tool appends on error — never by word-matching arbitrary output
+  // (a successful grep whose results contain "isError" must stay success).
   if (!expanded) {
-    const firstLine = output.split("\n")[0];
-    if (/error|command not found|no such file|exit code: [1-9]/i.test(firstLine || "")) {
-      return new Text(theme.fg("error", firstLine?.slice(0, 200) || "failed"), 0, 0);
+    if (resultIsError("bash", output, details)) {
+      let msg = "failed";
+      if (/Command timed out/.test(output)) msg = "timed out";
+      else if (/Command aborted/.test(output)) msg = "aborted";
+      else {
+        const m = output.match(/Command exited with code (\d+)/);
+        if (m) msg = `exit ${m[1]}`;
+      }
+      return new Text(theme.fg("error", msg), 0, 0, (l) => theme.bg("toolErrorBg", l));
     }
     return collapsedNone(theme);
   }
