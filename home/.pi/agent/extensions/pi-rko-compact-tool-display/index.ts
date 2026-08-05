@@ -234,24 +234,45 @@ function renderBashResult(result: any, { expanded, isPartial }: any, theme: any)
 }
 
 // --- edit ---
+// pi renders the call and result as separate vertical rows, so a standalone
+// result line costs a second row. To compact, fold the success/error status
+// onto the CALL line: the result renderer caches the status in module scope
+// and nudges one extra render (guarded so it can't loop) for the call line to
+// pick it up. Reset to null when a new edit starts so a stale status never
+// leaks across calls.
+let editStatus: { kind: "ok" | "err" } | null = null;
+
 function renderEditCall(args: any, theme: any): Text {
   const path = shortenPath(args.path);
   const n = Array.isArray(args.edits) ? args.edits.length : args.oldText ? 1 : 0;
   const count = theme.fg("dim", ` (${n} edit${n === 1 ? "" : "s"})`);
-  return callLine(theme, "edit", theme.fg("accent", path || "...") + count);
+  const status = editStatus
+    ? editStatus.kind === "ok"
+      ? theme.fg("success", " applied")
+      : theme.fg("error", " failed")
+    : "";
+  return callLine(theme, "edit", theme.fg("accent", path || "...") + count + status);
 }
 
-function renderEditResult(result: any, { expanded, isPartial }: any, theme: any): Text {
+function renderEditResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "editing");
   const content = getText(result);
-  if ((content || "").startsWith("Error")) {
-    return new Text(theme.fg("error", content.split("\n")[0]), 0, 0);
-  }
+  const isError = (content || "").startsWith("Error");
   const details = result.details as EditToolDetails | undefined;
-  if (!expanded) {
-    if (!details?.diff) return collapsedNone(theme);
-    return new Text(theme.fg("success", "applied"), 0, 0);
+
+  // Fold status into the call line (handled regardless of expanded state; the
+  // expanded view shows diff/content as its own block below).
+  const kind: "ok" | "err" | null = isError ? "err" : details?.diff ? "ok" : null;
+  if (kind !== (editStatus?.kind ?? null)) {
+    editStatus = kind ? { kind } : null;
+    try {
+      ctx?.invalidate?.();
+    } catch {
+      /* component may be gone */
+    }
   }
+
+  if (!expanded) return collapsedNone(theme);
   if (details?.diff) {
     const lines = details.diff.split("\n").map((l) => {
       if (l.startsWith("+") && !l.startsWith("+++")) return theme.fg("success", l);
@@ -296,6 +317,7 @@ function registerBuiltin(
   pi: ExtensionAPI,
   name: "read" | "grep" | "find" | "ls" | "bash" | "edit" | "write",
   renderers: RendererSet,
+  onExecuteStart?: (params: any) => void,
 ): void {
   const details = getBuiltIns(process.cwd())[name];
   pi.registerTool({
@@ -308,6 +330,7 @@ function registerBuiltin(
     // plain container — no colored vertical padding rows, just a blank spacer.
     renderShell: renderers.renderShell ?? "self",
     async execute(toolCallId, params, signal, onUpdate, ctx) {
+      onExecuteStart?.(params);
       return getBuiltIns(ctx.cwd)[name].execute(toolCallId, params as any, signal, onUpdate);
     },
     renderCall: renderers.renderCall as any,
@@ -396,7 +419,9 @@ export default function (pi: ExtensionAPI): void {
     renderResult: (r, o, t) => renderSearchResult(r, o, t, "ls"),
   });
   registerBuiltin(pi, "bash", { renderCall: renderBashCall, renderResult: renderBashResult });
-  registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
+  registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult }, () => {
+    editStatus = null;
+  });
   registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
 
   // Generic/MCP tools → one line too.
