@@ -185,24 +185,33 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   if (st.translation) {
     return callLine(theme, "$", theme.fg("success", st.translation) + timeout);
   }
-  // Only fire once the REAL command is available. Live bash calls stream args
-  // in, so the first render can carry an empty `command`; marking done on that
-  // empty render would lock out translation forever.
-  if (!st.translationDone && cmd.trim().length >= 4) {
-    st.translationDone = true;
-    const invalidate = context?.invalidate;
-    translateCommand(cmd)
-      .then((label) => {
-        if (label) {
-          st.translation = label;
-          try {
-            invalidate?.();
-          } catch {
-            /* component may be gone */
-          }
-        }
-      })
-      .catch(() => {});
+  // Retroactive translation: show raw now, swap in a short human label once a
+  // cheap background LLM call returns. Commands stream in over several renders,
+  // so debounce: fire only after the command stops changing (~250ms). Firing on
+  // an early partial (e.g. just `cd ~/s`) would lock translationDone and leave
+  // the full pipeline command untranslated forever.
+  const trimmed = cmd.trim();
+  if (!st.translationDone && trimmed.length >= 4) {
+    if (trimmed !== st.lastCmd) {
+      st.lastCmd = trimmed;
+      if (st.timer) clearTimeout(st.timer);
+      const invalidate = context?.invalidate;
+      st.timer = setTimeout(() => {
+        st.translationDone = true;
+        translateCommand(st.lastCmd)
+          .then((label) => {
+            if (label) {
+              st.translation = label;
+              try {
+                invalidate?.();
+              } catch {
+                /* component may be gone */
+              }
+            }
+          })
+          .catch(() => {});
+      }, 250);
+    }
   }
 
   const shown = cmd.length > 100 ? `${cmd.slice(0, 97)}…` : cmd;

@@ -22,8 +22,9 @@ const MAX_LABEL = 79;
 const TIMEOUT_MS = 4000;
 
 // Bump when the completion request or key scheme changes so stale cached
-// labels (including poisoned "" failures) are ignored and re-translated.
-const CACHE_VERSION = "1";
+// labels (including poisoned "" failures and partial-command entries from
+// the pre-debounce era) are ignored and re-translated.
+const CACHE_VERSION = "2";
 
 function cacheKey(command: string): string {
 	const thinking = CONFIG.thinking === "off" ? "low" : CONFIG.thinking;
