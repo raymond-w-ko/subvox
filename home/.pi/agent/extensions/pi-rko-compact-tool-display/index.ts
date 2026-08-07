@@ -135,35 +135,41 @@ const callLine = (theme: any, name: string, rest: string, bg?: (l: string) => st
 // --- status-colored background (replicates the original tool box) -----------
 // The original paints the whole tool block with a background that flips
 // pending -> success/error. pi only auto-fills a full row when the Text has a
-// customBgFn (4th arg), so each call line carries one. Status is cached in
-// module scope (per tool name) and the result renderer nudges one guarded
-// invalidate so the just-computed color lands on the call line — same pattern
-// that folds the edit status onto its line, generalized to every tool.
+// customBgFn (4th arg), so each call line carries one. Status must live in
+// context.state: it belongs to one tool row, not every row sharing a tool name.
 type ToolStatus = "pending" | "ok" | "err";
-const toolStatus: Record<string, ToolStatus | undefined> = {};
 
-function statusBg(theme: any, name: string): ((l: string) => string) | undefined {
-  const s = toolStatus[name] ?? "pending";
-  const key = s === "pending" ? "toolPendingBg" : s === "ok" ? "toolSuccessBg" : "toolErrorBg";
+function statusBg(theme: any, ctx: any): ((l: string) => string) | undefined {
+  const status: ToolStatus = ctx?.state?.compactToolStatus ?? "pending";
+  const key = status === "pending" ? "toolPendingBg" : status === "ok" ? "toolSuccessBg" : "toolErrorBg";
   return (l: string) => theme.bg(key, l);
 }
 
-function setToolStatus(name: string, status: ToolStatus | undefined, ctx: any): void {
-  if (toolStatus[name] !== status) {
-    toolStatus[name] = status;
+function setToolStatus(status: ToolStatus, ctx: any): void {
+  const state = ctx?.state;
+  if (!state || state.compactToolStatus === status) return;
+
+  state.compactToolStatus = status;
+  if (state.compactToolStatusInvalidationQueued) return;
+  state.compactToolStatusInvalidationQueued = true;
+
+  // renderResult runs after renderCall. Defer one row-local invalidation so the
+  // call line can pick up the final status without re-entering updateDisplay().
+  queueMicrotask(() => {
+    state.compactToolStatusInvalidationQueued = false;
     try {
       ctx?.invalidate?.();
     } catch {
       /* component may be gone */
     }
-  }
+  });
 }
 
-function beginRenderedCall(name: string, ctx: any): void {
+function beginRenderedCall(ctx: any): void {
   const state = ctx?.state;
   if (!state || state.compactToolInitialized) return;
   state.compactToolInitialized = true;
-  toolStatus[name] = "pending";
+  state.compactToolStatus = "pending";
 }
 
 function resultIsError(name: string, content: string, details: any): boolean {
@@ -191,7 +197,8 @@ function resultIsError(name: string, content: string, details: any): boolean {
 const collapsedNone = (theme: any): Text => new Text("", 0, 0);
 
 // --- read ---
-function renderReadCall(args: any, theme: any): Text {
+function renderReadCall(args: any, theme: any, ctx?: any): Text {
+  beginRenderedCall(ctx);
   const path = shortenPath(args.path);
   let suffix = "";
   if (args.offset !== undefined || args.limit !== undefined) {
@@ -201,13 +208,13 @@ function renderReadCall(args: any, theme: any): Text {
   }
   const pathColored = theme.fg("accent", path || "...");
   const suffixColored = suffix ? theme.fg("warning", suffix) : "";
-  return callLine(theme, "read", pathColored + suffixColored, statusBg(theme, "read"));
+  return callLine(theme, "read", pathColored + suffixColored, statusBg(theme, ctx));
 }
 
 function renderReadResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "reading");
   const details = result.details as ReadToolDetails | undefined;
-  setToolStatus("read", resultIsError("read", getText(result), undefined) ? "err" : "ok", ctx);
+  setToolStatus(resultIsError("read", getText(result), undefined) ? "err" : "ok", ctx);
   if (details?.truncation?.truncated) {
     return new Text(theme.fg("warning", `(truncated from ${details.truncation.totalLines} lines)`), 0, 0);
   }
@@ -216,11 +223,12 @@ function renderReadResult(result: any, { expanded, isPartial }: any, theme: any,
 }
 
 // --- grep / find / ls ---
-function renderSearchCall(theme: any, name: string, pattern: string, scope: string, extra = ""): Text {
+function renderSearchCall(theme: any, name: string, pattern: string, scope: string, extra = "", ctx?: any): Text {
+  beginRenderedCall(ctx);
   // Pattern neutral so the colored name (accent) doesn't collide with it.
   let rest = theme.fg("text", pattern) + theme.fg("dim", ` in ${scope}`);
   if (extra) rest += theme.fg("dim", extra);
-  return callLine(theme, name, rest, statusBg(theme, name));
+  return callLine(theme, name, rest, statusBg(theme, ctx));
 }
 
 function getScope(args: any): string {
@@ -230,14 +238,14 @@ function getScope(args: any): string {
 
 function renderSearchResult(result: any, { expanded, isPartial }: any, theme: any, label: string, ctx?: any): Text {
   if (isPartial) return running(theme, label);
-  setToolStatus(label, ctx?.isError || resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
+  setToolStatus(ctx?.isError || resultIsError(label, getText(result), result.details) ? "err" : "ok", ctx);
   if (!expanded) return collapsedNone(theme);
   return fullOutput(result, theme);
 }
 
 // --- external tools ---
 function renderTodoCall(args: any, theme: any, context?: any): Text {
-  beginRenderedCall("todo", context);
+  beginRenderedCall(context);
   const action = String(args.action || "...");
   let detail = "";
   if (args.id !== undefined) detail += ` #${args.id}`;
@@ -247,7 +255,7 @@ function renderTodoCall(args: any, theme: any, context?: any): Text {
     theme,
     "todo",
     theme.fg("accent", action) + theme.fg("dim", detail),
-    statusBg(theme, "todo"),
+    statusBg(theme, context),
   );
 }
 
@@ -255,7 +263,7 @@ function renderTodoResult(result: any, { expanded, isPartial }: any, theme: any,
   if (isPartial) return running(theme, "todo");
   const content = getText(result);
   const isError = Boolean(context?.isError || result.details?.error || resultIsError("todo", content, result.details));
-  setToolStatus("todo", isError ? "err" : "ok", context);
+  setToolStatus(isError ? "err" : "ok", context);
   if (!expanded) return collapsedNone(theme);
   return fullOutput(result, theme);
 }
@@ -269,9 +277,8 @@ function registerExternalRenderers(pi: ExtensionAPI): void {
   pi.registerToolRenderer("ffgrep", {
     renderShell: "self",
     renderCall: (args: any, theme: any, context?: any) => {
-      beginRenderedCall("ffgrep", context);
       const extra = args.limit !== undefined ? ` (limit ${args.limit})` : args.cursor ? " (page)" : "";
-      return renderSearchCall(theme, "ffgrep", `/${args.pattern || ""}/`, getScope(args), extra);
+      return renderSearchCall(theme, "ffgrep", `/${args.pattern || ""}/`, getScope(args), extra, context);
     },
     renderResult: (result: any, options: any, theme: any, context?: any) =>
       renderSearchResult(result, options, theme, "ffgrep", context),
@@ -279,9 +286,8 @@ function registerExternalRenderers(pi: ExtensionAPI): void {
   pi.registerToolRenderer("fffind", {
     renderShell: "self",
     renderCall: (args: any, theme: any, context?: any) => {
-      beginRenderedCall("fffind", context);
       const extra = args.limit !== undefined ? ` (limit ${args.limit})` : args.cursor ? " (page)" : "";
-      return renderSearchCall(theme, "fffind", args.pattern || "", getScope(args), extra);
+      return renderSearchCall(theme, "fffind", args.pattern || "", getScope(args), extra, context);
     },
     renderResult: (result: any, options: any, theme: any, context?: any) =>
       renderSearchResult(result, options, theme, "fffind", context),
@@ -290,20 +296,21 @@ function registerExternalRenderers(pi: ExtensionAPI): void {
 
 // --- bash ---
 function renderBashCall(args: any, theme: any, context?: any): Text {
+  beginRenderedCall(context);
   const cmd = String(args.command || "");
   const timeout = args.timeout ? theme.fg("dim", ` (${args.timeout}s)`) : "";
 
   // Expanded: show the original command again (instead of the translated
   // label), unwrapped so the full command is visible under ctrl+o.
   if (context?.expanded) {
-    return callLine(theme, "$", theme.fg("accent", cmd) + timeout, statusBg(theme, "bash"));
+    return callLine(theme, "$", theme.fg("accent", cmd) + timeout, statusBg(theme, context));
   }
 
   // Retroactive translation: show the raw command now, swap in a short
   // human label once a cheap background LLM call returns.
   const st = context?.state ?? {};
   if (st.translation) {
-    return callLine(theme, "$", theme.fg("success", st.translation) + timeout, statusBg(theme, "bash"));
+    return callLine(theme, "$", theme.fg("success", st.translation) + timeout, statusBg(theme, context));
   }
   // Retroactive translation: show raw now, swap in a short human label once a
   // cheap background LLM call returns. Commands stream in over several renders,
@@ -335,14 +342,14 @@ function renderBashCall(args: any, theme: any, context?: any): Text {
   }
 
   const shown = cmd.length > 100 ? `${cmd.slice(0, 97)}…` : cmd;
-  return callLine(theme, "$", theme.fg("accent", shown) + timeout, statusBg(theme, "bash"));
+  return callLine(theme, "$", theme.fg("accent", shown) + timeout, statusBg(theme, context));
 }
 
 function renderBashResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "$");
   const output = getText(result);
   const details = result.details as BashToolDetails | undefined;
-  setToolStatus("bash", resultIsError("bash", output, details) ? "err" : "ok", ctx);
+  setToolStatus(resultIsError("bash", output, details) ? "err" : "ok", ctx);
   // Surface real failures when collapsed. Judge only by the trailing status
   // line the tool appends on error — never by word-matching arbitrary output
   // (a successful grep whose results contain "isError" must stay success).
@@ -363,13 +370,14 @@ function renderBashResult(result: any, { expanded, isPartial }: any, theme: any,
 }
 
 // --- edit ---
-function renderEditCall(args: any, theme: any): Text {
+function renderEditCall(args: any, theme: any, ctx?: any): Text {
+  beginRenderedCall(ctx);
   const path = shortenPath(args.path);
   const n = Array.isArray(args.edits) ? args.edits.length : args.oldText ? 1 : 0;
   const count = theme.fg("dim", ` (${n} edit${n === 1 ? "" : "s"})`);
-  const s = toolStatus["edit"] ?? "pending";
-  const word = s === "ok" ? theme.fg("success", " applied") : s === "err" ? theme.fg("error", " failed") : "";
-  return callLine(theme, "edit", theme.fg("accent", path || "...") + count + word, statusBg(theme, "edit"));
+  const status: ToolStatus = ctx?.state?.compactToolStatus ?? "pending";
+  const word = status === "ok" ? theme.fg("success", " applied") : status === "err" ? theme.fg("error", " failed") : "";
+  return callLine(theme, "edit", theme.fg("accent", path || "...") + count + word, statusBg(theme, ctx));
 }
 
 function renderEditResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
@@ -380,7 +388,7 @@ function renderEditResult(result: any, { expanded, isPartial }: any, theme: any,
 
   // Fold status into the call line (handled regardless of expanded state; the
   // expanded view shows diff/content as its own block below).
-  setToolStatus("edit", isError ? "err" : details?.diff ? "ok" : null, ctx);
+  setToolStatus(isError ? "err" : "ok", ctx);
 
   if (!expanded) return collapsedNone(theme);
   if (details?.diff) {
@@ -396,17 +404,18 @@ function renderEditResult(result: any, { expanded, isPartial }: any, theme: any,
 }
 
 // --- write ---
-function renderWriteCall(args: any, theme: any): Text {
+function renderWriteCall(args: any, theme: any, ctx?: any): Text {
+  beginRenderedCall(ctx);
   const path = shortenPath(args.path);
   const lines = (args.content || "").split("\n").length;
   const count = theme.fg("dim", ` (${lines} lines)`);
-  return callLine(theme, "write", theme.fg("accent", path || "...") + count, statusBg(theme, "write"));
+  return callLine(theme, "write", theme.fg("accent", path || "...") + count, statusBg(theme, ctx));
 }
 
 function renderWriteResult(result: any, { expanded, isPartial }: any, theme: any, ctx?: any): Text {
   if (isPartial) return running(theme, "writing");
   const content = getText(result);
-  setToolStatus("write", resultIsError("write", content, undefined) ? "err" : "ok", ctx);
+  setToolStatus(resultIsError("write", content, undefined) ? "err" : "ok", ctx);
   if ((content || "").startsWith("Error")) {
     return new Text(theme.fg("error", content.split("\n")[0]), 0, 0);
   }
@@ -440,9 +449,6 @@ function registerBuiltin(
     // plain container — no colored vertical padding rows, just a blank spacer.
     renderShell: renderers.renderShell ?? "self",
     async execute(toolCallId, params, signal, onUpdate, ctx) {
-      // Mark this tool as running so its call line shows the pending bg; the
-      // result renderer flips it to success/error when execution finishes.
-      toolStatus[name] = "pending";
       return getBuiltIns(ctx.cwd)[name].execute(toolCallId, params as any, signal, onUpdate);
     },
     renderCall: renderers.renderCall as any,
@@ -460,15 +466,17 @@ export default function (pi: ExtensionAPI): void {
 
   registerBuiltin(pi, "read", { renderCall: renderReadCall, renderResult: renderReadResult });
   registerBuiltin(pi, "grep", {
-    renderCall: (a, t) => renderSearchCall(t, "grep", `/${a.pattern}/`, getScope(a)),
+    renderCall: (a, t, c) => renderSearchCall(t, "grep", `/${a.pattern}/`, getScope(a), "", c),
     renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "grep", c),
   });
   registerBuiltin(pi, "find", {
-    renderCall: (a, t) => renderSearchCall(t, "find", a.pattern, getScope(a), a.limit !== undefined ? ` (limit ${a.limit})` : ""),
+    renderCall: (a, t, c) =>
+      renderSearchCall(t, "find", a.pattern, getScope(a), a.limit !== undefined ? ` (limit ${a.limit})` : "", c),
     renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "find", c),
   });
   registerBuiltin(pi, "ls", {
-    renderCall: (a, t) => renderSearchCall(t, "ls", getScope(a), "", a.limit !== undefined ? ` (limit ${a.limit})` : ""),
+    renderCall: (a, t, c) =>
+      renderSearchCall(t, "ls", getScope(a), "", a.limit !== undefined ? ` (limit ${a.limit})` : "", c),
     renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "ls", c),
   });
   registerBuiltin(pi, "bash", { renderCall: renderBashCall, renderResult: renderBashResult });
