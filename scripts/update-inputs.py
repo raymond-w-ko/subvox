@@ -182,6 +182,14 @@ class UpdateInputsApp(App[None]):
       text-style: bold;
     }
 
+    #inputs Checkbox > .toggle--button {
+      color: $panel;
+    }
+
+    #inputs Checkbox.-on > .toggle--button {
+      color: $text-success;
+    }
+
     #status {
       margin-top: 1;
       padding: 1;
