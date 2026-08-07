@@ -48,8 +48,8 @@ case "${1:-}" in
 esac
 
 models=(
-  openrouter/deepseek/deepseek-v4-flash-0731
   openai-codex/gpt-5.6-sol
+  openrouter/deepseek/deepseek-v4-flash-0731
   anthropic/claude-fable-5
   openrouter/moonshotai/kimi-k3
   openrouter/x-ai/grok-4.5
