@@ -7,6 +7,23 @@
 # https://github.com/y3owk1n/nix-system-config-v2/blob/main/modules/home/packages/neru.nix
 
 # ============================================================================
+# Theme
+# ============================================================================
+[theme.light]
+surface = "#000000"
+accent = "#00AA00"
+accent_alt = "#00FF00"
+on_accent_alt = "#000000"
+text = "#00FF00"
+
+[theme.dark]
+surface = "#000000"
+accent = "#00AA00"
+accent_alt = "#00FF00"
+on_accent_alt = "#000000"
+text = "#00FF00"
+
+# ============================================================================
 # General Settings
 # ============================================================================
 [general]
@@ -50,9 +67,10 @@ enabled = true
 
 [recursive_grid.ui]
 font_family = "JetBrainsMonoNLNFP-Bold"
+font_size = 12
 line_width = 1
-# highlight_color = "#00000000"
-text_color = "#00000000"
+highlight_color = "#44000000"
+text_color = "#FF00FF00"
 
 [recursive_grid.hotkeys]
 # disable defaults
@@ -66,6 +84,7 @@ text_color = "#00000000"
 
 "Tab" = "toggle-cursor-follow-selection"
 
+"q" = "idle"
 "w" = "action move_mouse --center"
 "e" = "action reset"
 "r" = "action left_click --toggle"
