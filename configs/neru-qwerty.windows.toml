@@ -6,151 +6,118 @@
 # Upstream source:
 # https://github.com/y3owk1n/nix-system-config-v2/blob/main/modules/home/packages/neru.nix
 
+# ============================================================================
+# Theme
+# ============================================================================
+[theme.light]
+surface = "#000000"
+accent = "#00AA00"
+accent_alt = "#00FF00"
+on_accent_alt = "#000000"
+text = "#00FF00"
+
+[theme.dark]
+surface = "#000000"
+accent = "#00AA00"
+accent_alt = "#00FF00"
+on_accent_alt = "#000000"
+text = "#00FF00"
+
+# ============================================================================
+# General Settings
+# ============================================================================
 [general]
 hide_overlay_in_screen_share = true
 passthrough_unbounded_keys = true
 exec_shell = 'C:\Windows\System32\cmd.exe'
 exec_shell_args = ["/c"]
 
+# ============================================================================
+# Hotkeys
+# ============================================================================
 [hotkeys]
 "Ctrl+Y" = "recursive_grid --cursor-selection-mode hold"
 "Ctrl+;" = "scroll"
-"Ctrl+Space" = ["action move_mouse --window", "hints"]
 
+# ============================================================================
+# Hints
+# ============================================================================
 [hints]
 enabled = true
-visible_check_enabled = false
 
-hint_characters = "adfhjkl;rtyuioxcvbnm,./"
-include_menubar_hints = true
-include_dock_hints = true
-include_nc_hints = true
-include_stage_manager_hints = true
-include_pip_hints = true
-include_screen_capture_hints = true
-detect_mission_control = true
-on_mission_control_activated = "hints --action left_click"
-on_mission_control_deactivated = "idle"
-
-clickable_roles = [
-  "button",
-  "menu_button",
-  "popup_button",
-  "combo_box",
-  "checkbox",
-  "radio",
-  "switch",
-  "disclosure",
-  "link",
-  "text_field",
-  "text_area",
-  "slider",
-  "tab",
-  "menu_item",
-  "cell",
-  "row",
-  "ax:AXGenericElement",
-]
-
-additional_menubar_hints_targets = [
-  "com.apple.TextInputMenuAgent",
-  "com.apple.controlcenter",
-  "com.apple.systemuiserver",
-  "com.y3owk1n.neru",
-  "com.openai.codex",
-  "com.google.antigravity",
-]
-
-[[hints.app_configs]]
-bundle_id = "com.apple.Safari"
-visible_check_enabled = true
-
-[hints.additional_ax_support]
-enable = true
-additional_electron_bundles = [
-  "com.openai.codex",
-  "com.hnc.discord",
-  "com.google.antigravity",
-]
-additional_chromium_bundles = []
-additional_firefox_bundles = []
-additional_webkit_bundles = []
-
-[hints.boundary_highlight]
-enabled = true
-
+# ============================================================================
+# Grid Navigation
+# ============================================================================
 [grid]
 enabled = false
 
+# ============================================================================
+# Recursive Grid Navigation
+# ============================================================================
 [recursive_grid]
 enabled = true
-grid_cols = 5
-grid_rows = 5
-keys = "yuiopasdfghjkl;zxcvbnm,./"
+grid_cols = 3
+grid_rows = 3
+keys = "uiojklm,."
 min_size_width = 1
 min_size_height = 1
 
 [recursive_grid.animation]
-enabled = false
+enabled = true
 
 [recursive_grid.ui]
-font_family = "JetBrainsMonoNLNFP-Regular"
+font_family = "JetBrainsMonoNLNFP-Bold"
 font_size = 12
 line_width = 1
-highlight_color = "#88000000"
+highlight_color = "#44000000"
 text_color = "#FF00FF00"
-label_background = false
-label_background_color = "#99000000"
-label_background_padding_x = 0
-label_background_padding_y = 0
-label_background_border_radius = 0
-label_background_border_width = 0
-sub_key_preview = true
-sub_key_preview_font_size = 10
-label_autohide_multiplier = 0
-sub_key_preview_autohide_multiplier = 1.5
-sub_key_preview_text_color = "#CC0088AA"
 
 [recursive_grid.hotkeys]
-# disable built-in defaults
-"Shift+L" = "__disabled__"
-"Shift+R" = "__disabled__"
+# disable defaults
+# "space" = "__disabled__"
+# "shift+l" = "__disabled__"
 "Shift+M" = "__disabled__"
 "Shift+I" = "__disabled__"
 "Shift+U" = "__disabled__"
+"Shift+R" = "__disabled__"
 "`" = "__disabled__"
 
 "Tab" = "toggle-cursor-follow-selection"
 
 "q" = "idle"
-"w" = "action reset"
-"e" = "action move_mouse"
-"r" = "action mouse_down"
-"t" = "action mouse_up"
-"Enter" = "action left_click"
-"Shift+Enter" = "action middle_click"
-"Ctrl+Enter" = "action right_click"
-"Space" = "action left_click"
-"Shift+Space" = "action middle_click"
-"Ctrl+Space" = "action right_click"
+"w" = "action move_mouse --center"
+"e" = "action reset"
+"r" = "action left_click --toggle"
+"g" = "action move_mouse"
+"f" = "action left_click"
+"d" = "action middle_click"
+"s" = "action right_click"
 
 "Ctrl+C" = "idle"
 "Ctrl+J" = "action scroll_down"
 "Ctrl+K" = "action scroll_up"
 "Ctrl+H" = "action scroll_left"
 "Ctrl+L" = "action scroll_right"
-"Ctrl+;" = ["action move_mouse --selection", "scroll"]
+"Ctrl+;" = "macro move_and_scroll"
 
+"Shift+H" = "action move_cell --direction left"
+"Shift+L" = "action move_cell --direction right"
+"Shift+K" = "action move_cell --direction up"
+"Shift+J" = "action move_cell --direction down"
+
+# ============================================================================
+# Scroll
+# ============================================================================
 [scroll]
 scroll_step = 1
 
 [scroll.hotkeys]
 # disable built-in defaults
 "Shift+L" = "__disabled__"
-"Shift+R" = "__disabled__"
 "Shift+M" = "__disabled__"
 "Shift+I" = "__disabled__"
 "Shift+U" = "__disabled__"
+"Shift+R" = "__disabled__"
 
 "Ctrl+C" = "idle"
 "y" = "action feed ctrl+y"
@@ -158,12 +125,50 @@ scroll_step = 1
 "Enter" = "action left_click"
 "Shift+Enter" = "action middle_click"
 "Ctrl+Enter" = "action right_click"
-"Space" = "action left_click"
-"Shift+Space" = "action middle_click"
-"Ctrl+Space" = "action right_click"
 
+# ============================================================================
+# Held Repeat
+# ============================================================================
+[held_repeat]
+enabled = true
+
+# ============================================================================
+# Smooth Cursor
+# ============================================================================
+[smooth_cursor]
+move_mouse_enabled = true
+steps = 30
+max_duration = 100
+
+# ============================================================================
+# Smooth Scroll
+# ============================================================================
+[smooth_scroll]
+enabled = true
+steps = 300
+max_duration = 300
+duration_per_pixel = 20.00
+
+# ============================================================================
+# Mouse Action Indicator
+# ============================================================================
 [mouse_action_indicator]
 enabled = true
 
+# ============================================================================
+# Mode Indicator
+# ============================================================================
 [mode_indicator.ui]
 font_family = "JetBrainsMonoNLNFP-Bold"
+
+# ============================================================================
+# Virtual Pointer
+# ============================================================================
+[virtual_pointer.ui]
+font_family = "JetBrainsMonoNLNFP-Bold"
+
+# ============================================================================
+# Macro
+# ============================================================================
+[macros]
+move_and_scroll = "run 'action move_mouse --selection' 'scroll'"
