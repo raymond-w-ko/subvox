@@ -62,6 +62,7 @@ models=(
 
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
   "$PI" \
+  --tui-mode fullscreen \
   --models "$(IFS=,; echo "${models[*]}")" \
   --model "${models[0]}" --thinking high \
   "$@"
