@@ -52,7 +52,7 @@ models=(
   openrouter/deepseek/deepseek-v4-flash-0731
   anthropic/claude-fable-5
   openrouter/moonshotai/kimi-k3
-  openrouter/x-ai/grok-4.5
+  openrouter/x-ai/grok-4.6
   openrouter/minimax/minimax-m3
   openai-codex/gpt-5.6-terra
   openai-codex/gpt-5.6-luna
