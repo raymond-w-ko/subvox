@@ -70,7 +70,13 @@ function getDb(): SqliteConnection | undefined {
 	}
 }
 
-/** Returns the cached label, undefined on miss or when sqlite is unavailable. */
+function usableLabel(label: unknown): string | undefined {
+	if (typeof label !== "string") return undefined;
+	const trimmed = label.trim();
+	return trimmed ? trimmed : undefined;
+}
+
+/** Returns the cached label, undefined on miss, empty, or when sqlite is unavailable. */
 export function cacheGet(key: string): string | undefined {
 	const d = getDb();
 	if (!d) return undefined;
@@ -78,21 +84,23 @@ export function cacheGet(key: string): string | undefined {
 		const row = d.prepare("SELECT label FROM cache WHERE key = ?").get(key) as
 			| { label: string }
 			| undefined;
-		return row?.label;
+		return usableLabel(row?.label);
 	} catch {
 		return undefined;
 	}
 }
 
-/** Store a label (upsert) and enforce the size cap. Best-effort. */
+/** Store a non-empty label (upsert) and enforce the size cap. Best-effort. */
 export function cacheSet(key: string, label: string): void {
+	const usable = usableLabel(label);
+	if (!usable) return;
 	const d = getDb();
 	if (!d) return;
 	try {
 		d.prepare(
 			"INSERT INTO cache(key, label, created_at) VALUES(?, ?, ?) " +
 				"ON CONFLICT(key) DO UPDATE SET label = excluded.label, created_at = excluded.created_at",
-		).run(key, label, Date.now());
+		).run(key, usable, Date.now());
 		d.prepare(
 			"DELETE FROM cache WHERE key NOT IN " +
 				"(SELECT key FROM cache ORDER BY created_at DESC LIMIT ?)",

@@ -20,10 +20,12 @@ import { log } from "./debug-log.js";
 
 const MAX_LABEL = 79;
 const TIMEOUT_MS = 8000;
+const MAX_ATTEMPTS = 3;
+const RETRY_DELAYS_MS = [400, 1200];
 
 // Bump when the completion request or key scheme changes so stale cached
-// labels (including poisoned "" failures and partial-command entries from
-// the pre-debounce era) are ignored and re-translated.
+// labels (including leftover "" failures from older builds) are ignored
+// and re-translated.
 const CACHE_VERSION = "2";
 
 function cacheKey(command: string): string {
@@ -44,28 +46,43 @@ export function translateCommand(command: string): Promise<string | null> {
 
 	const key = cacheKey(trimmed);
 
-	// 1. Persistent cache hit ("" stored = known-failed, don't retry).
+	// 1. Persistent cache hit. Empty/whitespace labels are treated as misses
+	// so a failed translation can be retried on the next call.
 	const cached = cacheGet(key);
-	if (cached !== undefined) {
+	if (cached) {
 		log("translateCommand: CACHE HIT key=", key, "->", JSON.stringify(cached));
-		return Promise.resolve(cached || null);
+		return Promise.resolve(cached);
 	}
 	log("translateCommand: CACHE MISS key=", key);
 
-	// 2. In-flight dedupe.
+	// 2. In-flight dedupe. The promise is removed after settle so a later
+	// call can retry a failed (uncached) translation.
 	const existing = inflight.get(key);
 	if (existing) return existing;
 
-	const p = doTranslate(trimmed).then((label) => {
-		log("translateCommand: store label=", JSON.stringify(label), "for", JSON.stringify(command.slice(0, 60)));
-		cacheSet(key, label ?? "");
-		return label;
-	});
+	const p = doTranslate(trimmed)
+		.then((label) => {
+			log(
+				"translateCommand: store label=",
+				JSON.stringify(label),
+				"for",
+				JSON.stringify(command.slice(0, 60)),
+			);
+			if (label) cacheSet(key, label);
+			return label;
+		})
+		.finally(() => {
+			inflight.delete(key);
+		});
 	inflight.set(key, p);
 	return p;
 }
 
-async function doTranslate(command: string): Promise<string | null> {
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function translateOnce(command: string): Promise<string | null> {
 	const prompt = `Rewrite this shell command as one short plain-English label describing WHAT IT DOES. Max ${MAX_LABEL} chars. Imperative phrase, no code markers, no quotes, no trailing punctuation. Respond with ONLY the label, no explanation.\n\nCommand: ${command}`;
 
 	// Race against a hard timeout so a slow/hung provider never stalls the TUI.
@@ -84,4 +101,19 @@ async function doTranslate(command: string): Promise<string | null> {
 		label = `${label.slice(0, MAX_LABEL - 1)}…`;
 	}
 	return label;
+}
+
+async function doTranslate(command: string): Promise<string | null> {
+	for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+		const label = await translateOnce(command);
+		if (label) {
+			if (attempt > 1) log("doTranslate: succeeded on attempt", attempt);
+			return label;
+		}
+		log("doTranslate: empty result attempt=", attempt, "of", MAX_ATTEMPTS);
+		if (attempt < MAX_ATTEMPTS) {
+			await sleep(RETRY_DELAYS_MS[attempt - 1] ?? RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1]);
+		}
+	}
+	return null;
 }

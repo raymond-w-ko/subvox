@@ -91,11 +91,12 @@ Labels are deterministic (temperature 0, pinned model), so results are cached
 in SQLite at `~/.cache/pi-rko-compact-tool-display.sqlite3` (see `cache.ts`, uses
 `node:sqlite` — the same driver Pi's own storage uses) keyed by
 `model|thinking|command`. Hits avoid the LLM call entirely — including across
-`/reload` and restarts. Capped at 500 rows (oldest dropped by `created_at`).
-Failed translations are stored as `""` so they're not retried. Delete the file
-to clear it.
+`/reload` and restarts. Capped at 65536 rows (oldest dropped by `created_at`).
+Only successful non-empty labels are stored. Empty/failed translations are not
+cached, so a later call can retry. Delete the file to clear it.
 
-Drains: 8s hard timeout, deduped per command, silent no-op on failure (the raw
+Drains: 8s hard timeout, up to 3 attempts with 400ms / 1200ms backoff, in-flight
+dedupe per command (cleared after settle), silent no-op on failure (the raw
 command is already shown, so a miss costs nothing).
 
 ## Files
@@ -164,10 +165,14 @@ ahead of any tag).
 ### 7. Commands that run before `session_start` have no captured registry
 
 At module-load time (and on the resumed-transcript re-render flood),
-`registry` is still `undefined`, so every such call fails and gets cached as
-`""`. Those poison the cache. If you bump the request/key scheme, bump
-`CACHE_VERSION` in `translate.ts` (or delete `~/.cache/pi-rko-compact-tool-display.sqlite3`)
-or you'll keep returning the stale `""`.
+`registry` is still `undefined`, so every such call fails with `""`. Empty
+results are **not** written to the cache, and `translateCommand` retries up to
+3 times (400ms / 1200ms backoff) so a later attempt can catch the registry
+once `session_start` has fired. Older builds did persist `""` as a
+known-failure; leftover empty rows are treated as cache misses. If you bump
+the request/key scheme, bump `CACHE_VERSION` in `translate.ts` (or delete
+`~/.cache/pi-rko-compact-tool-display.sqlite3`) so stale successful labels are
+not reused.
 
 ### 8. Beware writing weird disk state: `:/ > file` truncates to 0 bytes
 
