@@ -7,8 +7,8 @@
     ./networking.nix
   ];
 
-  networking.hostName = "cloudvac";
-  services.tailscale.extraSetFlags = [ "--hostname=cloudvac" ];
+  networking.hostName = "nixvac";
+  services.tailscale.extraSetFlags = [ "--hostname=nixvac" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

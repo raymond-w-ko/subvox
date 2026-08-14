@@ -51,7 +51,7 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 
 ## Flake Outputs
 - `nixosConfigurations.wsl2` - WSL2 NixOS (x86_64-linux)
-- `nixosConfigurations.cloudvac` - Proxmox guest NixOS (x86_64-linux)
+- `nixosConfigurations.nixvac` - Proxmox guest NixOS (x86_64-linux)
 - `darwinConfigurations.macos` - nix-darwin (aarch64-darwin)
 - `homeConfigurations."rko@linux"` - standalone home-manager (x86_64-linux)
 - `homeConfigurations."rko@macos"` - standalone home-manager (aarch64-darwin)
@@ -67,13 +67,13 @@ nix flake check
 ./scripts/rebuild switch
 
 # build or activate an explicit target
-./scripts/rebuild build cloudvac
-./scripts/rebuild switch cloudvac
+./scripts/rebuild build nixvac
+./scripts/rebuild switch nixvac
 ./scripts/rebuild switch 'rko@linux'  # Home Manager target
 ./scripts/rebuild build wsl2 --print  # show exact command without running it
 
 # first NixOS flake switch before nix-command/flakes are enabled
-./scripts/bootstrap-nixos cloudvac
+./scripts/bootstrap-nixos nixvac
 
 # format
 nix fmt

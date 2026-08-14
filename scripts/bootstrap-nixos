@@ -10,8 +10,8 @@ enabled by the running system. The feature override applies only to this
 command; the activated configuration enables both features permanently.
 
 examples:
-  bootstrap-nixos cloudvac
-  bootstrap-nixos cloudvac --print
+  bootstrap-nixos nixvac
+  bootstrap-nixos nixvac --print
 EOF
 }
 

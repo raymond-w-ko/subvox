@@ -101,9 +101,9 @@
           module = ./hosts/wsl2;
         };
 
-        cloudvac = mkNixosHost {
+        nixvac = mkNixosHost {
           system = "x86_64-linux";
-          module = ./hosts/cloudvac;
+          module = ./hosts/nixvac;
         };
       };
 

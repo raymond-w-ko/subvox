@@ -10,8 +10,8 @@ options:
   -h, --help   show this help
 
 examples:
-  rebuild build cloudvac
-  rebuild switch cloudvac
+  rebuild build nixvac
+  rebuild switch nixvac
   rebuild build wsl2 --print
   rebuild switch 'rko@linux'
   rebuild build macos -- --no-link --print-build-logs
