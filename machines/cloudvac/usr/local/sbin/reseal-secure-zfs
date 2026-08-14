@@ -1,0 +1,227 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# reseal-zfs-key
+#
+# Re-seals the raw ZFS key for rpool/secure to the CURRENT TPM PCR values:
+#
+#   sha256:4,7
+#
+# Expected input:
+#   /run/cloudvac-tpm/zfs-secure.key
+#
+# Persistent output:
+#   /etc/cloudvac-tpm/zfs-secure.pub
+#   /etc/cloudvac-tpm/zfs-secure.priv
+#
+# The old TPM blobs are only replaced after the newly-created blobs have
+# successfully unsealed and matched the original key.
+# ---------------------------------------------------------------------------
+
+PCRS='sha256:4,7'
+
+RUNTIME='/run/cloudvac-tpm'
+PERSIST='/etc/cloudvac-tpm'
+
+KEY="$RUNTIME/zfs-secure.key"
+
+PRIMARY_CTX="$RUNTIME/primary.ctx"
+POLICY_SESSION="$RUNTIME/policy.session"
+POLICY_DIGEST="$RUNTIME/pcr.policy"
+
+NEW_PUB="$RUNTIME/zfs-secure.pub.new"
+NEW_PRIV="$RUNTIME/zfs-secure.priv.new"
+NEW_CTX="$RUNTIME/zfs-secure.ctx.new"
+TEST_KEY="$RUNTIME/zfs-secure.test.key"
+
+FINAL_PUB="$PERSIST/zfs-secure.pub"
+FINAL_PRIV="$PERSIST/zfs-secure.priv"
+
+
+# ---------------------------------------------------------------------------
+# Safety checks.
+# ---------------------------------------------------------------------------
+
+if [[ $EUID -ne 0 ]]; then
+  echo "ERROR: run as root" >&2
+  exit 1
+fi
+
+if [[ ! -f "$KEY" ]]; then
+  echo "ERROR: missing raw ZFS key: $KEY" >&2
+  exit 1
+fi
+
+install -d -m 700 "$RUNTIME"
+install -d -m 700 "$PERSIST"
+
+chmod 600 "$KEY"
+
+echo "Current PCR values:"
+tpm2_pcrread "$PCRS"
+
+echo
+echo "WARNING:"
+echo "This will bind the ZFS key to the CURRENT PCR state:"
+echo "  $PCRS"
+echo
+
+
+# ---------------------------------------------------------------------------
+# Remove stale transient files from a previous attempt.
+# ---------------------------------------------------------------------------
+
+rm -f \
+  "$PRIMARY_CTX" \
+  "$POLICY_SESSION" \
+  "$POLICY_DIGEST" \
+  "$NEW_PUB" \
+  "$NEW_PRIV" \
+  "$NEW_CTX" \
+  "$TEST_KEY"
+
+
+# ---------------------------------------------------------------------------
+# Create a transient primary object.
+#
+# This does not contain the ZFS key. It is simply the parent TPM object under
+# which the sealed child object is created.
+# ---------------------------------------------------------------------------
+
+tpm2_createprimary \
+  -C o \
+  -g sha256 \
+  -G ecc \
+  -c "$PRIMARY_CTX"
+
+
+# ---------------------------------------------------------------------------
+# Construct a policy digest bound to the TPM's CURRENT PCR 4 + PCR 7 values.
+#
+# This is a trial policy session used only to calculate the policy digest that
+# will be embedded in the sealed object.
+# ---------------------------------------------------------------------------
+
+tpm2_startauthsession \
+  --policy-session \
+  -S "$POLICY_SESSION"
+
+tpm2_policypcr \
+  -S "$POLICY_SESSION" \
+  -l "$PCRS" \
+  -L "$POLICY_DIGEST"
+
+tpm2_flushcontext "$POLICY_SESSION"
+rm -f "$POLICY_SESSION"
+
+
+# ---------------------------------------------------------------------------
+# Create a new sealed TPM object containing the raw 32-byte ZFS key.
+#
+# -i supplies the secret data.
+# -L attaches the PCR policy.
+# The resulting .pub/.priv files are safe to store persistently; they cannot
+# reveal the secret unless the TPM authorizes unsealing.
+# ---------------------------------------------------------------------------
+
+tpm2_create \
+  -C "$PRIMARY_CTX" \
+  -g sha256 \
+  -u "$NEW_PUB" \
+  -r "$NEW_PRIV" \
+  -L "$POLICY_DIGEST" \
+  -i "$KEY"
+
+
+# ---------------------------------------------------------------------------
+# Load the NEW object.
+# ---------------------------------------------------------------------------
+
+tpm2_load \
+  -C "$PRIMARY_CTX" \
+  -u "$NEW_PUB" \
+  -r "$NEW_PRIV" \
+  -c "$NEW_CTX"
+
+
+# ---------------------------------------------------------------------------
+# Critical test:
+#
+# Unseal the newly-created object using the same PCR policy shorthand that
+# your boot-time unlock script uses.
+# ---------------------------------------------------------------------------
+
+umask 077
+
+tpm2_unseal \
+  -c "$NEW_CTX" \
+  -p "pcr:$PCRS" \
+  > "$TEST_KEY"
+
+
+# ---------------------------------------------------------------------------
+# Verify the unsealed bytes are EXACTLY the original ZFS key.
+#
+# If this fails, the existing persistent blobs remain untouched.
+# ---------------------------------------------------------------------------
+
+if ! cmp -s "$KEY" "$TEST_KEY"; then
+  echo "ERROR: test-unsealed key does not match original key." >&2
+  rm -f "$TEST_KEY" "$NEW_PUB" "$NEW_PRIV" "$NEW_CTX"
+  exit 1
+fi
+
+echo "New TPM seal verified successfully."
+
+
+# ---------------------------------------------------------------------------
+# Back up old blobs, if present.
+#
+# They are not plaintext secrets, but keeping one backup generation is useful
+# until you have tested the new seal through an actual reboot.
+# ---------------------------------------------------------------------------
+
+if [[ -f "$FINAL_PUB" ]]; then
+  cp -a "$FINAL_PUB" "$FINAL_PUB.bak"
+fi
+
+if [[ -f "$FINAL_PRIV" ]]; then
+  cp -a "$FINAL_PRIV" "$FINAL_PRIV.bak"
+fi
+
+
+# ---------------------------------------------------------------------------
+# Atomically install the verified replacement blobs.
+# ---------------------------------------------------------------------------
+
+install -m 600 "$NEW_PUB"  "$FINAL_PUB"
+install -m 600 "$NEW_PRIV" "$FINAL_PRIV"
+
+
+# ---------------------------------------------------------------------------
+# Remove transient plaintext and TPM working material.
+#
+# /run is transient anyway, but clean it immediately.
+# ---------------------------------------------------------------------------
+
+rm -f \
+  "$TEST_KEY" \
+  "$NEW_PUB" \
+  "$NEW_PRIV" \
+  "$NEW_CTX" \
+  "$POLICY_DIGEST" \
+  "$PRIMARY_CTX"
+
+
+echo
+echo "Reseal complete."
+echo
+echo "Persistent TPM blobs:"
+echo "  $FINAL_PUB"
+echo "  $FINAL_PRIV"
+echo
+echo "IMPORTANT:"
+echo "  1. test your normal unlock script now"
+echo "  2. then test one real reboot"
+echo "  3. only after that remove the .bak blobs"

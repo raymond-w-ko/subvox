@@ -1,0 +1,32 @@
+#!/bin/bash
+set -euo pipefail
+
+# Runtime-only working directory.
+install -d -m 700 /run/cloudvac-tpm
+
+# Recreate transient TPM primary context after every boot.
+tpm2_createprimary \
+  -C o \
+  -g sha256 \
+  -G ecc \
+  -c /run/cloudvac-tpm/primary.ctx
+
+# Load the persistent sealed TPM object.
+tpm2_load \
+  -C /run/cloudvac-tpm/primary.ctx \
+  -u /etc/cloudvac-tpm/zfs-secure.pub \
+  -r /etc/cloudvac-tpm/zfs-secure.priv \
+  -c /run/cloudvac-tpm/zfs-secure.ctx
+
+# Unseal into RAM only.
+umask 077
+tpm2_unseal \
+  -c /run/cloudvac-tpm/zfs-secure.ctx \
+  -p 'pcr:sha256:4,7' \
+  > /run/cloudvac-tpm/zfs-secure.key
+
+# Feed the key directly to ZFS.
+zfs load-key rpool/secure < /run/cloudvac-tpm/zfs-secure.key
+
+# Remove plaintext copy immediately after ZFS accepts it.
+rm -f /run/cloudvac-tpm/zfs-secure.key
