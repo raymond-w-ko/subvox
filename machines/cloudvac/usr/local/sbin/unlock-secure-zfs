@@ -20,13 +20,16 @@ tpm2_load \
 
 # Unseal into RAM only.
 umask 077
+KEY=$(mktemp /run/cloudvac-tpm/zfs-secure.key.XXXXXX)
+cleanup() {
+  rm -f "$KEY"
+}
+trap cleanup EXIT
+
 tpm2_unseal \
   -c /run/cloudvac-tpm/zfs-secure.ctx \
   -p 'pcr:sha256:4,7' \
-  > /run/cloudvac-tpm/zfs-secure.key
+  > "$KEY"
 
 # Feed the key directly to ZFS.
-zfs load-key rpool/secure < /run/cloudvac-tpm/zfs-secure.key
-
-# Remove plaintext copy immediately after ZFS accepts it.
-rm -f /run/cloudvac-tpm/zfs-secure.key
+zfs load-key rpool/secure < "$KEY"

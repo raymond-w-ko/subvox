@@ -38,6 +38,20 @@ TEST_KEY="$RUNTIME/zfs-secure.test.key"
 FINAL_PUB="$PERSIST/zfs-secure.pub"
 FINAL_PRIV="$PERSIST/zfs-secure.priv"
 
+RESEAL_SUCCEEDED=0
+
+# Always remove the test-unsealed plaintext key. Keep the input key when
+# resealing fails so the operator can diagnose or retry; remove it after both
+# replacement blobs install successfully.
+cleanup_sensitive_files() {
+  rm -f "$TEST_KEY" || true
+
+  if [[ $RESEAL_SUCCEEDED -eq 1 ]]; then
+    rm -f "$KEY" || true
+  fi
+}
+trap cleanup_sensitive_files EXIT
+
 
 # ---------------------------------------------------------------------------
 # Safety checks.
@@ -197,6 +211,7 @@ fi
 
 install -m 600 "$NEW_PUB"  "$FINAL_PUB"
 install -m 600 "$NEW_PRIV" "$FINAL_PRIV"
+RESEAL_SUCCEEDED=1
 
 
 # ---------------------------------------------------------------------------
@@ -206,6 +221,7 @@ install -m 600 "$NEW_PRIV" "$FINAL_PRIV"
 # ---------------------------------------------------------------------------
 
 rm -f \
+  "$KEY" \
   "$TEST_KEY" \
   "$NEW_PUB" \
   "$NEW_PRIV" \

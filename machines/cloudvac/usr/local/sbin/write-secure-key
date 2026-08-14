@@ -1,6 +1,25 @@
 #!/bin/sh
+set -eu
+
+RUNTIME='/run/cloudvac-tpm'
+KEY="$RUNTIME/zfs-secure.key"
+
+install -d -m 700 "$RUNTIME"
+umask 077
+
+# Publish the key only after unsealing succeeds. The temporary file is created
+# with restrictive permissions and removed automatically on failure.
+TMP_KEY=$(mktemp "$RUNTIME/zfs-secure.key.XXXXXX")
+cleanup() {
+  rm -f "$TMP_KEY"
+}
+trap cleanup 0
+trap 'exit 1' HUP INT TERM
 
 tpm2_unseal \
-  -c /run/cloudvac-tpm/zfs-secure.ctx \
+  -c "$RUNTIME/zfs-secure.ctx" \
   -p 'pcr:sha256:4,7' \
-  > /run/cloudvac-tpm/zfs-secure.key
+  > "$TMP_KEY"
+
+chmod 600 "$TMP_KEY"
+mv -f "$TMP_KEY" "$KEY"
