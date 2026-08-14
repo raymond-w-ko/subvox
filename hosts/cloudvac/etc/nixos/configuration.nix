@@ -17,7 +17,7 @@
   boot.kernelParams = ["console=tty0" "console=ttyS0,115200"];
   systemd.services."serial-getty@ttyS0".enable = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "cloudvac"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -110,6 +110,7 @@
   services.openssh.enable = true;
 
   services.tailscale.enable = true;
+  services.tailscale.extraSetFlags = [ "--hostname=cloudvac" ];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

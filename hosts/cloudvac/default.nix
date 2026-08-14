@@ -8,6 +8,7 @@
   ];
 
   networking.hostName = "cloudvac";
+  services.tailscale.extraSetFlags = [ "--hostname=cloudvac" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
