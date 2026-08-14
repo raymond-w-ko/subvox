@@ -49,18 +49,38 @@
         inherit inputs user packageConfig;
       };
 
+      mkNixosHost =
+        {
+          system,
+          module,
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system specialArgs;
+          modules = [ module ];
+        };
+
       mkHome =
         {
           system,
           homeDirectory,
+          gui ? true,
           extraModules ? [ ],
         }:
+        let
+          platformGuiModule =
+            if nixpkgs.lib.hasSuffix "-darwin" system then ./home/darwin.nix else ./home/linux.nix;
+          guiModules = nixpkgs.lib.optionals gui [
+            ./home/gui.nix
+            platformGuiModule
+          ];
+        in
         home-manager.lib.homeManagerConfiguration {
           pkgs = packageConfig.mkPkgs system;
           extraSpecialArgs = specialArgs;
           modules = [
             ./home/common.nix
           ]
+          ++ guiModules
           ++ extraModules
           ++ [
             {
@@ -75,10 +95,16 @@
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
       formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt-tree;
 
-      nixosConfigurations.wsl2 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        inherit specialArgs;
-        modules = [ ./hosts/wsl2 ];
+      nixosConfigurations = {
+        wsl2 = mkNixosHost {
+          system = "x86_64-linux";
+          module = ./hosts/wsl2;
+        };
+
+        cloudvac = mkNixosHost {
+          system = "x86_64-linux";
+          module = ./hosts/cloudvac;
+        };
       };
 
       darwinConfigurations.macos = nix-darwin.lib.darwinSystem {
@@ -90,7 +116,6 @@
         "${user}@linux" = mkHome {
           system = "x86_64-linux";
           homeDirectory = "/home/${user}";
-          extraModules = [ ./home/linux.nix ];
         };
 
         "${user}@macos" = mkHome {
@@ -101,7 +126,6 @@
         "${user}@linux-arm" = mkHome {
           system = "aarch64-linux";
           homeDirectory = "/home/${user}";
-          extraModules = [ ./home/linux.nix ];
         };
       };
     };

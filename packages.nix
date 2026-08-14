@@ -1,180 +1,31 @@
-# Package definitions for home-manager and system configurations
-# Usage: import ./packages.nix { inherit pkgs codex-cli-nix; }
-{ pkgs, codex-cli-nix }:
+# Aggregate package interface. Focused consumers should import packages/* directly.
+{ pkgs, inputs }:
 let
-  pythonDarwin = pkgs.python314.override {
-    packageOverrides = self: super: {
-      rapidfuzz = super.rapidfuzz.overridePythonAttrs (old: {
-        env = (old.env or { }) // {
-          RAPIDFUZZ_BUILD_EXTENSION = 0;
-        };
-        doCheck = false;
-        doInstallCheck = false;
-        pythonImportsCheck = [ ];
-      });
-    };
-  };
-  pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python314;
-  poetryPkg =
-    let
-      poetryApplication =
-        if pkgs.stdenv.isDarwin then pkgs.poetry.override { python3 = pythonDarwin; } else pkgs.poetry;
-      # Temporary workaround for https://github.com/NixOS/nixpkgs/issues/544083.
-      patchedPoetryPackage = poetryApplication.python.pkgs.poetry.overridePythonAttrs (old: {
-        disabledTests = (old.disabledTests or [ ]) ++ [
-          "test_execute_executes_a_batch_of_operations"
-          "test_execute_prints_warning_for_yanked_package"
-        ];
-      });
-    in
-    poetryApplication.withPlugins (ps: [
-      (ps.poetry-plugin-shell.override { poetry = patchedPoetryPackage; })
-    ]);
-
-  # Packages managed by home-manager programs.* (do NOT add here):
-  #   neovim, git, lazygit, fzf, zoxide, bash, fish, tmux, bun, uv, direnv
-
-  common = with pkgs; [
-    # nix tools
-    nixpkgs-review
-    nix-update
-
-    # core utils
-    gh
-    gnumake
-    htop
-    curl
-    wget
-    ripgrep
-    fd
-    jq
-    ncdu
-    imagemagick
-    zip
-    unzip
-    difftastic
-    delta
-
-    # shells
-    zsh
-    eza
-
-    # javascript
-    nodejs_24
-    tsx
-
-    # python
-    pythonPkg
-    poetryPkg
-    # poetry plugin: shell is included via poetryPkg
-
-    # java/clojure
-    javaPackages.compiler.openjdk25
-    babashka
-
-    # go
-    go
-
-    # zig
-    zig
-
-    # rust (nightly via rust-overlay — matches fff.nvim's toolchain)
-    (pkgs.rust-bin.nightly."2026-03-14".default.override {
-      extensions = [
-        "clippy"
-        "rustfmt"
-        "llvm-tools"
-        "miri"
-        "rust-src"
-        "rust-analyzer"
-      ];
-    })
-
-    # perl
-    perl
-
-    # ai tools
-    codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
-    claude-code
-  ];
-
-  fonts = with pkgs; [
-    nerd-fonts.droid-sans-mono
-    nerd-fonts.jetbrains-mono
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-color-emoji
-    liberation_ttf
-    fira-code
-    fira-code-symbols
-    mplus-outline-fonts.githubRelease
-    dina-font
-    iosevka-bin
-    aporetic
-  ];
-
-  linux = with pkgs; [
-    # c / c++
-    gcc
-    llvmPackages.libclang
-    gdb # move back to common once compilation works on darwin again
-    openssl
-    pkg-config
-    sqlite
-    sqlite.dev
-    bubblewrap
-    traceroute
-
-    perf
-    kcov
-
-    adwaita-icon-theme
-    ghostty
-    # gstreamer plugins for ghostty bell
-    gst_all_1.gstreamer
-    gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-libav
-  ];
-
-  darwin = with pkgs; [
-    openssl
-    pkg-config
-
-    mactop
-    kanata
-    aerospace
-    sketchybar
-    raycast
-  ];
-
+  development = import ./packages/development.nix { inherit pkgs inputs; };
+  gui = import ./packages/gui.nix { inherit pkgs; };
+  fonts = import ./packages/fonts.nix { inherit pkgs; };
 in
 {
-  inherit
-    common
-    fonts
-    linux
-    darwin
-    ;
+  inherit fonts;
+  inherit (development) common;
 
-  # All packages for the current platform
-  forHome =
-    common
-    ++ (if pkgs.stdenv.isDarwin then darwin else [ ])
-    ++ (if pkgs.stdenv.isLinux then linux else [ ]);
+  linux = development.linux;
+  linuxGui = gui.linux;
+  darwin = development.darwin;
+  darwinGui = gui.darwin;
 
-  # All packages including fonts
-  forHomeWithFonts =
-    common
-    ++ fonts
-    ++ (if pkgs.stdenv.isDarwin then darwin else [ ])
-    ++ (if pkgs.stdenv.isLinux then linux else [ ]);
+  # Headless development environment for the current platform.
+  forHome = development.forHome;
 
-  # System-level packages (for environment.systemPackages)
-  forSystem =
-    common
-    ++ (if pkgs.stdenv.isDarwin then darwin else [ ])
-    ++ (if pkgs.stdenv.isLinux then linux else [ ]);
+  # GUI additions layered over the headless development environment.
+  forGuiHome = gui.forHome;
+
+  # Complete interactive workstation package set.
+  forFullHome = development.forHome ++ gui.forHome;
+
+  # Complete workstation package set including fonts.
+  forHomeWithFonts = development.forHome ++ gui.forHome ++ fonts;
+
+  # System-level package view retained for callers that need the full set.
+  forSystem = development.forHome ++ gui.forHome;
 }

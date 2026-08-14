@@ -47,6 +47,10 @@
       inherit inputs user packageConfig;
     };
 
-    users.${user} = import ../../home/common.nix;
+    users.${user}.imports = [
+      ../../home/common.nix
+      ../../home/gui.nix
+      ../../home/darwin.nix
+    ];
   };
 }

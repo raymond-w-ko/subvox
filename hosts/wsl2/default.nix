@@ -1,26 +1,15 @@
 {
   inputs,
   user,
-  packageConfig,
   pkgs,
   ...
 }:
 {
   imports = [
     inputs.nixos-wsl.nixosModules.default
-    inputs.home-manager.nixosModules.home-manager
-    ../common/all.nix
+    ../../modules/nixos/base.nix
+    ../../modules/shared/gui.nix
   ];
-
-  nix.settings.trusted-users = [ user ];
-  nix.gc.dates = "weekly";
-
-  environment.localBinInPath = true;
-  environment.sessionVariables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
-  environment.sessionVariables.LIBRARY_PATH = "${pkgs.sqlite.out}/lib:${pkgs.openssl.out}/lib";
-
-  programs.nix-ld.enable = true;
-  users.users.${user}.isNormalUser = true;
 
   fonts = {
     fontDir.enable = true;
@@ -65,19 +54,8 @@
   environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
   environment.sessionVariables.GDK_BACKEND = "x11";
 
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    extraSpecialArgs = {
-      inherit inputs user packageConfig;
-    };
-
-    users.${user} = {
-      imports = [
-        ../../home/common.nix
-        ../../home/linux.nix
-      ];
-      home.stateVersion = "26.05";
-    };
-  };
+  home-manager.users.${user}.imports = [
+    ../../home/gui.nix
+    ../../home/linux.nix
+  ];
 }

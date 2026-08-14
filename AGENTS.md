@@ -31,9 +31,12 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 # subvox Repository Guidelines
 
 ## Structure
-- `flake.nix` - single-file NixOS/nix-darwin config with all modules inline
-- `packages.nix` - shared package definitions for home-manager
-- `home/` - dotfiles symlinked via home-manager
+- `flake.nix` - flake inputs and output wiring
+- `packages.nix` - aggregate package interface
+- `packages/` - focused development, GUI, and font package definitions
+- `modules/` - reusable shared, NixOS, server, and virtualization modules
+- `hosts/` - machine-specific NixOS and nix-darwin assemblies
+- `home/` - Home Manager modules and dotfiles symlinked via Home Manager
   - `.config/nvim/` - neovim config (lazy.nvim, plugins in `lua/rko/plugins/`)
   - `.config/ghostty/` - terminal emulator config and shaders
   - `.codex/` - codex AI agent template config
@@ -48,6 +51,7 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 
 ## Flake Outputs
 - `nixosConfigurations.wsl2` - WSL2 NixOS (x86_64-linux)
+- `nixosConfigurations.cloudvac` - Proxmox guest NixOS (x86_64-linux)
 - `darwinConfigurations.macos` - nix-darwin (aarch64-darwin)
 - `homeConfigurations."rko@linux"` - standalone home-manager (x86_64-linux)
 - `homeConfigurations."rko@macos"` - standalone home-manager (aarch64-darwin)
@@ -77,7 +81,7 @@ nix flake update
 
 ## Adding Packages
 - **Programs with config**: add to `programs.*` in flake.nix (e.g., `programs.git`, `programs.tmux`)
-- **Simple packages**: add to `packages.nix` in the appropriate section
+- **Simple packages**: add to the appropriate file under `packages/` (`development.nix`, `gui.nix`, or `fonts.nix`)
 - **Custom overlays**: create new directory in `pkgs/` with `package.nix`
 
 ## Key Configurations

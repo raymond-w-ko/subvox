@@ -1,6 +1,5 @@
 {
   inputs,
-  lib,
   pkgs,
   config,
   ...
@@ -8,16 +7,10 @@
 let
   repoDir = "${config.home.homeDirectory}/subvox";
   dotfilesDir = "${repoDir}/home";
-  myPkgs = import ../packages.nix {
-    inherit pkgs;
-    codex-cli-nix = inputs.codex-cli-nix;
-  };
-  neruQwertyConfig = builtins.readFile ../configs/neru-qwerty.toml;
+  developmentPackages = import ../packages/development.nix { inherit pkgs inputs; };
 in
 {
-  imports = [ inputs.neru.homeManagerModules.default ];
-
-  home.packages = myPkgs.forHome;
+  home.packages = developmentPackages.forHome;
 
   home.sessionVariables.LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
 
@@ -32,8 +25,6 @@ in
 
   home.file.".config/nvim/".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/nvim";
-  home.file.".config/ghostty/".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/ghostty";
 
   home.file.".codex/config.template.toml".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
@@ -216,10 +207,4 @@ in
   programs.bun.enable = true;
   programs.uv.enable = true;
   programs.gpg.enable = true;
-
-  services.neru = lib.mkIf pkgs.stdenv.isDarwin {
-    enable = true;
-    package = pkgs.neru-source;
-    config = neruQwertyConfig;
-  };
 }
