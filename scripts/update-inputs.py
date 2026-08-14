@@ -41,33 +41,20 @@ GROUPS = {
 @dataclass(frozen=True)
 class SystemTarget:
     label: str
-    build_attribute: str
-    switch_script: str
-    switch_attribute: str
-
-
-SYSTEM_TARGETS = {
-    "Darwin": SystemTarget(
-        label="macOS",
-        build_attribute=".#darwinConfigurations.macos.config.system.build.toplevel",
-        switch_script="darwin-switch",
-        switch_attribute="macos",
-    ),
-    "Linux": SystemTarget(
-        label="Linux",
-        build_attribute=".#nixosConfigurations.wsl2.config.system.build.toplevel",
-        switch_script="linux-switch",
-        switch_attribute="wsl2",
-    ),
-}
+    target: str
 
 
 def current_system_target() -> SystemTarget:
     system = platform.system()
-    try:
-        return SYSTEM_TARGETS[system]
-    except KeyError as error:
-        raise ValueError(f"unsupported operating system: {system}") from error
+    if system == "Darwin":
+        return SystemTarget(label="macOS", target="macos")
+    if system == "Linux":
+        is_wsl = "microsoft" in platform.release().lower() or bool(
+            os.environ.get("WSL_DISTRO_NAME")
+        )
+        target = "wsl2" if is_wsl else platform.node().split(".", 1)[0]
+        return SystemTarget(label="Linux", target=target)
+    raise ValueError(f"unsupported operating system: {system}")
 
 
 def parse_initial_selection(arguments: list[str]) -> set[str]:
@@ -276,7 +263,7 @@ class UpdateInputsApp(App[None]):
         self.write_log("Tracked flake.lock remains untouched until Apply.")
         self.write_log(
             f"Platform: {self.system_target.label}; "
-            f"build target: {self.system_target.build_attribute}"
+            f"explicit rebuild target: {self.system_target.target}"
         )
         self.write_log(f"Repository: {self.repo}")
 
@@ -422,9 +409,10 @@ class UpdateInputsApp(App[None]):
                 f"Building {self.system_target.label} system against candidate…"
             )
             build_command = [
-                "nix",
+                str(self.repo / "scripts" / "rebuild"),
                 "build",
-                self.system_target.build_attribute,
+                self.system_target.target,
+                "--",
                 "--no-link",
                 "--reference-lock-file",
                 str(self.candidate),
@@ -476,9 +464,9 @@ class UpdateInputsApp(App[None]):
         self.set_busy(True)
         self.set_status(f"Switching {self.system_target.label} system…")
         try:
-            switch_script = self.repo / "scripts" / self.system_target.switch_script
+            rebuild_script = self.repo / "scripts" / "rebuild"
             return_code = await self.run_command(
-                [str(switch_script), self.system_target.switch_attribute]
+                [str(rebuild_script), "switch", self.system_target.target]
             )
             if return_code == 0:
                 self.set_status(f"Switched {self.system_target.label} system")

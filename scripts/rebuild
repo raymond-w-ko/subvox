@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+usage: rebuild <build|switch> <target> [options] [-- extra command args]
+
+options:
+  --print      print the exact command without running it
+  -h, --help   show this help
+
+examples:
+  rebuild build cloudvac
+  rebuild switch cloudvac
+  rebuild build wsl2 --print
+  rebuild switch 'rko@linux'
+  rebuild build macos -- --no-link --print-build-logs
+
+Omit <target> to list valid targets without taking action.
+EOF
+}
+
+print_command() {
+  printf "+"
+  printf " %q" "$@"
+  printf "\n"
+}
+
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+
+target_names() {
+  nix eval --no-warn-dirty --raw "${repo_dir}#$1" \
+    --apply 'configs: builtins.concatStringsSep "\n" (builtins.attrNames configs)'
+}
+
+print_target_group() {
+  local label="$1"
+  local names="$2"
+
+  printf "%s:\n" "${label}"
+  while IFS= read -r name; do
+    if [[ -n "${name}" ]]; then
+      printf "  %s\n" "${name}"
+    fi
+  done <<< "${names}"
+}
+
+load_targets() {
+  nixos_targets="$(target_names nixosConfigurations)"
+  darwin_targets="$(target_names darwinConfigurations)"
+  home_targets="$(target_names homeConfigurations)"
+}
+
+list_targets() {
+  load_targets
+  printf "Allowed rebuild targets:\n"
+  print_target_group "NixOS" "${nixos_targets}"
+  print_target_group "nix-darwin" "${darwin_targets}"
+  print_target_group "Home Manager" "${home_targets}"
+}
+
+contains_target() {
+  local names="$1"
+  local wanted="$2"
+  local name
+
+  while IFS= read -r name; do
+    if [[ "${name}" == "${wanted}" ]]; then
+      return 0
+    fi
+  done <<< "${names}"
+  return 1
+}
+
+action="${1:-}"
+case "${action}" in
+  build | switch)
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    exit 64
+    ;;
+esac
+
+target="${1:-}"
+if [[ -z "${target}" || "${target}" == -* ]]; then
+  list_targets
+  exit 0
+fi
+shift
+
+print_only=0
+extra_args=()
+while (( $# > 0 )); do
+  case "$1" in
+    --print)
+      print_only=1
+      shift
+      ;;
+    --)
+      shift
+      extra_args+=("$@")
+      break
+      ;;
+    *)
+      extra_args+=("$1")
+      shift
+      ;;
+  esac
+done
+
+load_targets
+kind=""
+if contains_target "${nixos_targets}" "${target}"; then
+  kind="nixos"
+elif contains_target "${darwin_targets}" "${target}"; then
+  kind="nix-darwin"
+elif contains_target "${home_targets}" "${target}"; then
+  kind="home-manager"
+else
+  printf "error: unknown rebuild target: %s\n\n" "${target}" >&2
+  list_targets >&2
+  exit 64
+fi
+
+command=()
+case "${kind}:${action}" in
+  nixos:build)
+    command=(
+      nix build
+      "${repo_dir}#nixosConfigurations.${target}.config.system.build.toplevel"
+      "${extra_args[@]}"
+    )
+    ;;
+  nixos:switch)
+    command=(
+      sudo -H nixos-rebuild switch
+      --flake "${repo_dir}#${target}"
+      "${extra_args[@]}"
+    )
+    ;;
+  nix-darwin:build)
+    command=(
+      nix build
+      "${repo_dir}#darwinConfigurations.${target}.config.system.build.toplevel"
+      "${extra_args[@]}"
+    )
+    ;;
+  nix-darwin:switch)
+    command=(
+      sudo -H nix run nix-darwin#darwin-rebuild -- switch
+      --flake "${repo_dir}#${target}"
+      "${extra_args[@]}"
+    )
+    ;;
+  home-manager:build)
+    command=(
+      home-manager build
+      --flake "${repo_dir}#${target}"
+      "${extra_args[@]}"
+    )
+    ;;
+  home-manager:switch)
+    command=(
+      home-manager switch
+      --flake "${repo_dir}#${target}"
+      "${extra_args[@]}"
+    )
+    ;;
+esac
+
+printf "target: %s (%s)\n" "${target}" "${kind}"
+print_command "${command[@]}"
+
+if (( print_only )); then
+  exit 0
+fi
+
+exec "${command[@]}"

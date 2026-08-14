@@ -62,14 +62,15 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 # validate
 nix flake check
 
-# build without applying
-nix build .#nixosConfigurations.wsl2.config.system.build.toplevel
-nix build .#darwinConfigurations.macos.config.system.build.toplevel
+# list allowed targets without taking action
+./scripts/rebuild build
+./scripts/rebuild switch
 
-# apply changes
-./scripts/linux-switch   # nixos-rebuild switch
-./scripts/darwin-switch  # darwin-rebuild switch
-./scripts/hm-switch      # home-manager switch (auto-detects platform)
+# build or activate an explicit target
+./scripts/rebuild build cloudvac
+./scripts/rebuild switch cloudvac
+./scripts/rebuild switch 'rko@linux'  # Home Manager target
+./scripts/rebuild build wsl2 --print  # show exact command without running it
 
 # format
 nix fmt

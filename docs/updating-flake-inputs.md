@@ -17,7 +17,7 @@ You can preselect a group from the command line:
 ./scripts/update neru home-manager
 ```
 
-The updater writes changes to a temporary candidate lock first. **Generate candidate** shows direct and transitive revisions without changing `flake.lock`. **Validate + build** evaluates the flake and builds the current platform's system against that candidate: `darwinConfigurations.macos` on macOS or `nixosConfigurations.wsl2` on Linux. **Apply validated lock** replaces `flake.lock` only after validation succeeds. **Switch system** then runs the matching `darwin-switch macos` or `linux-switch wsl2` script. **Commit lock** is optional and never pushes.
+The updater writes changes to a temporary candidate lock first. **Generate candidate** shows direct and transitive revisions without changing `flake.lock`. The updater identifies its current target (`wsl2` under WSL, `macos` under Darwin, otherwise the Linux hostname) and passes that target explicitly to `scripts/rebuild`. **Validate + build** evaluates the flake, then runs `scripts/rebuild build <target>` against the candidate lock. **Apply validated lock** replaces `flake.lock` only after validation succeeds. **Switch system** runs `scripts/rebuild switch <target>`. **Commit lock** is optional and never pushes.
 
 Every action has a keyboard shortcut shown in the footer: `g` generate, `v` validate, `a` apply, `s` switch, and `c` commit. Press `q` to quit.
 
