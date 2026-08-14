@@ -72,6 +72,9 @@ nix flake check
 ./scripts/rebuild switch 'rko@linux'  # Home Manager target
 ./scripts/rebuild build wsl2 --print  # show exact command without running it
 
+# first NixOS flake switch before nix-command/flakes are enabled
+./scripts/bootstrap-nixos cloudvac
+
 # format
 nix fmt
 

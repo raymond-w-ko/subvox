@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+usage: bootstrap-nixos <target> [--print] [-- extra nixos-rebuild args]
+
+Perform the first NixOS flake switch when nix-command and flakes are not yet
+enabled by the running system. The feature override applies only to this
+command; the activated configuration enables both features permanently.
+
+examples:
+  bootstrap-nixos cloudvac
+  bootstrap-nixos cloudvac --print
+EOF
+}
+
+print_command() {
+  printf "+"
+  printf " %q" "$@"
+  printf "\n"
+}
+
+target="${1:-}"
+case "${target}" in
+  "" | -h | --help)
+    usage
+    if [[ -z "${target}" ]]; then
+      exit 64
+    fi
+    exit 0
+    ;;
+esac
+shift
+
+print_only=0
+extra_args=()
+while (( $# > 0 )); do
+  case "$1" in
+    --print)
+      print_only=1
+      shift
+      ;;
+    --)
+      shift
+      extra_args+=("$@")
+      break
+      ;;
+    *)
+      extra_args+=("$1")
+      shift
+      ;;
+  esac
+done
+
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+bootstrap_config="extra-experimental-features = nix-command flakes"
+command=(
+  sudo -H env "NIX_CONFIG=${bootstrap_config}"
+  nixos-rebuild switch
+  --flake "${repo_dir}#${target}"
+  "${extra_args[@]}"
+)
+
+printf "one-time NixOS bootstrap target: %s\n" "${target}"
+print_command "${command[@]}"
+
+if (( print_only )); then
+  exit 0
+fi
+
+exec "${command[@]}"
