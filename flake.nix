@@ -36,572 +36,72 @@
 
   outputs =
     inputs@{
-      self,
       nixpkgs,
-      nixos-wsl,
       nix-darwin,
       home-manager,
-      rust-overlay,
-      neru,
-      claude-code,
-      codex-cli-nix,
       ...
     }:
     let
       user = "rko";
+      packageConfig = import ./lib/packages.nix { inherit inputs; };
 
-      # Overlay for custom packages
-      customOverlay =
-        final: prev:
-        let
-          zigPackages = prev.lib.recurseIntoAttrs (
-            final.callPackage ./pkgs/zig {
-              zigVersions = {
-                "0.15.2" = {
-                  llvmPackages = final.llvmPackages_20;
-                  hash = "sha256-u3pEMcYN71d83MJh14vtzU4DJXnMHu/Jw86d9XvwKE8=";
-                  patches = [ ./pkgs/zig/xcode-26.4-compat.patch ];
-                };
-              };
-            }
-          );
-          zig = zigPackages."0.16";
-        in
-        {
-          pythonPackagesExtensions =
-            prev.pythonPackagesExtensions
-            ++ prev.lib.optionals prev.stdenv.hostPlatform.isDarwin [
-              (python-final: python-prev: {
-                afdko = python-prev.afdko.overridePythonAttrs (old: {
-                  doCheck = false;
-                  # pythonPackages.cmake's wrapper fails scikit-build-core's lipo probe on Darwin.
-                  env = (old.env or { }) // {
-                    CMAKE_EXECUTABLE = "${final.cmake}/bin/cmake";
-                  };
-                });
-
-                # Upstream race: https://github.com/ipython/ipython/issues/12164
-                ipython = python-prev.ipython.overridePythonAttrs (old: {
-                  disabledTests = (old.disabledTests or [ ]) ++ [ "test_system_interrupt" ];
-                });
-              })
-            ];
-
-          mactop = prev.callPackage ./pkgs/mactop/package.nix { };
-          raycast = prev.callPackage ./pkgs/raycast/package.nix { };
-
-          inherit zigPackages zig;
-          zig_0_13 = zigPackages."0.13";
-          zig_0_14 = zigPackages."0.14";
-          zig_0_15 = zigPackages."0.15";
-          zig_0_16 = zig;
-
-          zigStdenv = if prev.stdenv.cc.isZig then prev.stdenv else prev.lowPrio zig.passthru.stdenv;
-        }
-        // prev.lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
-          # Temporary workaround until nixpkgs PR #536365 reaches nixos-unstable.
-          ld64 = prev.ld64.overrideAttrs {
-            hardeningDisable = [ "libcxxhardeningfast" ];
-          };
-        };
-
-      # Unfree packages we allow
-      allowedUnfree = [
-        "claude-code"
-        "raycast"
-      ];
-
-      # Create pkgs for a given system with our overlays
-      mkPkgs =
-        system:
-        import nixpkgs {
-          inherit system;
-          overlays = [
-            (import rust-overlay)
-            neru.overlays.default
-            customOverlay
-          ];
-          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) allowedUnfree;
-        };
-
-      # Shared nix settings
-      nixSettings = {
-        nix.settings.experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
-        nix.gc = {
-          automatic = true;
-          options = "--delete-older-than 30d";
-        };
+      specialArgs = {
+        inherit inputs user packageConfig;
       };
 
-      # Shared nixpkgs config (for NixOS/darwin modules)
-      nixpkgsConfig =
-        { lib, ... }:
+      mkHome =
         {
-          nixpkgs.overlays = [
-            (import rust-overlay)
-            neru.overlays.default
-            claude-code.overlays.default
-            customOverlay
-          ];
-          nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allowedUnfree;
-        };
-
-      # Font configuration (system-level)
-      fontConfig =
-        { pkgs, ... }:
-        let
-          myPkgs = import ./packages.nix { inherit pkgs codex-cli-nix; };
-        in
-        {
-          fonts.packages = myPkgs.fonts;
-        };
-
-      neruQwertyConfig = builtins.readFile ./configs/neru-qwerty.toml;
-
-      # Core home-manager config (shared across all platforms)
-      homeManagerConfig =
-        {
-          lib,
-          pkgs,
-          config,
-          ...
+          system,
+          homeDirectory,
+          extraModules ? [ ],
         }:
-        let
-          repoDir = "${config.home.homeDirectory}/subvox";
-          dotfilesDir = "${repoDir}/home";
-          myPkgs = import ./packages.nix { inherit pkgs codex-cli-nix; };
-        in
-        {
-          imports = [ neru.homeManagerModules.default ];
-
-          # Install packages via home-manager
-          home.packages = myPkgs.forHome;
-
-          home.sessionVariables.LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
-
-          # Disable manual generation to avoid builtins.toFile warning
-          manual.manpages.enable = false;
-
-          # `programs.fish` enables man caches by default, but some Home Manager
-          # profiles resolve `programs.man.package` to null (notably macOS).
-          programs.man.generateCaches = config.programs.man.package != null;
-
-          xdg.enable = true;
-
-          home.file.".config/nvim/".source =
-            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/nvim";
-          home.file.".config/ghostty/".source =
-            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/ghostty";
-
-          home.file.".codex/config.template.toml".source =
-            config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
-          home.file.".claude/CLAUDE.md".source =
-            config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
-          home.file.".codex/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
-          home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
-
-          programs.direnv = {
-            enable = true;
-            nix-direnv.enable = true;
-            enableBashIntegration = true;
-            enableZshIntegration = true;
-          };
-
-          programs.zoxide = {
-            enable = true;
-            enableBashIntegration = true;
-            enableZshIntegration = true;
-            enableFishIntegration = true;
-            options = [
-              "--cmd"
-              "j"
-            ];
-          };
-
-          programs.fzf = {
-            enable = true;
-            enableBashIntegration = true;
-            enableZshIntegration = true;
-            enableFishIntegration = true;
-          };
-
-          programs.bash = {
-            enable = true;
-          };
-          programs.fish = {
-            enable = true;
-            interactiveShellInit = ''
-              set fish_greeting
-              fish_config theme choose ayu-mirage
-              set -gx fish_prompt_pwd_dir_length 3
-              set -gx fish_prompt_pwd_full_dirs 3
-
-              fish_add_path $HOME/subvox/bin
-              fish_add_path $HOME/bin
-
-              set -l newpath (for p in $PATH
-                if not string match -rq '^/mnt/c/' -- $p
-                  echo $p
-                end
-              end)
-              set -gx PATH (string join ":" $newpath)
-
-              test -f $HOME/.config/secrets.fish && source $HOME/.config/secrets.fish
-            '';
-            shellAbbrs = {
-              e = "eza -l";
-              ee = "eza -la";
-              l = "eza -l";
-              ll = "eza -la";
-              v = "nvim";
-              cd = "__zoxide_z";
-
-              g = "git";
-              gs = "git status";
-              gsw = "git switch";
-              gcfxd = "git clean -fxd";
-              gd = "git diff";
-
-              ga = "git add";
-              gf = "git fetch";
-              gl = "git pull";
-              gm = "git merge";
-              gc = "git commit";
-              gca = "git commit -a";
-              gcam = "git commit -a -m";
-              gcav = "git commit -a -v";
-              gp = "git push";
-              gpfnv = "git push --force-with-lease --no-verify";
-
-              ts = "tmux new -s";
-              ta = "tmux attach -d -t";
-              tl = "tmux list-sessions";
-
-              oc = "opencode";
-              c = "claude --dangerously-skip-permissions";
-              x = "codex --yolo";
-              i = "pi.sh";
-              ir = "pi.sh --resume";
-
-              ".." = "__zoxide_z ..";
-              "..." = "__zoxide_z ../..";
-              "...." = "__zoxide_z ../../..";
-              "....." = "__zoxide_z ../../../..";
-            };
-          };
-          programs.tmux = {
-            enable = true;
-            terminal = "tmux-256color";
-            prefix = "f4";
-            keyMode = "emacs";
-            mouse = true;
-            focusEvents = true;
-            clock24 = true;
-            newSession = false;
-            baseIndex = 1;
-            historyLimit = 10000;
-            extraConfig = ''
-              set -g default-shell ${pkgs.fish}/bin/fish
-              set -g status-justify centre
-              set -g status-position top
-              setw -g monitor-activity on
-            '';
-            plugins = with pkgs; [
-              {
-                plugin = tmuxPlugins.sensible;
-              }
-              {
-                plugin = tmuxPlugins.catppuccin;
-                extraConfig = ''
-                  set -g @catppuccin_flavor "frappe"
-                  set -g @catppuccin_window_status_style "basic"
-                  set -g status-right-length 100
-                  set -g status-left-length 100
-                  set -g status-left ""
-                  set -g status-right "#{E:@catppuccin_status_application}"
-                  set -ag status-right "#{E:@catppuccin_status_session}"
-                  set -ag status-right "#{E:@catppuccin_status_uptime}"
-                '';
-              }
-            ];
-          };
-          programs.git = {
-            enable = true;
-            lfs.enable = true;
-            settings = {
-              user.name = "Raymond W. Ko";
-              user.email = "raymond.w.ko@gmail.com";
-              pull.rebase = true;
-              init.defaultBranch = "master";
-              core = {
-                autocrlf = false;
-                eol = "lf";
-                pager = "delta";
-              };
-              credential.helper = "";
-              credential."https://github.com".helper = "!gh auth git-credential";
-              credential."https://gist.github.com".helper = "!gh auth git-credential";
-              alias = {
-                co = "checkout";
-                br = "branch";
-                cp = "cherry-pick";
-                dl = "-c diff.external=difft log -p --ext-diff";
-                ds = "-c diff.external=difft show --ext-diff";
-                dft = "-c diff.external=difft diff";
-                undo = "reset --soft HEAD^";
-                lg = "log --graph --full-history --pretty=format:\"%h%x09%ar%x09%d%x20%s\"";
-              };
-            };
-          };
-          programs.lazygit = {
-            enable = true;
-            enableBashIntegration = true;
-            enableZshIntegration = true;
-            enableFishIntegration = true;
-            shellWrapperName = "lg";
-            settings = {
-              gui.theme = {
-                lightTheme = false;
-              };
-            };
-          };
-          programs.neovim = {
-            enable = true;
-            defaultEditor = true;
-            vimAlias = true;
-            sideloadInitLua = true;
-          };
-          programs.bun = {
-            enable = true;
-          };
-          programs.uv = {
-            enable = true;
-          };
-
-          programs.gpg = {
-            enable = true;
-          };
-
-          services.neru = lib.mkIf pkgs.stdenv.isDarwin {
-            enable = true;
-            package = pkgs.neru-source;
-            config = neruQwertyConfig;
-          };
-        };
-
-      # Linux-specific home-manager additions
-      linuxHomeManagerConfig =
-        { pkgs, config, ... }:
-        {
-          home.packages = [ pkgs.dconf ];
-
-          dconf = {
-            enable = true;
-            settings = {
-              "org/gnome/desktop/interface" = {
-                enable-animations = false;
-              };
-            };
-          };
-        };
-
-      # NixOS/darwin shared system config
-      systemConfig =
-        { lib, pkgs, ... }:
-        {
-          time.timeZone = "America/New_York";
-          security.sudo.keepTerminfo = true;
-          programs.fish.enable = true;
-          users.users."${user}".shell = pkgs.fish;
-        };
-
-      # Linux-specific system config
-      linuxSystemConfig =
-        { pkgs, ... }:
-        {
-          nix.settings.trusted-users = [ "${user}" ];
-          nix.gc.dates = "weekly";
-          environment.localBinInPath = true;
-          environment.sessionVariables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
-          environment.sessionVariables.LIBRARY_PATH = "${pkgs.sqlite.out}/lib:${pkgs.openssl.out}/lib";
-          programs.nix-ld.enable = true;
-          users.users."${user}".isNormalUser = true;
-
-          fonts = {
-            fontDir.enable = true;
-            fontconfig.useEmbeddedBitmaps = true;
-            enableDefaultPackages = true;
-          };
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users."${user}" = {
-            imports = [
-              homeManagerConfig
-              linuxHomeManagerConfig
-            ];
-          };
-        };
-
-      # WSL2-specific config
-      wsl2Config =
-        { pkgs, ... }:
-        {
-          wsl.enable = true;
-          wsl.defaultUser = user;
-          wsl.useWindowsDriver = true;
-          system.stateVersion = "25.05";
-
-          hardware.graphics.enable = true;
-          hardware.graphics.enable32Bit = true;
-          environment.systemPackages = with pkgs; [
-            mesa
-            mesa-demos
-            glmark2
-            gst_all_1.gstreamer
-            gst_all_1.gst-plugins-base
-            gst_all_1.gst-plugins-good
-            gst_all_1.gst-plugins-bad
-            gst_all_1.gst-plugins-ugly
-            gst_all_1.gst-libav
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = packageConfig.mkPkgs system;
+          extraSpecialArgs = specialArgs;
+          modules = [
+            ./home/common.nix
+          ]
+          ++ extraModules
+          ++ [
+            {
+              home.username = user;
+              home.homeDirectory = homeDirectory;
+              home.stateVersion = "26.05";
+            }
           ];
-          environment.sessionVariables.GST_PLUGIN_PATH = with pkgs.gst_all_1; [
-            "${gst-plugins-base}/lib/gstreamer-1.0"
-            "${gst-plugins-good}/lib/gstreamer-1.0"
-            "${gst-plugins-bad}/lib/gstreamer-1.0"
-            "${gst-plugins-ugly}/lib/gstreamer-1.0"
-            "${gst-libav}/lib/gstreamer-1.0"
-          ];
-          environment.sessionVariables.LD_LIBRARY_PATH = [ "/run/opengl-driver/lib/" ];
-          environment.sessionVariables.GALLIUM_DRIVER = "d3d12";
-          environment.sessionVariables.MESA_D3D12_DEFAULT_ADAPTER_NAME = "Nvidia";
-          environment.sessionVariables.GDK_BACKEND = "x11";
         };
-
-      # macOS-specific system config
-      macosSystemConfig =
-        { pkgs, ... }:
-        {
-          nix.gc.interval = {
-            Weekday = 0;
-            Hour = 0;
-            Minute = 0;
-          };
-          system.configurationRevision = self.rev or self.dirtyRev or null;
-          system.stateVersion = 6;
-          nixpkgs.hostPlatform = "aarch64-darwin";
-          nix.enable = true;
-
-          system.primaryUser = "${user}";
-          system.defaults.NSGlobalDomain.NSWindowShouldDragOnGesture = true;
-
-          environment.variables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
-
-          environment.shells = with pkgs; [
-            bash
-            fish
-            zsh
-          ];
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users."${user}" = homeManagerConfig;
-        };
-
     in
     {
-      ########################
-      # formatter
-      ########################
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
       formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt-tree;
 
-      ########################
-      # nixos
-      ########################
-      nixosConfigurations = {
-        wsl2 = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            nixos-wsl.nixosModules.default
-            home-manager.nixosModules.home-manager
-            nixpkgsConfig
-            nixSettings
-            systemConfig
-            fontConfig
-            linuxSystemConfig
-            wsl2Config
-            { home-manager.users."${user}".home.stateVersion = "26.05"; }
-          ];
-        };
+      nixosConfigurations.wsl2 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        inherit specialArgs;
+        modules = [ ./hosts/wsl2 ];
       };
 
-      ########################
-      # darwin
-      ########################
-      darwinConfigurations = {
-        macos = nix-darwin.lib.darwinSystem {
-          modules = [
-            home-manager.darwinModules.home-manager
-            nixpkgsConfig
-            nixSettings
-            systemConfig
-            fontConfig
-            macosSystemConfig
-            {
-              users.users.${user}.home = "/Users/${user}";
-              home-manager.users.${user}.home.stateVersion = "26.05";
-            }
-          ];
-        };
+      darwinConfigurations.macos = nix-darwin.lib.darwinSystem {
+        inherit specialArgs;
+        modules = [ ./hosts/macos ];
       };
 
-      ########################
-      # standalone home-manager
-      ########################
       homeConfigurations = {
-        # Generic Linux (non-NixOS)
-        "${user}@linux" = home-manager.lib.homeManagerConfiguration {
-          pkgs = mkPkgs "x86_64-linux";
-          modules = [
-            homeManagerConfig
-            linuxHomeManagerConfig
-            {
-              home.username = user;
-              home.homeDirectory = "/home/${user}";
-              home.stateVersion = "26.05";
-            }
-          ];
+        "${user}@linux" = mkHome {
+          system = "x86_64-linux";
+          homeDirectory = "/home/${user}";
+          extraModules = [ ./home/linux.nix ];
         };
 
-        # Generic macOS (without nix-darwin)
-        "${user}@macos" = home-manager.lib.homeManagerConfiguration {
-          pkgs = mkPkgs "aarch64-darwin";
-          modules = [
-            homeManagerConfig
-            {
-              home.username = user;
-              home.homeDirectory = "/Users/${user}";
-              home.stateVersion = "26.05";
-            }
-          ];
+        "${user}@macos" = mkHome {
+          system = "aarch64-darwin";
+          homeDirectory = "/Users/${user}";
         };
 
-        # ARM Linux (e.g., Raspberry Pi, ARM server)
-        "${user}@linux-arm" = home-manager.lib.homeManagerConfiguration {
-          pkgs = mkPkgs "aarch64-linux";
-          modules = [
-            homeManagerConfig
-            linuxHomeManagerConfig
-            {
-              home.username = user;
-              home.homeDirectory = "/home/${user}";
-              home.stateVersion = "26.05";
-            }
-          ];
+        "${user}@linux-arm" = mkHome {
+          system = "aarch64-linux";
+          homeDirectory = "/home/${user}";
+          extraModules = [ ./home/linux.nix ];
         };
       };
     };
