@@ -135,6 +135,8 @@ in
     historyLimit = 10000;
     extraConfig = ''
       set -g default-shell ${pkgs.fish}/bin/fish
+      set -g extended-keys on
+      set -g extended-keys-format csi-u
       set -g status-justify centre
       set -g status-position top
       setw -g monitor-activity on
