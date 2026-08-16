@@ -12,7 +12,12 @@ in
 {
   home.packages = developmentPackages.forHome;
 
-  home.sessionVariables.LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
+  home.sessionVariables = {
+    LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
+  }
+  // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+    SSL_CERT_FILE = "/etc/ssl/certs/ca-bundle.crt";
+  };
 
   # Disable manual generation to avoid builtins.toFile warning.
   manual.manpages.enable = false;
