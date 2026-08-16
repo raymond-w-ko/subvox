@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   imports = [
     ../../modules/nixos/base.nix
@@ -9,6 +10,8 @@
 
   networking.hostName = "nixvac";
   services.tailscale.extraSetFlags = [ "--hostname=nixvac" ];
+
+  environment.systemPackages = [ pkgs.ghostty.terminfo ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
