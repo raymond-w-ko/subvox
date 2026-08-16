@@ -12,11 +12,14 @@ let
       });
     };
   };
-  pythonPkg = if pkgs.stdenv.isDarwin then pythonDarwin else pkgs.python314;
+  pythonPkg = if pkgs.stdenv.hostPlatform.isDarwin then pythonDarwin else pkgs.python314;
   poetryPkg =
     let
       poetryApplication =
-        if pkgs.stdenv.isDarwin then pkgs.poetry.override { python3 = pythonDarwin; } else pkgs.poetry;
+        if pkgs.stdenv.hostPlatform.isDarwin then
+          pkgs.poetry.override { python3 = pythonDarwin; }
+        else
+          pkgs.poetry;
       # Temporary workaround for https://github.com/NixOS/nixpkgs/issues/544083.
       patchedPoetryPackage = poetryApplication.python.pkgs.poetry.overridePythonAttrs (old: {
         disabledTests = (old.disabledTests or [ ]) ++ [
@@ -117,7 +120,8 @@ let
   ];
 
   platform =
-    (if pkgs.stdenv.isDarwin then darwin else [ ]) ++ (if pkgs.stdenv.isLinux then linux else [ ]);
+    (if pkgs.stdenv.hostPlatform.isDarwin then darwin else [ ])
+    ++ (if pkgs.stdenv.hostPlatform.isLinux then linux else [ ]);
 in
 {
   inherit common linux darwin;

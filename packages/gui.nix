@@ -20,7 +20,8 @@ let
   ];
 
   platform =
-    (if pkgs.stdenv.isDarwin then darwin else [ ]) ++ (if pkgs.stdenv.isLinux then linux else [ ]);
+    (if pkgs.stdenv.hostPlatform.isDarwin then darwin else [ ])
+    ++ (if pkgs.stdenv.hostPlatform.isLinux then linux else [ ]);
 in
 {
   inherit linux darwin;
