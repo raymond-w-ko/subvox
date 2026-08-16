@@ -13,6 +13,10 @@
 
   environment.systemPackages = [ pkgs.ghostty.terminfo ];
 
+  security.sudo.extraConfig = ''
+    @includedir /etc/sudoers.d
+  '';
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
