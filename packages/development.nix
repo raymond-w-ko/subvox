@@ -45,6 +45,13 @@ let
     htop
     btop
     file
+    which
+    tree
+    less
+    rsync
+    lsof
+    patch
+    bc
     curl
     wget
     ripgrep
@@ -110,6 +117,17 @@ let
     sqlite.dev
     bubblewrap
     traceroute
+
+    # system diagnostics
+    procps
+    psmisc
+    util-linux
+    iproute2
+    iputils
+    dnsutils
+    pciutils
+    usbutils
+    strace
 
     perf
     kcov
