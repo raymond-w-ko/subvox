@@ -44,6 +44,7 @@ let
     gnumake
     htop
     btop
+    file
     curl
     wget
     ripgrep
