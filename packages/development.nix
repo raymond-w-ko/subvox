@@ -43,6 +43,7 @@ let
     gh
     gnumake
     htop
+    btop
     curl
     wget
     ripgrep
