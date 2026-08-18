@@ -31,8 +31,6 @@ in
   home.file.".config/nvim/".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.config/nvim";
 
-  home.file.".codex/config.template.toml".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.codex/config.template.toml";
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".codex/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
