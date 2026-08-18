@@ -140,11 +140,11 @@ const callLine = (theme: any, name: string, rest: string, bg?: (l: string) => st
 // pending -> success/error. pi only auto-fills a full row when the Text has a
 // customBgFn (4th arg), so each call line carries one. Status must live in
 // context.state: it belongs to one tool row, not every row sharing a tool name.
-type ToolStatus = "pending" | "ok" | "err";
+type ToolStatus = "pending" | "ok" | "noop" | "err";
 
 function statusBg(theme: any, ctx: any): ((l: string) => string) | undefined {
   const status: ToolStatus = ctx?.state?.compactToolStatus ?? "pending";
-  const key = status === "pending" ? "toolPendingBg" : status === "ok" ? "toolSuccessBg" : "toolErrorBg";
+  const key = status === "pending" ? "toolPendingBg" : status === "err" ? "toolErrorBg" : "toolSuccessBg";
   return (l: string) => theme.bg(key, l);
 }
 
@@ -218,10 +218,17 @@ function renderReadResult(result: any, { expanded, isPartial }: any, theme: any,
   if (isPartial) return running(theme, "reading");
   const details = result.details as ReadToolDetails | undefined;
   setToolStatus(resultIsError("read", getText(result), undefined) ? "err" : "ok", ctx);
-  if (details?.truncation?.truncated) {
-    return new Text(theme.fg("warning", `(truncated from ${details.truncation.totalLines} lines)`), 0, 0);
-  }
   if (!expanded) return collapsedNone(theme);
+  if (details?.truncation?.truncated) {
+    const lines = getText(result)
+      .replace(/\r/g, "")
+      .trimEnd()
+      .split("\n")
+      .map((line) => theme.fg("toolOutput", line));
+    if (lines.some(Boolean)) lines.push("");
+    lines.push(theme.fg("warning", `(truncated from ${details.truncation.totalLines} lines)`));
+    return new Text(lines.join("\n"), 1, 0);
+  }
   return fullOutput(result, theme);
 }
 
@@ -411,8 +418,36 @@ function renderHashlineCall(name: "replace" | "undo", args: any, theme: any, ctx
   beginRenderedCall(ctx);
   const path = shortenPath(args.path ?? args.file_path);
   const status: ToolStatus = ctx?.state?.compactToolStatus ?? "pending";
-  const word = status === "ok" ? theme.fg("success", " applied") : status === "err" ? theme.fg("error", " failed") : "";
+  const word =
+    status === "ok"
+      ? theme.fg("success", " applied")
+      : status === "noop"
+        ? theme.fg("warning", " unchanged")
+        : status === "err"
+          ? theme.fg("error", " failed")
+          : "";
   return callLine(theme, name, theme.fg("accent", path || "...") + word, statusBg(theme, ctx));
+}
+
+type HashlineToolName = "replace" | "undo_last_replace";
+
+function classifyHashlineResult(toolName: HashlineToolName, result: any, ctx: any, content: string): ToolStatus {
+  const details = result?.details;
+  const isError = Boolean(
+    ctx?.isError ||
+    result?.isError ||
+    details?.error ||
+    /^\[E_[A-Z_]+\]/.test(content) ||
+    (toolName === "undo_last_replace" && /^No undo history\b/i.test(content)) ||
+    resultIsError(toolName, content, details),
+  );
+  if (isError) return "err";
+
+  const classification = details?.classification ?? details?.metrics?.classification;
+  if (toolName === "replace" && (classification === "noop" || /^No changes made\b/i.test(content))) {
+    return "noop";
+  }
+  return "ok";
 }
 
 function renderHashlineResult(
@@ -420,21 +455,16 @@ function renderHashlineResult(
   { expanded, isPartial }: any,
   theme: any,
   ctx: any,
+  toolName: HashlineToolName,
   label: string,
 ): Text {
   if (isPartial) return running(theme, label);
   const content = getText(result);
-  const isError = Boolean(
-    ctx?.isError ||
-    result?.isError ||
-    result?.details?.error ||
-    /^\[E_[A-Z_]+\]/.test(content) ||
-    resultIsError(label, content, result?.details),
-  );
-  setToolStatus(isError ? "err" : "ok", ctx);
+  const status = classifyHashlineResult(toolName, result, ctx, content);
+  setToolStatus(status, ctx);
 
   if (!expanded) {
-    if (!isError) return collapsedNone(theme);
+    if (status !== "err") return collapsedNone(theme);
     const firstLine = content.split("\n")[0]?.trim() || "failed";
     return new Text(theme.fg("error", firstLine), 0, 0, (line) => theme.bg("toolErrorBg", line));
   }
@@ -508,15 +538,36 @@ function registerBuiltin(
 }
 
 const HASHLINE_PACKAGE_ID = "pi-hashline-edit-pro";
+const HASHLINE_TOOL_NAMES = new Set(["read", "replace", "undo_last_replace"]);
 
 function hasHashlineEditPro(pi: ExtensionAPI): boolean {
-  const hashlineTools = new Set(
-    pi
-      .getAllTools()
-      .filter((tool) => tool.sourceInfo?.source?.includes(HASHLINE_PACKAGE_ID))
+  const tools = pi.getAllTools().filter((tool) => HASHLINE_TOOL_NAMES.has(tool.name));
+  const explicitTools = new Set(
+    tools
+      .filter((tool) =>
+        [tool.sourceInfo?.source, tool.sourceInfo?.path, tool.sourceInfo?.baseDir].some((value) =>
+          value?.includes(HASHLINE_PACKAGE_ID),
+        ),
+      )
       .map((tool) => tool.name),
   );
-  return hashlineTools.has("read") && hashlineTools.has("replace");
+  if (explicitTools.has("read") && explicitTools.has("replace")) return true;
+
+  // Path-loaded extensions use generic sources such as "local", "auto", or
+  // "cli". The read/replace/undo trio sharing one extension path uniquely
+  // identifies Hashline without depending on package-manager provenance.
+  const toolsByPath = new Map<string, Set<string>>();
+  for (const tool of tools) {
+    const sourcePath = tool.sourceInfo?.path ?? tool.sourceInfo?.baseDir;
+    if (!sourcePath || tool.sourceInfo?.source === "builtin") continue;
+    const names = toolsByPath.get(sourcePath) ?? new Set<string>();
+    names.add(tool.name);
+    toolsByPath.set(sourcePath, names);
+  }
+
+  return [...toolsByPath.values()].some(
+    (names) => names.has("read") && names.has("replace") && names.has("undo_last_replace"),
+  );
 }
 
 function registerHashlineRenderers(pi: ExtensionAPI): void {
@@ -529,13 +580,13 @@ function registerHashlineRenderers(pi: ExtensionAPI): void {
     renderShell: "self",
     renderCall: (args, theme, ctx) => renderHashlineCall("replace", args, theme, ctx),
     renderResult: (result, options, theme, ctx) =>
-      renderHashlineResult(result, options, theme, ctx, "replacing"),
+      renderHashlineResult(result, options, theme, ctx, "replace", "replacing"),
   });
   pi.registerToolRenderer("undo_last_replace", {
     renderShell: "self",
     renderCall: (args, theme, ctx) => renderHashlineCall("undo", args, theme, ctx),
     renderResult: (result, options, theme, ctx) =>
-      renderHashlineResult(result, options, theme, ctx, "undoing"),
+      renderHashlineResult(result, options, theme, ctx, "undo_last_replace", "undoing"),
   });
 }
 
@@ -550,6 +601,10 @@ function registerFileToolRenderers(pi: ExtensionAPI): void {
   registerBuiltin(pi, "read", { renderCall: renderReadCall, renderResult: renderReadResult });
   registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
   registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
+  // These wrappers were extension tools before provenance selection moved to
+  // session_start. Keep them active when built-ins are disabled; Pi still
+  // enforces explicit tool allowlists and denylists in setActiveTools().
+  pi.setActiveTools([...new Set([...pi.getActiveTools(), "read", "edit", "write"])]);
 }
 
 // ============================================================================

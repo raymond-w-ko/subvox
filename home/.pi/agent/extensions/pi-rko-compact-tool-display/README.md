@@ -9,7 +9,8 @@ Live TUI:
 - Every supported tool call renders as **ONE line** — the invocation (`read ~/x.ts:5-14`,
   `$ git status (30s)`, `edit /tmp/a.ts (2 edits)`, `ffgrep /symbol/ in src/`, `todo update #3`, ...).
 - Collapsed tool **results render nothing** extra, so each tool block stays a
-  single line (errors still surface collapsed).
+  single line. Errors still surface collapsed; Hashline no-ops show `unchanged`
+  instead of `applied`.
 - Press `ctrl+o` (`app.tools.expand`) to reveal a tool's full output inline.
 - **Thinking blocks and normal assistant messages are untouched** — they render
   as full, multi-line Markdown (Pi's own `AssistantMessageComponent`).
@@ -31,11 +32,12 @@ File tools are selected at `session_start`, after every extension factory has ru
 - When `pi-hashline-edit-pro` is present, `read`, `replace`, and
   `undo_last_replace` receive renderer-only overrides through
   `pi.registerToolRenderer`, preserving Hashline schemas, metadata, and
-  execution. Its `edit` disablement remains intact. Built-in `write` still gets
+  execution. Detection supports package-manager provenance plus local, auto-discovered,
+  and CLI paths. Its `edit` disablement remains intact. Built-in `write` still gets
   the compact wrapper because Hashline does not replace that tool; it post-processes
   write results to add auto-read anchors.
 - Without `pi-hashline-edit-pro`, built-in `read`, `edit`, and `write` get the
-  compact wrappers.
+  compact wrappers and remain active as extension tools under `--no-builtin-tools`.
 
 No load-last naming trick is required. Pi allows renderer overrides before or after
 their target tool, and `session_start` sees the final registered-tool provenance.
@@ -52,14 +54,19 @@ virtual modules.
 Already dropped in `~/.pi/agent/extensions/` (auto-discovered). Restart pi or run
 `/reload`.
 
-## Typecheck
+## Verify
 
-```
-npm i -D typescript @types/node   # optional, only to typecheck
+```sh
+# Typecheck from this directory
 npx tsc -p tsconfig.json
+
+# Integration tests through Pi's real extension loader
+cd ~/src/pi
+node_modules/.bin/tsx ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/index.test.ts
 ```
 
-(tsconfig points `node_modules` symlink at `~/src/pi/node_modules` for types.)
+Typecheck uses the `node_modules` symlink to `~/src/pi/node_modules`. Integration
+tests also expect the documented `~/src/pi-hashline-edit-pro` checkout.
 
 ## Config
 
@@ -115,6 +122,7 @@ command is already shown, so a miss costs nothing).
 ## Files
 
 - `index.ts` — entry + all renderers
+- `index.test.ts` — real-loader regression tests for file-tool integration
 - `llm.ts` — Pi-native one-shot completion bridge (reuses provider/auth)
 - `translate.ts` — background bash translator + in-flight dedupe
 - `cache.ts` — persistent SQLite cache (`node:sqlite`, ~/.cache)
