@@ -69,7 +69,7 @@ in
     enable = true;
     interactiveShellInit = ''
       set fish_greeting
-      fish_config theme choose ayu-mirage
+      fish_config theme choose base16-default --color-theme=dark
       set -gx fish_prompt_pwd_dir_length 3
       set -gx fish_prompt_pwd_full_dirs 3
 
