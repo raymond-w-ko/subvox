@@ -22,14 +22,27 @@ Transcript / HTML export:
 
 ## How it works
 
-Re-registers the built-in tools (`read`, `grep`, `find`, `ls`, `bash`, `edit`,
-`write`) under the same name via `pi.registerTool`, delegating `execute()` to
-the originals (`createReadTool(cwd)` etc., cached per-cwd) so behavior is
-unchanged, and supplies custom `renderCall` / `renderResult`.
+Always re-registers the built-in `grep`, `find`, `ls`, and `bash` tools under the
+same names via `pi.registerTool`, delegating `execute()` to the originals
+(`createReadTool(cwd)` etc., cached per-cwd) so behavior is unchanged.
 
-The external `todo`, `ffgrep`, and `fffind` tools receive renderer-only overrides
-through `pi.registerToolRenderer`, preserving their original schemas, state, and
-execution while replacing only TUI rendering.
+File tools are selected at `session_start`, after every extension factory has run:
+
+- When `pi-hashline-edit-pro` is present, `read`, `replace`, and
+  `undo_last_replace` receive renderer-only overrides through
+  `pi.registerToolRenderer`, preserving Hashline schemas, metadata, and
+  execution. Its `edit` disablement remains intact. Built-in `write` still gets
+  the compact wrapper because Hashline does not replace that tool; it post-processes
+  write results to add auto-read anchors.
+- Without `pi-hashline-edit-pro`, built-in `read`, `edit`, and `write` get the
+  compact wrappers.
+
+No load-last naming trick is required. Pi allows renderer overrides before or after
+their target tool, and `session_start` sees the final registered-tool provenance.
+
+External `todo`, `ffgrep`, and `fffind` tools also receive renderer-only overrides,
+preserving their original schemas, state, and execution while replacing only TUI
+rendering.
 
 No `npm install` needed — Pi's jiti loader provides `@earendil-works/pi-*` as
 virtual modules.

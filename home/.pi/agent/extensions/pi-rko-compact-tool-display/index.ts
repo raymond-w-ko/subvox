@@ -19,8 +19,9 @@
  *
  * Mechanism: re-register built-in tools with the same name (delegating
  * execute() to the originals via create*Tool(cwd)), supplying custom
- * renderCall/renderResult. Selected third-party tools use Pi's renderer-only
- * override API so their original execution stays intact.
+ * renderCall/renderResult. When pi-hashline-edit-pro is loaded, keep its
+ * read/replace/undo execution intact through Pi's renderer-only override API
+ * and only wrap built-in write; otherwise wrap built-in read/edit/write.
  */
 
 import type {
@@ -116,6 +117,8 @@ const NAME_COLOR: Record<string, string> = {
   find: "accent",
   ls: "accent",
   edit: "warning",
+  replace: "warning",
+  undo: "warning",
   write: "success",
   bash: "bashMode",
   "$": "bashMode",
@@ -403,6 +406,54 @@ function renderEditResult(result: any, { expanded, isPartial }: any, theme: any,
   return fullOutput(result, theme);
 }
 
+// --- pi-hashline-edit-pro mutations ---
+function renderHashlineCall(name: "replace" | "undo", args: any, theme: any, ctx?: any): Text {
+  beginRenderedCall(ctx);
+  const path = shortenPath(args.path ?? args.file_path);
+  const status: ToolStatus = ctx?.state?.compactToolStatus ?? "pending";
+  const word = status === "ok" ? theme.fg("success", " applied") : status === "err" ? theme.fg("error", " failed") : "";
+  return callLine(theme, name, theme.fg("accent", path || "...") + word, statusBg(theme, ctx));
+}
+
+function renderHashlineResult(
+  result: any,
+  { expanded, isPartial }: any,
+  theme: any,
+  ctx: any,
+  label: string,
+): Text {
+  if (isPartial) return running(theme, label);
+  const content = getText(result);
+  const isError = Boolean(
+    ctx?.isError ||
+    result?.isError ||
+    result?.details?.error ||
+    /^\[E_[A-Z_]+\]/.test(content) ||
+    resultIsError(label, content, result?.details),
+  );
+  setToolStatus(isError ? "err" : "ok", ctx);
+
+  if (!expanded) {
+    if (!isError) return collapsedNone(theme);
+    const firstLine = content.split("\n")[0]?.trim() || "failed";
+    return new Text(theme.fg("error", firstLine), 0, 0, (line) => theme.bg("toolErrorBg", line));
+  }
+
+  const diff = result?.details?.diff;
+  if (typeof diff === "string" && diff) {
+    const warnings = content.match(/(?:^|\n)Warnings:\n[\s\S]*$/)?.[0]?.trimStart();
+    const expandedText = warnings ? `${diff}\n\n${warnings}` : diff;
+    const lines = expandedText.split("\n").map((line: string) => {
+      if (line.startsWith("+") && !line.startsWith("+++")) return theme.fg("success", line);
+      if (line.startsWith("-") && !line.startsWith("---")) return theme.fg("error", line);
+      if (line.startsWith("@@")) return theme.fg("warning", line);
+      return theme.fg("dim", line);
+    });
+    return new Text(lines.join("\n"), 1, 0);
+  }
+  return fullOutput(result, theme);
+}
+
 // --- write ---
 function renderWriteCall(args: any, theme: any, ctx?: any): Text {
   beginRenderedCall(ctx);
@@ -456,6 +507,51 @@ function registerBuiltin(
   } as unknown as ToolDefinition);
 }
 
+const HASHLINE_PACKAGE_ID = "pi-hashline-edit-pro";
+
+function hasHashlineEditPro(pi: ExtensionAPI): boolean {
+  const hashlineTools = new Set(
+    pi
+      .getAllTools()
+      .filter((tool) => tool.sourceInfo?.source?.includes(HASHLINE_PACKAGE_ID))
+      .map((tool) => tool.name),
+  );
+  return hashlineTools.has("read") && hashlineTools.has("replace");
+}
+
+function registerHashlineRenderers(pi: ExtensionAPI): void {
+  pi.registerToolRenderer("read", {
+    renderShell: "self",
+    renderCall: renderReadCall,
+    renderResult: renderReadResult,
+  });
+  pi.registerToolRenderer("replace", {
+    renderShell: "self",
+    renderCall: (args, theme, ctx) => renderHashlineCall("replace", args, theme, ctx),
+    renderResult: (result, options, theme, ctx) =>
+      renderHashlineResult(result, options, theme, ctx, "replacing"),
+  });
+  pi.registerToolRenderer("undo_last_replace", {
+    renderShell: "self",
+    renderCall: (args, theme, ctx) => renderHashlineCall("undo", args, theme, ctx),
+    renderResult: (result, options, theme, ctx) =>
+      renderHashlineResult(result, options, theme, ctx, "undoing"),
+  });
+}
+
+function registerFileToolRenderers(pi: ExtensionAPI): void {
+  if (hasHashlineEditPro(pi)) {
+    registerHashlineRenderers(pi);
+    // Hashline keeps Pi's built-in write tool and post-processes its result.
+    registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
+    return;
+  }
+
+  registerBuiltin(pi, "read", { renderCall: renderReadCall, renderResult: renderReadResult });
+  registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
+  registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
+}
+
 // ============================================================================
 // Entry
 // ============================================================================
@@ -464,7 +560,9 @@ export default function (pi: ExtensionAPI): void {
   // Route one-shot completions through Pi's own provider/auth stack.
   captureModelApi(pi);
 
-  registerBuiltin(pi, "read", { renderCall: renderReadCall, renderResult: renderReadResult });
+  // All extension factories have run by session_start, so tool provenance is final.
+  pi.on("session_start", () => registerFileToolRenderers(pi));
+
   registerBuiltin(pi, "grep", {
     renderCall: (a, t, c) => renderSearchCall(t, "grep", `/${a.pattern}/`, getScope(a), "", c),
     renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "grep", c),
@@ -480,7 +578,5 @@ export default function (pi: ExtensionAPI): void {
     renderResult: (r, o, t, c) => renderSearchResult(r, o, t, "ls", c),
   });
   registerBuiltin(pi, "bash", { renderCall: renderBashCall, renderResult: renderBashResult });
-  registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
-  registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
   registerExternalRenderers(pi);
 }
