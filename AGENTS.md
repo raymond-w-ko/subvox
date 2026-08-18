@@ -49,6 +49,10 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 - `docs/` - documentation (git hooks setup guide)
 - `nix-darwin-template/` - starter templates for nix-darwin
 
+## Pi Development
+- `home/.pi/agent/extensions/pi-rko-compact-tool-display/` contains the `pi-rko-compact-tool-display` pi extension.
+- A local `pi` source checkout is usually available at `~/src/pi`.
+
 ## Flake Outputs
 - `nixosConfigurations.wsl2` - WSL2 NixOS (x86_64-linux)
 - `nixosConfigurations.nixvac` - Proxmox guest NixOS (x86_64-linux)
