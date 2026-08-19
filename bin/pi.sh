@@ -49,15 +49,16 @@ esac
 
 models=(
   openai-codex/gpt-5.6-sol
-  openrouter/deepseek/deepseek-v4-flash-0731
   anthropic/claude-fable-5
   openrouter/moonshotai/kimi-k3
   openrouter/x-ai/grok-4.6
-  openrouter/minimax/minimax-m3
-  openai-codex/gpt-5.6-terra
-  openai-codex/gpt-5.6-luna
+  openrouter/z-ai/glm-5.3
   anthropic/claude-opus-5
   anthropic/claude-opus-4-8
+  openai-codex/gpt-5.6-terra
+  openai-codex/gpt-5.6-luna
+  openrouter/deepseek/deepseek-v4-pro-0813
+  openrouter/deepseek/deepseek-v4-flash-0731
 )
 
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
