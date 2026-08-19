@@ -6,6 +6,7 @@ import test from "node:test";
 
 const piRoot = join(homedir(), "src/pi");
 const compactPath = fileURLToPath(new URL("./index.ts", import.meta.url));
+const hashlineCompactPath = fileURLToPath(new URL("./hashline.test-extension.ts", import.meta.url));
 const hashlinePath = join(homedir(), "src/pi-hashline-edit-pro/index.ts");
 const builtInNames = ["read", "bash", "edit", "write", "grep", "find", "ls"];
 
@@ -13,7 +14,11 @@ async function importPiModule(relativePath: string): Promise<any> {
   return import(pathToFileURL(join(piRoot, relativePath)).href);
 }
 
-async function createRunner(extensionPaths: string[], initialActiveTools: string[]) {
+async function createRunner(
+  extensionPaths: string[],
+  initialActiveTools: string[],
+  emitSessionStart = true,
+) {
   const [{ loadExtensions }, { ExtensionRunner }, { SessionManager }, { AuthStorage }, testUtils] = await Promise.all([
     importPiModule("packages/coding-agent/src/core/extensions/loader.ts"),
     importPiModule("packages/coding-agent/src/core/extensions/runner.ts"),
@@ -114,7 +119,9 @@ async function createRunner(extensionPaths: string[], initialActiveTools: string
     },
   );
 
-  await runner.emit({ type: "session_start", reason: "startup" });
+  if (emitSessionStart) {
+    await runner.emit({ type: "session_start", reason: "startup" });
+  }
   return { runner, getActiveTools: () => activeTools };
 }
 
@@ -148,7 +155,7 @@ function renderContext() {
 }
 
 test("preserves Hashline tools and renders edge outcomes accurately", async () => {
-  const { runner } = await createRunner([compactPath, hashlinePath], builtInNames);
+  const { runner } = await createRunner([hashlineCompactPath, hashlinePath], builtInNames);
   const owners = new Map(
     runner.getAllRegisteredTools().map((tool: any) => [tool.definition.name, tool.sourceInfo.path]),
   );
@@ -199,9 +206,22 @@ test("preserves Hashline tools and renders edge outcomes accurately", async () =
   assert.match(expanded.render(100).join("\n"), /truncated from 100 lines/);
 });
 
-test("keeps fallback file wrappers active without built-in tools", async () => {
-  const { getActiveTools } = await createRunner([compactPath], ["grep", "find", "ls", "bash"]);
+test("registers built-in file wrappers before session_start for reload", async () => {
+  const { runner } = await createRunner([compactPath], builtInNames, false);
+
   for (const name of ["read", "edit", "write"]) {
-    assert(getActiveTools().includes(name), `${name} must remain active`);
+    const tool = runner.getToolDefinition(name);
+    assert(tool, `${name} must be registered during extension load`);
+    assert.equal(tool.renderShell, "self");
   }
+
+  const read = runner.getToolDefinition("read");
+  const context = renderContext();
+  const collapsed = read.renderResult(
+    { content: [{ type: "text", text: "restored output" }], details: {} },
+    { expanded: false, isPartial: false },
+    theme,
+    context,
+  );
+  assert.deepEqual(collapsed.render(100), []);
 });

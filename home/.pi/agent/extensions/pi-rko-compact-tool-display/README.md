@@ -27,20 +27,22 @@ Always re-registers the built-in `grep`, `find`, `ls`, and `bash` tools under th
 same names via `pi.registerTool`, delegating `execute()` to the originals
 (`createReadTool(cwd)` etc., cached per-cwd) so behavior is unchanged.
 
-File tools are selected at `session_start`, after every extension factory has run:
+File tools register during extension load, before `session_start`. This timing is
+required because Pi's interactive `/reload` rebuilds restored chat rows before it
+emits `session_start`; registering later makes restored `read` and `edit` rows use
+Pi's default renderers.
 
-- When `pi-hashline-edit-pro` is present, `read`, `replace`, and
-  `undo_last_replace` receive renderer-only overrides through
-  `pi.registerToolRenderer`, preserving Hashline schemas, metadata, and
-  execution. Detection supports package-manager provenance plus local, auto-discovered,
-  and CLI paths. Its `edit` disablement remains intact. Built-in `write` still gets
-  the compact wrapper because Hashline does not replace that tool; it post-processes
-  write results to add auto-read anchors.
-- Without `pi-hashline-edit-pro`, built-in `read`, `edit`, and `write` get the
-  compact wrappers and remain active as extension tools under `--no-builtin-tools`.
+`CONFIG.fileTools` selects file-tool ownership:
 
-No load-last naming trick is required. Pi allows renderer overrides before or after
-their target tool, and `session_start` sees the final registered-tool provenance.
+- `"builtin"` (default) wraps built-in `read`, `edit`, and `write`.
+- `"hashline"` gives `read`, `replace`, and `undo_last_replace` renderer-only
+  overrides through `pi.registerToolRenderer`, preserving
+  `pi-hashline-edit-pro` schemas, metadata, and execution. Built-in `write` still
+  gets the compact wrapper because Hashline post-processes its results.
+
+Selection is explicit because extension factories cannot inspect other registered
+tools before Pi binds the runtime, while reload needs renderers before
+`session_start`.
 
 External `todo`, `ffgrep`, and `fffind` tools also receive renderer-only overrides,
 preserving their original schemas, state, and execution while replacing only TUI
@@ -70,7 +72,8 @@ tests also expect the documented `~/src/pi-hashline-edit-pro` checkout.
 
 ## Config
 
-None required for one-line collapse. Optional: retroactive bash translation.
+Defaults target Pi's built-in file tools. Set `CONFIG.fileTools` to `"hashline"`
+when loading `pi-hashline-edit-pro`. Bash translation remains optional.
 
 ### Bash command → human-readable label
 
@@ -95,6 +98,7 @@ there:
 
 | constant | meaning |
 |----------|---------|
+| `CONFIG.fileTools` | file-tool owner: `"builtin"` or `"hashline"` |
 | `CONFIG.enabled` | master switch for bash translation |
 | `CONFIG.model` | model (default `openrouter/google/gemini-3.5-flash-lite`) |
 | `CONFIG.thinking` | thinking level; default `low` |
@@ -123,6 +127,7 @@ command is already shown, so a miss costs nothing).
 
 - `index.ts` — entry + all renderers
 - `index.test.ts` — real-loader regression tests for file-tool integration
+- `hashline.test-extension.ts` — Hashline-mode integration test entry point
 - `llm.ts` — Pi-native one-shot completion bridge (reuses provider/auth)
 - `translate.ts` — background bash translator + in-flight dedupe
 - `cache.ts` — persistent SQLite cache (`node:sqlite`, ~/.cache)

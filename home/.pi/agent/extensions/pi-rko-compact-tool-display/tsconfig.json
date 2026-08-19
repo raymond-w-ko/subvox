@@ -14,5 +14,5 @@
     "strictNullChecks": false,
     "types": ["node"]
   },
-  "include": ["index.ts", "index.test.ts", "translate.ts", "llm.ts", "cache.ts", "debug-log.ts", "config.ts"]
+  "include": ["index.ts", "index.test.ts", "hashline.test-extension.ts", "translate.ts", "llm.ts", "cache.ts", "debug-log.ts", "config.ts"]
 }

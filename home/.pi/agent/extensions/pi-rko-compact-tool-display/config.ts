@@ -2,6 +2,8 @@
  * Personal settings — top-level constants, no env vars. Edit here.
  */
 export const CONFIG = {
+	/** File-tool owner. Use "hashline" when pi-hashline-edit-pro is loaded. */
+	fileTools: "builtin" as "builtin" | "hashline",
 	/** Master switch for bash-command translation. */
 	enabled: true,
 	/** Model used for the background one-shot translation. */

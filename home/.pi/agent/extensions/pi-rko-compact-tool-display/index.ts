@@ -19,9 +19,9 @@
  *
  * Mechanism: re-register built-in tools with the same name (delegating
  * execute() to the originals via create*Tool(cwd)), supplying custom
- * renderCall/renderResult. When pi-hashline-edit-pro is loaded, keep its
- * read/replace/undo execution intact through Pi's renderer-only override API
- * and only wrap built-in write; otherwise wrap built-in read/edit/write.
+ * renderCall/renderResult. CONFIG.fileTools selects built-in read/edit wrappers
+ * or renderer-only pi-hashline-edit-pro overrides. File renderers register during
+ * extension load because /reload rebuilds restored chat before session_start.
  */
 
 import type {
@@ -42,6 +42,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 import { homedir } from "os";
+import { CONFIG } from "./config.js";
 import { captureModelApi } from "./llm.js";
 import { translateCommand } from "./translate.js";
 
@@ -537,39 +538,6 @@ function registerBuiltin(
   } as unknown as ToolDefinition);
 }
 
-const HASHLINE_PACKAGE_ID = "pi-hashline-edit-pro";
-const HASHLINE_TOOL_NAMES = new Set(["read", "replace", "undo_last_replace"]);
-
-function hasHashlineEditPro(pi: ExtensionAPI): boolean {
-  const tools = pi.getAllTools().filter((tool) => HASHLINE_TOOL_NAMES.has(tool.name));
-  const explicitTools = new Set(
-    tools
-      .filter((tool) =>
-        [tool.sourceInfo?.source, tool.sourceInfo?.path, tool.sourceInfo?.baseDir].some((value) =>
-          value?.includes(HASHLINE_PACKAGE_ID),
-        ),
-      )
-      .map((tool) => tool.name),
-  );
-  if (explicitTools.has("read") && explicitTools.has("replace")) return true;
-
-  // Path-loaded extensions use generic sources such as "local", "auto", or
-  // "cli". The read/replace/undo trio sharing one extension path uniquely
-  // identifies Hashline without depending on package-manager provenance.
-  const toolsByPath = new Map<string, Set<string>>();
-  for (const tool of tools) {
-    const sourcePath = tool.sourceInfo?.path ?? tool.sourceInfo?.baseDir;
-    if (!sourcePath || tool.sourceInfo?.source === "builtin") continue;
-    const names = toolsByPath.get(sourcePath) ?? new Set<string>();
-    names.add(tool.name);
-    toolsByPath.set(sourcePath, names);
-  }
-
-  return [...toolsByPath.values()].some(
-    (names) => names.has("read") && names.has("replace") && names.has("undo_last_replace"),
-  );
-}
-
 function registerHashlineRenderers(pi: ExtensionAPI): void {
   pi.registerToolRenderer("read", {
     renderShell: "self",
@@ -591,7 +559,7 @@ function registerHashlineRenderers(pi: ExtensionAPI): void {
 }
 
 function registerFileToolRenderers(pi: ExtensionAPI): void {
-  if (hasHashlineEditPro(pi)) {
+  if (CONFIG.fileTools === "hashline") {
     registerHashlineRenderers(pi);
     // Hashline keeps Pi's built-in write tool and post-processes its result.
     registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
@@ -601,10 +569,6 @@ function registerFileToolRenderers(pi: ExtensionAPI): void {
   registerBuiltin(pi, "read", { renderCall: renderReadCall, renderResult: renderReadResult });
   registerBuiltin(pi, "edit", { renderCall: renderEditCall, renderResult: renderEditResult });
   registerBuiltin(pi, "write", { renderCall: renderWriteCall, renderResult: renderWriteResult });
-  // These wrappers were extension tools before provenance selection moved to
-  // session_start. Keep them active when built-ins are disabled; Pi still
-  // enforces explicit tool allowlists and denylists in setActiveTools().
-  pi.setActiveTools([...new Set([...pi.getActiveTools(), "read", "edit", "write"])]);
 }
 
 // ============================================================================
@@ -615,8 +579,9 @@ export default function (pi: ExtensionAPI): void {
   // Route one-shot completions through Pi's own provider/auth stack.
   captureModelApi(pi);
 
-  // All extension factories have run by session_start, so tool provenance is final.
-  pi.on("session_start", () => registerFileToolRenderers(pi));
+  // /reload rebuilds restored chat before session_start. Register file renderers
+  // during extension load so rebuilt read/edit rows receive compact definitions.
+  registerFileToolRenderers(pi);
 
   registerBuiltin(pi, "grep", {
     renderCall: (a, t, c) => renderSearchCall(t, "grep", `/${a.pattern}/`, getScope(a), "", c),
