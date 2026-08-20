@@ -64,6 +64,10 @@ let
     difftastic
     delta
 
+    # encryption
+    age
+    age-plugin-yubikey
+
     # shells
     zsh
     eza
@@ -134,6 +138,7 @@ let
   ];
 
   darwin = with pkgs; [
+    openssh
     openssl
     pkg-config
     mactop
