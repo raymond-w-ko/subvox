@@ -83,6 +83,7 @@ text_color = "#00000000"
 "e" = "action middle_click"
 "o" = "action right_click"
 
+"Ctrl+F" = "run 'idle' 'recursive_grid --cursor-selection-mode hold --zoom-to-depth 2'"
 "Ctrl+C" = "idle"
 "Ctrl+J" = "action scroll_down"
 "Ctrl+K" = "action scroll_up"
@@ -121,6 +122,8 @@ scroll_step = 100
 # ============================================================================
 [held_repeat]
 enabled = true
+accel_enabled = true
+accel_max_multiplier = 10
 
 # ============================================================================
 # Smooth Cursor
