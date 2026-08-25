@@ -251,12 +251,12 @@ class UpdateInputsApp(App[None]):
             yield Button(
                 "Apply validated lock", id="apply", variant="success", disabled=True
             )
+            yield Button("Commit lock", id="commit", disabled=True)
             yield Button(
                 f"Switch {self.system_target.label} system",
                 id="switch",
                 disabled=True,
             )
-            yield Button("Commit lock", id="commit", disabled=True)
         yield Footer()
 
     def on_mount(self) -> None:
