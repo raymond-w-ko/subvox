@@ -1,4 +1,4 @@
 interface:
   display_name: "Review PR as Change Stack"
-  short_description: "Review PRs in dependency-ordered layers"
-  default_prompt: "Use $review-pr-as-change-stack to review this PR as logical change cohorts and dependency-ordered layers."
+  short_description: "Turn PRs into standalone dependency stacks"
+  default_prompt: "Use $review-pr-as-change-stack to transform this PR into a standalone, lettered change stack with explicit dependencies."

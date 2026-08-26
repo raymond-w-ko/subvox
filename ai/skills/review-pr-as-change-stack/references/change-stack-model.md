@@ -1,6 +1,6 @@
 # Change-stack model
 
-Read this reference for PRs with multiple conceptual outcomes, cross-layer dependencies, lifecycle changes, or data-model changes.
+Read this reference for PRs with multiple conceptual outcomes, cross-entry dependencies, lifecycle changes, or data-model changes.
 
 ## Research basis
 
@@ -10,13 +10,13 @@ This skill adapts CodeRabbit's Change Stack inspection model to a text-based age
 - [CodeRabbit changelog announcement](https://docs.coderabbit.ai/changelog#coderabbit-change-stack)
 - [PR Walkthroughs](https://docs.coderabbit.ai/pr-reviews/walkthroughs)
 
-CodeRabbit defines cohorts as independent conceptual groupings and layers as their natural reading order. Layers are anchored to changed line ranges and get range-specific summaries. Foundational data shapes and contracts precede consumers, call sites, and tests. Diagrams appear only where they add value. This skill preserves those ideas without claiming CodeRabbit's proprietary analysis or UI.
+CodeRabbit defines cohorts as independent conceptual groupings and layers as their natural reading order. Foundational data shapes and contracts precede consumers, call sites, and tests. Diagrams appear only where they add value. CodeRabbit's UI anchors layers to changed ranges; this skill intentionally replaces those navigation anchors with a self-contained assistant-turn artifact. It preserves logical grouping and dependency order without claiming CodeRabbit's proprietary analysis or UI.
 
-## Construct cohorts
+## Choose semantic entries
 
-A cohort should answer one review question such as “Does token rotation preserve existing sessions?” or “Can the new audit event reach its sink safely?” It should not merely answer “Which files changed?”
+A stack entry should answer one review question such as “Does token rotation preserve existing sessions?” or “Can the new audit event reach its sink safely?” It should not merely answer “Which files changed?”
 
-Prefer separate cohorts when changes:
+Prefer separate entries when changes:
 
 - deliver independent outcomes;
 - have distinct entry points and blast radii;
@@ -24,11 +24,11 @@ Prefer separate cohorts when changes:
 - require different domain expertise; or
 - are mechanical support work with no behavioral coupling.
 
-Keep work together when ranges share one contract, transaction, lifecycle, or externally visible outcome. Do not split tests and docs away from the behavior they prove or describe unless they cover several cohorts.
+Keep work together when changes share one contract, transaction, lifecycle, or externally visible outcome. Do not split tests and docs away from the behavior they prove or describe unless they cover several entries.
 
-## Order layers
+## Order predecessors and successors
 
-Draw a lightweight dependency graph between changed ranges. An edge from A to B means B consumes, calls, instantiates, configures, persists, deploys, or verifies A. Topologically order that graph, then merge adjacent nodes when one reading step can explain them without hiding risk.
+Draw a lightweight dependency graph between semantic changes. An edge from A to B means B consumes, calls, instantiates, configures, persists, deploys, or verifies A. Topologically order that graph, assign letters, then merge adjacent nodes when one reading step can explain them without hiding risk.
 
 Useful layer roles include:
 
@@ -39,23 +39,56 @@ Useful layer roles include:
 5. downstream consumers and call-site propagation;
 6. tests, fixtures, documentation, and deployment proof.
 
-These are heuristics, not mandatory names or count. A migration may need to follow compatibility code; a test helper may establish a contract before production code. Follow actual dependency and rollout order.
+These are heuristics, not mandatory titles or count. A migration may need to follow compatibility code; a test helper may establish a contract before production code. Follow actual dependency and rollout order.
 
-## Summarize ranges
+## Preserve meaning while compressing
 
-Use post-change line numbers when possible. For deleted code, anchor to the nearest surviving hunk or use diff coordinates and say that the range was deleted.
+Compress changes into caveman English while remaining semantically isomorphic. Reader should recover every review-material fact without reopening the diff.
 
-Each summary should cover:
+Each entry should preserve:
 
 - behavior introduced, removed, or changed;
-- role in its cohort;
+- public and internal contracts affected;
 - inputs, outputs, state, or contract affected;
-- prerequisite and downstream ranges;
-- review-relevant edge cases, without inventing a finding.
+- control flow, data flow, errors, and review-relevant edge cases;
+- predecessor requirements and successor use;
+- compatibility, rollout, tests, deletions, and breaking effects.
 
-Example:
+Omit file lists, hunk narration, import noise, and generated repetition when they add no semantic information. Keep exact technical terms and code symbols when paraphrase would lose meaning.
 
-> `src/session/store.ts:44-78` adds compare-and-swap token rotation. It implements the atomicity required by the refresh handler in `src/http/refresh.ts:91-118`; callers now distinguish stale-token conflicts from storage failures. Review focus: concurrent refreshes and retry behavior.
+## Standalone output example
+
+```markdown
+## A: Version session-token contract
+
+Change: Token record gains generation number and rotation timestamp. Existing readers accept old records with default generation `0`; writers always emit new shape.
+
+Depends on: none.
+
+Successors: B depends on A for stale-token detection. C depends on A for compatibility fixtures.
+
+Review: clear.
+
+## B: Rotate tokens atomically
+
+Change: Refresh compares expected generation before write. Concurrent refresh: one succeeds; loser gets stale-token conflict, not storage failure.
+
+Depends on A because generation number supplies compare-and-swap guard.
+
+Successors: C depends on B to prove concurrent behavior.
+
+Review: `[major] Retry can replay stale generation` Retry path reuses old generation after conflict, allowing repeated failure. Reload current record before retry.
+
+## C: Prove old-record and concurrent-refresh behavior
+
+Change: Tests cover generation default, new writes, one-winner concurrency, stale-token error mapping.
+
+Depends on A for old/new record shapes. Depends on B for atomic rotation behavior.
+
+Successors: none.
+
+Review: clear.
+```
 
 ## Choose diagrams
 
@@ -67,14 +100,15 @@ Skip diagrams for simple call chains, static module lists, or relationships alre
 
 ## Reconcile coverage
 
-Before verdict, reconcile ledger against provider diff:
+Before verdict, reconcile private ledger against provider diff:
 
 - every changed path accounted for;
-- every hunk assigned or explicitly excluded;
+- every hunk represented by a semantic entry or explicitly excluded;
 - renames and deletions reviewed for lost behavior and callers;
 - generated outputs match their source;
 - tests mapped to claimed behavior;
-- all findings anchored to current head;
-- cross-cohort contracts reviewed once end to end.
+- all findings verified against current head;
+- cross-entry contracts reviewed once end to end;
+- every dependency edge explained in both predecessor and successor entries.
 
-Coverage does not mean equal prose for every file. It means no change disappears from review reasoning.
+Coverage does not mean equal prose for every file or any source-navigation appendix. It means no material change disappears from standalone artifact.
