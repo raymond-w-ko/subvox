@@ -4,6 +4,7 @@ let
 
   allowedUnfree = [
     "claude-code"
+    "google-chrome"
     "raycast"
   ];
 

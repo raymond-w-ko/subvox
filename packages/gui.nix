@@ -1,16 +1,20 @@
 { pkgs }:
 let
-  linux = with pkgs; [
-    adwaita-icon-theme
-    ghostty
-    # GStreamer plugins for Ghostty bell support.
-    gst_all_1.gstreamer
-    gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-libav
-  ];
+  linux =
+    with pkgs;
+    [
+      adwaita-icon-theme
+      chromium
+      ghostty
+      # GStreamer plugins for Ghostty bell support.
+      gst_all_1.gstreamer
+      gst_all_1.gst-plugins-base
+      gst_all_1.gst-plugins-good
+      gst_all_1.gst-plugins-ugly
+      gst_all_1.gst-plugins-bad
+      gst_all_1.gst-libav
+    ]
+    ++ lib.optionals (stdenv.hostPlatform.system == "x86_64-linux") [ google-chrome ];
 
   darwin = with pkgs; [
     kanata
