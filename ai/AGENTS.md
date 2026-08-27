@@ -97,14 +97,21 @@ Persisted outside chat: write normal prose — code, comments, commits, docs, is
 
 ## File Search (fff)
 
-Prefer fff-backed search over shell `find`, `grep`, or `rg` whenever available.
+Prefer search tools in this rank order:
 
-- **Claude Code and Codex:** use the user-scoped `fff` MCP server and its `ffgrep` and `fffind` tools.
-- **Pi:** use the directly exposed `ffgrep` and `fffind` tools; Pi does not access them through MCP.
-- Use `ffgrep` for file contents. Prefer bare identifiers, then narrow with `path`, `exclude`, or exact case only when needed.
-- Use `fffind` for paths and globs. It matches the whole repository-relative path; use a path glob for exact filenames.
-- After one or two searches, read the strongest match instead of continuing broad searches.
-- Fall back to shell search only when fff tools are unavailable or cannot express the required operation.
+- `mcp__fff__grep` — Default content search for one bare identifier or pattern; supports file constraints.
+- `mcp__fff__find_files` — Fuzzy filename search for exploring modules or locating a file.
+- `mcp__fff__multi_grep` — Content search matching any of multiple literal patterns with OR logic.
+- `ffgrep` — Pi content search with smart-case, regex/literal auto-detection, git awareness, and frecency ranking.
+- `fffind` — Pi fuzzy whole-path and glob search with git awareness, frecency ranking, and multi-word AND matching.
+- `fff-multi-grep` — Optional Pi literal multi-pattern content search using OR logic and SIMD Aho-Corasick; requires `PI_FFF_MULTIGREP=1`.
+- `Grep` — Claude Code's ripgrep-backed regex content search; supports glob, file-type, output-mode, case, context, and multiline controls and respects `.gitignore`.
+- `Glob` — Claude Code's filename-pattern search; supports recursive glob syntax, sorts by modification time, and does not respect `.gitignore` by default.
+- `rg` — ripgrep CLI for recursive regex content search; respects ignore files and skips hidden and binary files by default.
+- `multi_grep` — Not a standard Codex, Claude Code, or Pi tool; local pi-fff uses this name for optional FFF multi-pattern OR search in override mode.
+- `grep` — Pi's optional read-only content-search tool, with regex/literal, path, glob, case, and context controls; also the standard shell line-matching fallback.
+- `find` — Pi's optional read-only glob file-search tool, returning relative paths and respecting `.gitignore`; also the standard shell recursive path/predicate fallback.
+- Fall back through the ranked list only when a higher-ranked tool is unavailable or cannot express the required operation.
 
 ## Project Defaults
 
