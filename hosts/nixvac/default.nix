@@ -11,7 +11,11 @@
   networking.hostName = "nixvac";
   services.tailscale.extraSetFlags = [ "--hostname=nixvac" ];
 
-  environment.systemPackages = [ pkgs.ghostty.terminfo ];
+  environment.systemPackages = with pkgs; [
+    chromium
+    google-chrome
+    ghostty.terminfo
+  ];
 
   security.sudo.extraConfig = ''
     @includedir /etc/sudoers.d
