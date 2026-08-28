@@ -97,6 +97,8 @@ Persisted outside chat: write normal prose — code, comments, commits, docs, is
 
 ## File Search (fff)
 
+**Mandatory discovery:** Before declaring `mcp__fff__*` unavailable or falling back, inspect platform's complete deferred/dynamic tool catalog (`ALL_TOOLS` in Codex when exposed; equivalent discovery elsewhere). Omission from initial/static tool declarations does not prove unavailability. If catalog lists FFF, make direct FFF call to verify connection. Only failed discovery or failed call permits fallback; running `fff-mcp` OS process alone neither proves nor disproves harness connection.
+
 Prefer search tools in this rank order:
 
 - `mcp__fff__grep` — Default content search for one bare identifier or pattern; supports file constraints.
