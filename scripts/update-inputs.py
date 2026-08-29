@@ -205,8 +205,8 @@ class UpdateInputsApp(App[None]):
         ("g", "generate", "Generate"),
         ("v", "validate", "Validate"),
         ("a", "apply", "Apply"),
-        ("s", "switch", "Switch"),
         ("c", "commit", "Commit"),
+        ("s", "switch", "Switch"),
     ]
 
     def __init__(
