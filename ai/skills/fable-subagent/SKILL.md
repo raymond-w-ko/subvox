@@ -26,20 +26,20 @@ Do not make a warm-up, authentication, MCP, or smoke-test call unless the user e
 Prefer read-only repository tools for contextual review:
 
 ```text
-claude -p --model claude-fable-5-1 --permission-mode=plan --tools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --allowedTools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --output-format json "<self-contained review or debugging prompt>"
+claude -p --model claude-fable-5-1 --permission-mode=dontAsk --tools="Read,Grep,Glob,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --allowedTools="Read,Grep,Glob,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --output-format json "<self-contained review or debugging prompt>"
 ```
 
-Expose `fff` only as part of the substantive task. Do not call it beforehand to confirm connectivity unless the user explicitly requests that exact diagnostic. Use `mcp__fff__grep`, `mcp__fff__find_files`, or `mcp__fff__multi_grep`, then use `Read` only for identified files. `--tools` exposes the tools; matching `--allowedTools` grants non-interactive permission. Both flags are required for unattended `claude -p` calls.
+Expose `fff` only as part of the substantive task. Do not call it beforehand to confirm connectivity unless the user explicitly requests that exact diagnostic. Prefer `mcp__fff__grep`, `mcp__fff__find_files`, or `mcp__fff__multi_grep`; use built-in `Grep` or `Glob` when `fff` is unavailable or cannot express the search. Use `Read` only for identified files. `--tools` exposes the tools; matching `--allowedTools` grants non-interactive permission. Both flags are required for unattended `claude -p` calls.
 
 For a supplied diff that needs no repository access, disable tools and pipe the diff:
 
 ```text
-git diff <base>...HEAD | claude -p --model claude-fable-5-1 --permission-mode=plan --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
+git diff <base>...HEAD | claude -p --model claude-fable-5-1 --permission-mode=dontAsk --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
 ```
 
 Use `=` with variadic flags such as `--tools`, `--allowedTools`, and `--add-dir`; otherwise they may consume the prompt. For input larger than the CLI stdin limit, let Fable read named files instead of piping everything.
 
-Pass `--permission-mode=plan` on every review-only call so user or project settings cannot inherit `acceptEdits`. Do not grant `Edit`, `Write`, or unrestricted `Bash`. If implementation is explicitly requested, authorize the smallest required tool set and permission mode, then review Fable's diff before keeping it.
+Pass `--permission-mode=dontAsk` on every review-only call so only tools explicitly granted through `--allowedTools` can run. Do not grant `Edit`, `Write`, or unrestricted `Bash`. If implementation is explicitly requested, authorize the smallest required tool set and permission mode, then review Fable's diff before keeping it.
 
 ## Prompt Shape
 
@@ -60,7 +60,7 @@ If a broad review says `no findings` but risk remains, independently inspect the
 
 - Do not run diagnostic inference, authentication, MCP, or `fff` probes after a failure unless the user explicitly requests that exact diagnostic.
 - Diagnose from the substantive call's stdout, stderr, and exit code. Never print tokens or dump the full environment.
-- Do not silently replace unavailable `fff` with built-in `Grep` or `Glob`.
+- If `fff` fails during the substantive call, use built-in `Grep` or `Glob` and report the fallback.
 - Do not retry a token-spending invocation unless the user requests it.
 - Disable timeouts. Let Fable run until completion or explicit user cancellation; never terminate it because elapsed time exceeds a limit.
 - Treat silence as normal because text/JSON mode may emit nothing until completion.
