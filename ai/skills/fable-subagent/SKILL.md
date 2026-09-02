@@ -19,14 +19,14 @@ Use Claude Fable 5 as a read-only peer by default. Keep Codex responsible for sc
 
 ## Invocation
 
-Pass exact model ID `--model claude-fable-5` on every call. Never use floating aliases such as `fable` and never fall back to another model. If Claude Fable 5 is unavailable, report the failure.
+Pass exact model ID `--model claude-fable-5-1` on every call. Never use floating aliases such as `fable` and never fall back to another model. If Claude Fable 5.1 is unavailable, report the failure.
 
 Do not make a warm-up, authentication, MCP, or smoke-test call unless the user explicitly requests that exact diagnostic. Fable 5 tokens are expensive. Spend them only on the requested task.
 
 Prefer read-only repository tools for contextual review:
 
 ```text
-claude -p --model claude-fable-5 --permission-mode=plan --tools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --allowedTools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --output-format json "<self-contained review or debugging prompt>"
+claude -p --model claude-fable-5-1 --permission-mode=plan --tools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --allowedTools="Read,mcp__fff__find_files,mcp__fff__grep,mcp__fff__multi_grep" --output-format json "<self-contained review or debugging prompt>"
 ```
 
 Expose `fff` only as part of the substantive task. Do not call it beforehand to confirm connectivity unless the user explicitly requests that exact diagnostic. Use `mcp__fff__grep`, `mcp__fff__find_files`, or `mcp__fff__multi_grep`, then use `Read` only for identified files. `--tools` exposes the tools; matching `--allowedTools` grants non-interactive permission. Both flags are required for unattended `claude -p` calls.
@@ -34,7 +34,7 @@ Expose `fff` only as part of the substantive task. Do not call it beforehand to 
 For a supplied diff that needs no repository access, disable tools and pipe the diff:
 
 ```text
-git diff <base>...HEAD | claude -p --model claude-fable-5 --permission-mode=plan --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
+git diff <base>...HEAD | claude -p --model claude-fable-5-1 --permission-mode=plan --tools="" --output-format json "Review the diff from stdin. Report only concrete correctness, safety, or regression issues."
 ```
 
 Use `=` with variadic flags such as `--tools`, `--allowedTools`, and `--add-dir`; otherwise they may consume the prompt. For input larger than the CLI stdin limit, let Fable read named files instead of piping everything.
