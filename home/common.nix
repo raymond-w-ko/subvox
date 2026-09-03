@@ -34,6 +34,7 @@ in
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".codex/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
+  home.file.".grok/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
 
   programs.direnv = {
@@ -71,6 +72,7 @@ in
       set -gx fish_prompt_pwd_dir_length 3
       set -gx fish_prompt_pwd_full_dirs 3
 
+      fish_add_path $HOME/.grok/bin
       fish_add_path $HOME/subvox/bin
       fish_add_path $HOME/bin
 
