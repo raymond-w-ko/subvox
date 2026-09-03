@@ -108,6 +108,10 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+  services.openssh.settings.AcceptEnv = [
+    "TERM"
+    "COLORTERM"
+  ];
 
   services.tailscale.enable = true;
   services.tailscale.extraSetFlags = [ "--hostname=nixvac" ];

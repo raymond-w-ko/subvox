@@ -12,5 +12,9 @@
   ];
 
   services.openssh.enable = true;
+  services.openssh.settings.AcceptEnv = [
+    "TERM"
+    "COLORTERM"
+  ];
   services.tailscale.enable = true;
 }
