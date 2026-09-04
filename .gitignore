@@ -22,6 +22,8 @@ home/.pi/agent/intercom/
 home/.pi/agent/*.jsonl
 home/.pi/agent/models-store.json
 
+home/.pi/web-search-cache/
+
 .claude/**
 .codex/**
 .vscode/**
