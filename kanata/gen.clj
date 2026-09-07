@@ -72,8 +72,8 @@
 (def nop (keyword "•"))
 (defn layer-switch-key []
   (cond
-    (is-macos?) :grv
-    (is-windows?) :grv
+    (is-macos?) :ralt
+    (is-windows?) :ralt
     :else nop))
 (defn live-reload-key []
   (cond
@@ -220,8 +220,7 @@
             rsft :at/os_rsft]))
 
 (def qwerty-to-game-layer
-  (->hash '[caps spc
-            spc lctrl]))
+  (->hash '[caps spc]))
 
 (defn gen-qwerty-to-shortcut-layer []
   (->hash `[u bspc
