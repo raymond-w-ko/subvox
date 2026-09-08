@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from collections.abc import Callable
@@ -40,12 +41,17 @@ CLAUDE_SETTINGS = CLAUDE_DIR / "settings.json"
 CODEX_PLUGIN = "codex@openai-codex"
 CODEX_MARKETPLACE = "openai-codex"
 CODEX_MARKETPLACE_REPO = "openai/codex-plugin-cc"
-FFF_MCP_BIN = HOME / "bin" / "fff-mcp"
+WINDOWS = os.name == "nt"
+FFF_MCP_BIN = HOME / "bin" / ("fff-mcp.exe" if WINDOWS else "fff-mcp")
 FFF_MCP_ENV = {"FFF_MCP_IDLE_TIMEOUT_SECS": "0"}
 
 # --- colors -----------------------------------------------------------------
 
 USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
+if USE_COLOR and WINDOWS:
+    # an empty system() call makes the Windows console start honoring
+    # ANSI escape sequences
+    os.system("")
 
 
 def paint(code: str, text: str) -> str:
@@ -295,10 +301,18 @@ def setting_claude_codex_plugin(state: State) -> None:
     )
 
 
+def claude_bin() -> str:
+    # on Windows `claude` is a .cmd shim, which subprocess only finds via which()
+    found = shutil.which("claude")
+    if not found:
+        raise RuntimeError("claude is not on PATH")
+    return found
+
+
 def claude_json(*args: str) -> Any:
     """Run `claude <args> --json` and return the parsed output."""
     proc = subprocess.run(
-        ["claude", *args, "--json"], capture_output=True, text=True, timeout=60
+        [claude_bin(), *args, "--json"], capture_output=True, text=True, timeout=60
     )
     if proc.returncode != 0:
         raise RuntimeError(f"claude {' '.join(args)} failed: {proc.stderr.strip()}")
@@ -311,7 +325,7 @@ def claude_run(*args: str) -> bool:
     `claude plugin` exits 0 even when it reports a failure, so callers must
     verify the result with `claude_json` instead of trusting the exit code.
     """
-    proc = subprocess.run(["claude", *args], capture_output=True, text=True, timeout=180)
+    proc = subprocess.run([claude_bin(), *args], capture_output=True, text=True, timeout=180)
     output = (proc.stdout + proc.stderr).strip().splitlines()
     if output:
         info(output[-1])
