@@ -4,12 +4,11 @@
 # requires-python = ">=3.14"
 # dependencies = ["tomlkit"]
 # ///
-#!/usr/bin/env python3
 """
 merge two TOML files with template precedence.
 
 usage:
-    merge_toml.py base.toml template.toml [output.toml]
+    toml_merge.py base.toml template.toml [output.toml]
 
 semantics:
     - parse base.toml and template.toml with tomlkit
@@ -65,7 +64,7 @@ def main(argv=None):
 
     if not (2 <= len(argv) <= 3):
         sys.stderr.write(
-            "usage: merge_toml.py base.toml template.toml [output.toml]\n"
+            "usage: toml_merge.py base.toml template.toml [output.toml]\n"
             "note: template values take precedence over base values.\n"
         )
         return 1
