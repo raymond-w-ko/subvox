@@ -42,7 +42,8 @@ CODEX_PLUGIN = "codex@openai-codex"
 CODEX_MARKETPLACE = "openai-codex"
 CODEX_MARKETPLACE_REPO = "openai/codex-plugin-cc"
 WINDOWS = os.name == "nt"
-FFF_MCP_BIN = HOME / "bin" / ("fff-mcp.exe" if WINDOWS else "fff-mcp")
+FFF_MCP_NAME = "fff-mcp.exe" if WINDOWS else "fff-mcp"
+FFF_MCP_CANDIDATES = [HOME / "bin" / FFF_MCP_NAME, HOME / ".local" / "bin" / FFF_MCP_NAME]
 FFF_MCP_ENV = {"FFF_MCP_IDLE_TIMEOUT_SECS": "0"}
 
 # --- colors -----------------------------------------------------------------
@@ -94,6 +95,8 @@ class State:
         self.dry_run = dry_run
         self.failures = 0
         self.warnings = 0
+        # set by setting_fff_mcp_binary, consumed by the MCP config settings
+        self.fff_mcp_bin: Path | None = None
 
     def warn(self, msg: str) -> None:
         self.warnings += 1
@@ -192,21 +195,29 @@ def ensure_entry(
 
 def setting_fff_mcp_binary(state: State) -> None:
     header("fff-mcp binary")
-    if FFF_MCP_BIN.is_symlink():
-        target = FFF_MCP_BIN.resolve()
+    found = [p for p in FFF_MCP_CANDIDATES if p.is_symlink() or p.exists()]
+    if not found:
+        state.fail("no fff-mcp found, looked in " + ", ".join(map(str, FFF_MCP_CANDIDATES)))
+        return
+    binary = found[0]
+    if len(found) > 1:
+        info("using " + str(binary) + ", ignoring " + ", ".join(map(str, found[1:])))
+    if binary.is_symlink():
+        target = binary.resolve()
         if not target.is_file():
-            state.fail(f"{FFF_MCP_BIN} is a symlink to {target}, which does not exist")
+            state.fail(f"{binary} is a symlink to {target}, which does not exist")
             return
-        ok(f"{FFF_MCP_BIN} -> {target}")
-    elif FFF_MCP_BIN.is_file():
-        state.warn(f"{FFF_MCP_BIN} is a regular file, expected a symlink to the real binary")
+        ok(f"{binary} -> {target}")
+    elif binary.is_file():
+        state.warn(f"{binary} is a regular file, expected a symlink to the real binary")
     else:
-        state.fail(f"{FFF_MCP_BIN} does not exist")
+        state.fail(f"{binary} is not a file")
         return
-    if not os.access(FFF_MCP_BIN, os.X_OK):
-        state.fail(f"{FFF_MCP_BIN} is not executable")
+    if not os.access(binary, os.X_OK):
+        state.fail(f"{binary} is not executable")
         return
-    ok(f"{FFF_MCP_BIN} is an executable binary")
+    ok(f"{binary} is an executable binary")
+    state.fff_mcp_bin = binary
 
     # Speak enough MCP to make sure the binary actually starts and answers.
     request = {
@@ -221,7 +232,7 @@ def setting_fff_mcp_binary(state: State) -> None:
     }
     try:
         proc = subprocess.run(
-            [str(FFF_MCP_BIN)],
+            [str(binary)],
             input=json.dumps(request) + "\n",
             capture_output=True,
             text=True,
@@ -249,24 +260,30 @@ def setting_fff_mcp_binary(state: State) -> None:
 
 def setting_codex_fff_mcp(state: State) -> None:
     header("codex: fff MCP server")
+    if state.fff_mcp_bin is None:
+        state.fail("codex: skipped, no usable fff-mcp binary")
+        return
     ensure_entry(
         state,
         CODEX_CONFIG,
         ["mcp_servers", "fff"],
-        {"command": str(FFF_MCP_BIN), "env": FFF_MCP_ENV},
+        {"command": str(state.fff_mcp_bin), "env": FFF_MCP_ENV},
         "codex",
     )
 
 
 def setting_claude_fff_mcp(state: State) -> None:
     header("claude: fff MCP server")
+    if state.fff_mcp_bin is None:
+        state.fail("claude: skipped, no usable fff-mcp binary")
+        return
     ensure_entry(
         state,
         CLAUDE_CONFIG,
         ["mcpServers", "fff"],
         {
             "type": "stdio",
-            "command": str(FFF_MCP_BIN),
+            "command": str(state.fff_mcp_bin),
             "args": [],
             "env": FFF_MCP_ENV,
         },
