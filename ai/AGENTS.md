@@ -96,7 +96,7 @@ Do not apply caveman phrasing to persisted human-facing artifacts: code, comment
 ## Clarifying Questions
 
 - Clarify instead of guess.
-- Use available question tool: `ask_user_question` (Pi extension) or `request_user_input` (Codex).
+- Use available question tool: `AskUserQuestion` (Claude Code), `ask_user_question` (Pi extension), or `request_user_input` (Codex).
 - `? me` => ask clarifying questions about recent messages with available question tool.
 
 ## File Search (fff)
