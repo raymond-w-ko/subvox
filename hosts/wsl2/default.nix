@@ -21,6 +21,9 @@
     enable = true;
     defaultUser = user;
     useWindowsDriver = true;
+    extraBin = [
+      { src = "${pkgs.coreutils}/bin/true"; }
+    ];
   };
 
   system.stateVersion = "25.05";
