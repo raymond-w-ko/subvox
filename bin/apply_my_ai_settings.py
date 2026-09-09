@@ -21,6 +21,7 @@ usage:
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import os
 import shutil
@@ -47,11 +48,8 @@ FFF_MCP_ENV = {"FFF_MCP_IDLE_TIMEOUT_SECS": "0"}
 
 # --- colors -----------------------------------------------------------------
 
-USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
-if USE_COLOR and WINDOWS:
-    # an empty system() call makes the Windows console start honoring
-    # ANSI escape sequences
-    os.system("")
+# assume a modern terminal that understands ANSI colors, even on Windows
+USE_COLOR = os.environ.get("NO_COLOR") is None
 
 
 def paint(code: str, text: str) -> str:
@@ -84,6 +82,28 @@ def info(msg: str) -> None:
 
 def header(msg: str) -> None:
     print(paint("1;36", f"== {msg}"))
+
+
+def show_diff(path: Path, old: str, new: str) -> None:
+    """Print a unified diff of a file rewrite, colored like git diff."""
+    lines = difflib.unified_diff(
+        old.splitlines(keepends=True),
+        new.splitlines(keepends=True),
+        fromfile=f"{path} (before)",
+        tofile=f"{path} (after)",
+    )
+    for line in lines:
+        line = line.rstrip("\n")
+        if line.startswith(("+++", "---")):
+            print(paint("1", f"        {line}"))
+        elif line.startswith("@@"):
+            print(paint("36", f"        {line}"))
+        elif line.startswith("+"):
+            print(paint("32", f"        {line}"))
+        elif line.startswith("-"):
+            print(paint("31", f"        {line}"))
+        else:
+            print(f"        {line}")
 
 
 # --- state ------------------------------------------------------------------
@@ -172,21 +192,25 @@ def ensure_entry(
     text = path.read_text()
     doc = tomlkit.parse(text) if is_toml else json.loads(text)
 
-    if unwrap(get_path(doc, keys)) == desired:
+    current = unwrap(get_path(doc, keys))
+    if current == desired:
         ok(f"{label}: {dotted} already correct in {path}")
-        return
-
-    if state.dry_run:
-        would(f"{label}: set {dotted} in {path}")
         return
 
     if is_toml:
         set_path(doc, keys, to_toml_value(desired), tomlkit.table)
-        path.write_text(tomlkit.dumps(doc))
+        new_text = tomlkit.dumps(doc)
     else:
         set_path(doc, keys, desired, dict)
-        path.write_text(json.dumps(doc, indent=2) + "\n")
-    fixed(f"{label}: set {dotted} in {path}")
+        new_text = json.dumps(doc, indent=2) + "\n"
+
+    if state.dry_run:
+        would(f"{label}: set {dotted} in {path}")
+    else:
+        path.write_text(new_text)
+        fixed(f"{label}: set {dotted} in {path}")
+    info(f"{label}: {dotted} was {current!r}")
+    show_diff(path, text, new_text)
 
 
 # --- settings ---------------------------------------------------------------
