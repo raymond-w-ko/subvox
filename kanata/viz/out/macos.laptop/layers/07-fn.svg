@@ -1,0 +1,387 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2335" height="962" viewBox="0 0 2335 962" role="img">
+<title>Function keys</title>
+<defs><style>text { font-family: 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif; }</style></defs>
+<rect width="2335" height="962" fill="#eef1f3"/>
+<rect x="20" y="12" width="2295" height="938" rx="28" fill="#fafbfc" stroke="#dce2e7"/>
+<text x="64" y="49" font-size="15" fill="#657480" font-weight="600" text-anchor="start" dominant-baseline="middle">07  /  MACOS · LAPTOP</text>
+<text x="64" y="92" font-size="40" fill="#233342" font-weight="700" text-anchor="start" dominant-baseline="middle">Function keys</text>
+<text x="64" y="132" font-size="20" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Function keys on the letter rows.</text>
+<rect x="2097" y="61" width="174" height="48" rx="24" fill="#e9edf1"/>
+<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  G  /  H</text>
+<g data-source="f1"><title>F1: No action</title>
+<rect x="64" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="76" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F1</text>
+</g>
+<g data-source="f2"><title>F2: No action</title>
+<rect x="187.20000000000002" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="199.20000000000002" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F2</text>
+</g>
+<g data-source="f3"><title>F3: No action</title>
+<rect x="310.40000000000003" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="322.40000000000003" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F3</text>
+</g>
+<g data-source="f4"><title>F4: No action</title>
+<rect x="433.6" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="445.6" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F4</text>
+</g>
+<g data-source="f5"><title>F5: No action</title>
+<rect x="612.8000000000001" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="624.8000000000001" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F5</text>
+</g>
+<g data-source="f6"><title>F6: No action</title>
+<rect x="736" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="748" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F6</text>
+</g>
+<g data-source="f7"><title>F7: No action</title>
+<rect x="859.1999999999999" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="871.1999999999999" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F7</text>
+</g>
+<g data-source="f8"><title>F8: No action</title>
+<rect x="982.3999999999999" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="994.3999999999999" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F8</text>
+</g>
+<g data-source="f9"><title>F9: No action</title>
+<rect x="1161.6" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1173.6" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F9</text>
+</g>
+<g data-source="f10"><title>F10: No action</title>
+<rect x="1284.7999999999997" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1296.7999999999997" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F10</text>
+</g>
+<g data-source="f11"><title>F11: No action</title>
+<rect x="1407.9999999999998" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1419.9999999999998" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F11</text>
+</g>
+<g data-source="f12"><title>F12: No action</title>
+<rect x="1531.1999999999998" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1543.1999999999998" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F12</text>
+</g>
+<g data-source="ins"><title>Insert: No action</title>
+<rect x="1710.3999999999996" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1722.3999999999996" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Insert</text>
+</g>
+<g data-source="tab"><title>Tab: No action</title>
+<rect x="64" y="416" width="158" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="76" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Tab</text>
+</g>
+<g data-source="q"><title>Q: F10</title>
+<rect x="243.20000000000002" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="243.20000000000002" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="255.20000000000002" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Q</text>
+<text x="294.20000000000005" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F10</text>
+</g>
+<g data-source="w"><title>W: F9</title>
+<rect x="366.40000000000003" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="366.40000000000003" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="378.40000000000003" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">W</text>
+<text x="417.40000000000003" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F9</text>
+</g>
+<g data-source="e"><title>E: F8</title>
+<rect x="489.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="489.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="501.6" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">E</text>
+<text x="540.6" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F8</text>
+</g>
+<g data-source="r"><title>R: F7</title>
+<rect x="612.8000000000001" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="612.8000000000001" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="624.8000000000001" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">R</text>
+<text x="663.8000000000001" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F7</text>
+</g>
+<g data-source="t"><title>T: No action</title>
+<rect x="736" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="748" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">T</text>
+</g>
+<g data-source="y"><title>Y: No action</title>
+<rect x="859.1999999999999" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="871.1999999999999" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Y</text>
+</g>
+<g data-source="u"><title>U: F7</title>
+<rect x="982.3999999999999" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="982.3999999999999" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="994.3999999999999" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">U</text>
+<text x="1033.3999999999999" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F7</text>
+</g>
+<g data-source="i"><title>I: F8</title>
+<rect x="1105.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1105.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1117.6" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">I</text>
+<text x="1156.6" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F8</text>
+</g>
+<g data-source="o"><title>O: F9</title>
+<rect x="1228.7999999999997" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1228.7999999999997" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1240.7999999999997" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">O</text>
+<text x="1279.7999999999997" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F9</text>
+</g>
+<g data-source="p"><title>P: F10</title>
+<rect x="1351.9999999999998" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1351.9999999999998" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1363.9999999999998" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">P</text>
+<text x="1402.9999999999998" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F10</text>
+</g>
+<g data-source="lbrc"><title>[: No action</title>
+<rect x="1475.1999999999998" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1487.1999999999998" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">[</text>
+</g>
+<g data-source="rbrc"><title>]: No action</title>
+<rect x="1598.3999999999996" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1610.3999999999996" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">]</text>
+</g>
+<g data-source="bksl"><title>\: No action</title>
+<rect x="1721.5999999999997" y="416" width="158" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1733.5999999999997" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">\</text>
+</g>
+<g data-source="grv"><title>`: No action</title>
+<rect x="64" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="76" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">`</text>
+</g>
+<g data-source="1"><title>1: No action</title>
+<rect x="187.20000000000002" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="199.20000000000002" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">1</text>
+</g>
+<g data-source="2"><title>2: No action</title>
+<rect x="310.40000000000003" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="322.40000000000003" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">2</text>
+</g>
+<g data-source="3"><title>3: No action</title>
+<rect x="433.6" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="445.6" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">3</text>
+</g>
+<g data-source="4"><title>4: No action</title>
+<rect x="556.8000000000001" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="568.8000000000001" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">4</text>
+</g>
+<g data-source="5"><title>5: No action</title>
+<rect x="680" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="692" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">5</text>
+</g>
+<g data-source="6"><title>6: No action</title>
+<rect x="803.1999999999999" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="815.1999999999999" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">6</text>
+</g>
+<g data-source="7"><title>7: No action</title>
+<rect x="926.3999999999999" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="938.3999999999999" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">7</text>
+</g>
+<g data-source="8"><title>8: No action</title>
+<rect x="1049.6" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1061.6" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">8</text>
+</g>
+<g data-source="9"><title>9: No action</title>
+<rect x="1172.7999999999997" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1184.7999999999997" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">9</text>
+</g>
+<g data-source="0"><title>0: No action</title>
+<rect x="1295.9999999999998" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1307.9999999999998" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">0</text>
+</g>
+<g data-source="min"><title>-: No action</title>
+<rect x="1419.1999999999998" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1431.1999999999998" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">-</text>
+</g>
+<g data-source="="><title>=: No action</title>
+<rect x="1542.3999999999996" y="304" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1554.3999999999996" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">=</text>
+</g>
+<g data-source="bspc"><title>Backspace: No action</title>
+<rect x="1665.5999999999997" y="304" width="214" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1677.5999999999997" y="322" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Backspace</text>
+</g>
+<g data-source="caps"><title>Caps: No action</title>
+<rect x="64" y="528" width="186" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="76" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Caps</text>
+</g>
+<g data-source="a"><title>A: F11</title>
+<rect x="271.20000000000005" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="271.20000000000005" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="283.20000000000005" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">A</text>
+<text x="322.20000000000005" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F11</text>
+</g>
+<g data-source="s"><title>S: F6</title>
+<rect x="394.40000000000003" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="394.40000000000003" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="406.40000000000003" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">S</text>
+<text x="445.40000000000003" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F6</text>
+</g>
+<g data-source="d"><title>D: F5</title>
+<rect x="517.6000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="517.6000000000001" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="529.6000000000001" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">D</text>
+<text x="568.6000000000001" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F5</text>
+</g>
+<g data-source="f"><title>F: F4</title>
+<rect x="640.8000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="640.8000000000001" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="652.8000000000001" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">F</text>
+<text x="691.8000000000001" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F4</text>
+</g>
+<g data-source="g"><title>G: No action</title>
+<rect x="764" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="776" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">G</text>
+</g>
+<g data-source="h"><title>H: No action</title>
+<rect x="887.1999999999999" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="899.1999999999999" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">H</text>
+</g>
+<g data-source="j"><title>J: F4</title>
+<rect x="1010.3999999999999" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1010.3999999999999" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1022.3999999999999" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">J</text>
+<text x="1061.3999999999999" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F4</text>
+</g>
+<g data-source="k"><title>K: F5</title>
+<rect x="1133.6" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1133.6" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1145.6" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">K</text>
+<text x="1184.6" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F5</text>
+</g>
+<g data-source="l"><title>L: F6</title>
+<rect x="1256.7999999999997" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1256.7999999999997" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1268.7999999999997" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">L</text>
+<text x="1307.7999999999997" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F6</text>
+</g>
+<g data-source="scln"><title>;: F11</title>
+<rect x="1379.9999999999998" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1379.9999999999998" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1391.9999999999998" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">;</text>
+<text x="1430.9999999999998" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F11</text>
+</g>
+<g data-source="apos"><title>': No action</title>
+<rect x="1503.1999999999998" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1515.1999999999998" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">'</text>
+</g>
+<g data-source="ret"><title>Enter: No action</title>
+<rect x="1626.3999999999996" y="528" width="242" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1638.3999999999996" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Enter</text>
+</g>
+<g data-source="lsft"><title>L Shift: No action</title>
+<rect x="64" y="640" width="242" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="76" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">L Shift</text>
+</g>
+<g data-source="z"><title>Z: F12</title>
+<rect x="327.2" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="327.2" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="339.2" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Z</text>
+<text x="378.2" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F12</text>
+</g>
+<g data-source="x"><title>X: F3</title>
+<rect x="450.40000000000003" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="450.40000000000003" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="462.40000000000003" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">X</text>
+<text x="501.40000000000003" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F3</text>
+</g>
+<g data-source="c"><title>C: F2</title>
+<rect x="573.6000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="573.6000000000001" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="585.6000000000001" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">C</text>
+<text x="624.6000000000001" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F2</text>
+</g>
+<g data-source="v"><title>V: F1</title>
+<rect x="696.8000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="696.8000000000001" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="708.8000000000001" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">V</text>
+<text x="747.8000000000001" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F1</text>
+</g>
+<g data-source="b"><title>B: No action</title>
+<rect x="820" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="832" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">B</text>
+</g>
+<g data-source="n"><title>N: No action</title>
+<rect x="943.1999999999999" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="955.1999999999999" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">N</text>
+</g>
+<g data-source="m"><title>M: F1</title>
+<rect x="1066.3999999999999" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1066.3999999999999" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1078.3999999999999" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">M</text>
+<text x="1117.3999999999999" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F1</text>
+</g>
+<g data-source="comm"><title>,: F2</title>
+<rect x="1189.6" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1189.6" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1201.6" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">,</text>
+<text x="1240.6" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F2</text>
+</g>
+<g data-source="."><title>.: F3</title>
+<rect x="1312.7999999999997" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1312.7999999999997" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1324.7999999999997" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">.</text>
+<text x="1363.7999999999997" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F3</text>
+</g>
+<g data-source="/"><title>/: F12</title>
+<rect x="1435.9999999999998" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1435.9999999999998" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1447.9999999999998" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">/</text>
+<text x="1486.9999999999998" y="701" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F12</text>
+</g>
+<g data-source="rsft"><title>R Shift: ONE SHOT R Shift</title>
+<rect x="1559.1999999999998" y="643" width="298" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1559.1999999999998" y="640" width="298" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="1571.1999999999998" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">R Shift</text>
+<text x="1708.1999999999998" y="683" font-size="11" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">ONE SHOT</text>
+<text x="1708.1999999999998" y="710" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Shift</text>
+</g>
+<g data-source="fn"><title>Fn: No action</title>
+<rect x="64" y="752" width="130" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="76" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Fn</text>
+</g>
+<g data-source="lctl"><title>L Ctrl: No action</title>
+<rect x="215.20000000000002" y="752" width="130" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="227.20000000000002" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">L Ctrl</text>
+</g>
+<g data-source="lalt"><title>L Alt: No action</title>
+<rect x="366.40000000000003" y="752" width="130" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="378.40000000000003" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">L Alt</text>
+</g>
+<g data-source="lmet"><title>L Cmd: No action</title>
+<rect x="517.6000000000001" y="752" width="130" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="529.6000000000001" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">L Cmd</text>
+</g>
+<g data-source="spc"><title>Space: Space; hold L Cmd</title>
+<rect x="668.8000000000001" y="755" width="690" height="102" rx="13" fill="#dce2e7"/>
+<rect x="668.8000000000001" y="752" width="690" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="1013.8000000000001" y="784" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">Space</text>
+<line x1="682.8000000000001" y1="807" x2="1344.8000000000002" y2="807" stroke="#b9cdeb"/>
+<text x="1013.8000000000001" y="829" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Cmd</text>
+</g>
+<g data-source="rmet"><title>R Cmd: No action</title>
+<rect x="1380" y="752" width="130" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1392" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">R Cmd</text>
+</g>
+<g data-source="ralt"><title>R Alt: No action</title>
+<rect x="1531.2" y="752" width="130" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1543.2" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">R Alt</text>
+</g>
+<g data-source="up"><title>↑: No action</title>
+<rect x="2035.1999999999998" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="2047.1999999999998" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">↑</text>
+</g>
+<g data-source="down"><title>↓: No action</title>
+<rect x="2035.1999999999998" y="752" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="2047.1999999999998" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">↓</text>
+</g>
+<g data-source="left"><title>←: No action</title>
+<rect x="1911.9999999999995" y="752" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="1923.9999999999995" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">←</text>
+</g>
+<g data-source="right"><title>→: No action</title>
+<rect x="2158.3999999999996" y="752" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="2170.3999999999996" y="770" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">→</text>
+</g>
+<circle cx="70" cy="920" r="6" fill="#304351"/>
+<text x="87" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Key</text>
+<circle cx="385.2857142857143" cy="920" r="6" fill="#305d91"/>
+<text x="402.2857142857143" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Modifier</text>
+<circle cx="700.5714285714286" cy="920" r="6" fill="#675193"/>
+<text x="717.5714285714286" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Hold for layer</text>
+<circle cx="1015.8571428571429" cy="920" r="6" fill="#2b6b50"/>
+<text x="1032.857142857143" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Switch layer</text>
+<circle cx="1331.142857142857" cy="920" r="6" fill="#99513e"/>
+<text x="1348.142857142857" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Key chord</text>
+<circle cx="1646.4285714285713" cy="920" r="6" fill="#28666b"/>
+<text x="1663.4285714285713" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Tap / hold</text>
+<circle cx="1961.7142857142856" cy="920" r="6" fill="#84909b"/>
+<text x="1978.7142857142856" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">No action</text>
+</svg>
