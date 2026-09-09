@@ -35,12 +35,11 @@ import tomlkit
 HOME = Path.home()
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
-# claude honors CLAUDE_CONFIG_DIR, so honor it too (handy for testing)
-CLAUDE_DIR = Path(os.environ.get("CLAUDE_CONFIG_DIR", HOME / ".claude"))
-CLAUDE_SETTINGS = CLAUDE_DIR / "settings.json"
-CODEX_PLUGIN = "codex@openai-codex"
-CODEX_MARKETPLACE = "openai-codex"
-CODEX_MARKETPLACE_REPO = "openai/codex-plugin-cc"
+# (plugin id, marketplace name, github repo), managed through `claude plugin`
+CLAUDE_PLUGINS = [
+    ("codex@openai-codex", "openai-codex", "openai/codex-plugin-cc"),
+    ("fable-advisor@fable-advisor", "fable-advisor", "DannyMac180/fable-advisor"),
+]
 WINDOWS = os.name == "nt"
 FFF_MCP_NAME = "fff-mcp.exe" if WINDOWS else "fff-mcp"
 FFF_MCP_CANDIDATES = [HOME / "bin" / FFF_MCP_NAME, HOME / ".local" / "bin" / FFF_MCP_NAME]
@@ -300,24 +299,6 @@ def setting_codex_model(state: State) -> None:
         ensure_entry(state, CODEX_CONFIG, [key], value, "codex")
 
 
-def setting_claude_codex_plugin(state: State) -> None:
-    header("claude: codex plugin")
-    ensure_entry(
-        state,
-        CLAUDE_SETTINGS,
-        ["enabledPlugins", "codex@openai-codex"],
-        True,
-        "claude",
-    )
-    ensure_entry(
-        state,
-        CLAUDE_SETTINGS,
-        ["extraKnownMarketplaces", "openai-codex"],
-        {"source": {"source": "github", "repo": "openai/codex-plugin-cc"}},
-        "claude",
-    )
-
-
 def claude_bin() -> str:
     # on Windows `claude` is a .cmd shim, which subprocess only finds via which()
     found = shutil.which("claude")
@@ -349,53 +330,85 @@ def claude_run(*args: str) -> bool:
     return proc.returncode == 0
 
 
-def setting_claude_codex_plugin_installed(state: State) -> None:
-    """Install the codex plugin the way `/plugin install codex@openai-codex`
-    would inside claude code. The marketplace must be fetched first;
-    the `extraKnownMarketplaces` settings entry alone is not enough."""
-    header("claude: codex plugin installed")
+def ensure_claude_plugin(state: State, plugin_id: str, marketplace: str, repo: str) -> None:
+    """Install or update a plugin the way these would inside claude code:
+
+        /plugin marketplace add <repo>
+        /plugin install <plugin_id>
+
+    `claude plugin marketplace add` and `claude plugin install` write the
+    `extraKnownMarketplaces` and `enabledPlugins` entries to settings.json
+    themselves, so nothing is edited by hand here. When the plugin is already
+    installed, the marketplace and plugin are updated to the latest release.
+    """
+    header(f"claude: plugin {plugin_id}")
     try:
         marketplaces = {m["name"] for m in claude_json("plugin", "marketplace", "list")}
     except (OSError, RuntimeError, json.JSONDecodeError, KeyError) as error:
         state.fail(f"cannot query claude marketplaces: {error}")
         return
 
-    if CODEX_MARKETPLACE in marketplaces:
-        ok(f"marketplace {CODEX_MARKETPLACE} is known to claude")
+    if marketplace not in marketplaces:
+        if state.dry_run:
+            would(f"claude plugin marketplace add {repo}")
+        else:
+            claude_run("plugin", "marketplace", "add", repo)
+            marketplaces = {m["name"] for m in claude_json("plugin", "marketplace", "list")}
+            if marketplace not in marketplaces:
+                state.fail(f"marketplace {marketplace} still missing after add")
+                return
+            fixed(f"added marketplace {marketplace}")
     elif state.dry_run:
-        would(f"claude plugin marketplace add {CODEX_MARKETPLACE_REPO}")
+        ok(f"marketplace {marketplace} is known to claude")
     else:
-        claude_run("plugin", "marketplace", "add", CODEX_MARKETPLACE_REPO)
-        marketplaces = {m["name"] for m in claude_json("plugin", "marketplace", "list")}
-        if CODEX_MARKETPLACE not in marketplaces:
-            state.fail(f"marketplace {CODEX_MARKETPLACE} still missing after add")
-            return
-        fixed(f"added marketplace {CODEX_MARKETPLACE}")
+        claude_run("plugin", "marketplace", "update", marketplace)
+        ok(f"marketplace {marketplace} refreshed")
 
     def installed() -> dict[str, Any] | None:
         for plugin in claude_json("plugin", "list"):
-            if plugin.get("id") == CODEX_PLUGIN and plugin.get("scope") == "user":
+            if plugin.get("id") == plugin_id and plugin.get("scope") == "user":
                 return plugin
         return None
 
     plugin = installed()
-    if plugin:
-        ok(f"{CODEX_PLUGIN} {plugin.get('version')} installed (user scope)")
-    elif state.dry_run:
-        would(f"claude plugin install {CODEX_PLUGIN} --scope user -y")
-        return
-    else:
-        claude_run("plugin", "install", CODEX_PLUGIN, "--scope", "user", "-y")
-        plugin = installed()
-        if not plugin:
-            state.fail(f"{CODEX_PLUGIN} still not installed after install")
+    if plugin is None:
+        if state.dry_run:
+            would(f"claude plugin install {plugin_id} --scope user -y")
             return
-        fixed(f"installed {CODEX_PLUGIN} {plugin.get('version')} (user scope)")
+        claude_run("plugin", "install", plugin_id, "--scope", "user", "-y")
+        plugin = installed()
+        if plugin is None:
+            state.fail(f"{plugin_id} still not installed after install")
+            return
+        fixed(f"installed {plugin_id} {plugin.get('version')} (user scope)")
+    elif state.dry_run:
+        ok(f"{plugin_id} {plugin.get('version')} installed (user scope)")
+    else:
+        before = plugin.get("version")
+        claude_run("plugin", "update", plugin_id, "--scope", "user", "-y")
+        plugin = installed() or plugin
+        after = plugin.get("version")
+        if after != before:
+            fixed(f"updated {plugin_id} {before} -> {after} (restart claude to apply)")
+        else:
+            ok(f"{plugin_id} {after} is the latest version")
 
     if plugin.get("enabled"):
-        ok(f"{CODEX_PLUGIN} is enabled")
+        ok(f"{plugin_id} is enabled")
+    elif state.dry_run:
+        would(f"claude plugin enable {plugin_id}")
     else:
-        state.fail(f"{CODEX_PLUGIN} is installed but disabled")
+        claude_run("plugin", "enable", plugin_id)
+        plugin = installed() or plugin
+        if plugin.get("enabled"):
+            fixed(f"enabled {plugin_id}")
+        else:
+            state.fail(f"{plugin_id} still disabled after enable")
+
+
+def setting_claude_plugins(state: State) -> None:
+    for plugin_id, marketplace, repo in CLAUDE_PLUGINS:
+        ensure_claude_plugin(state, plugin_id, marketplace, repo)
 
 
 SETTINGS: list[Callable[[State], None]] = [
@@ -403,8 +416,7 @@ SETTINGS: list[Callable[[State], None]] = [
     setting_codex_model,
     setting_codex_fff_mcp,
     setting_claude_fff_mcp,
-    setting_claude_codex_plugin,
-    setting_claude_codex_plugin_installed,
+    setting_claude_plugins,
 ]
 
 
