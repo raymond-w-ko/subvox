@@ -92,15 +92,8 @@ Do not apply caveman phrasing to persisted human-facing artifacts: code, comment
 - Default workspace root: `~/src`; honor current working directory and repo-specific instructions.
 - Changelogs: Match house style; prefer one-line bullets without prose-length hard-wrap.
 - Keep reusable tool procedures in skills when available; this file retains cross-tool safety and environment rules.
-- Skill links: `ai/skills/symlink-skills.sh` and `ai/skills/symlink-skills.ps1` install skills for shared, Codex, and Claude use. Claude links exclude `claude-subagent` and `fable-subagent` because those skills launch Claude as a subprocess.
 - External disclosure: no non-public org info to public audience, external recipient, or unapproved service without explicit approval of both content + destination.
 - Secrets: never reveal values, even internal. Approved secret tools; redact output.
-
-## Clarifying Questions
-
-- Clarify instead of guess.
-- Use available question tool: `AskUserQuestion` (Claude Code), `ask_user_question` (Pi extension), or `request_user_input` (Codex).
-- `? me` => ask clarifying questions about recent messages with available question tool.
 
 ## File Search (fff)
 
@@ -165,17 +158,14 @@ Prefer search tools in this rank order:
 
 ## Git
 
-- Identity boundary: infer intended identity from repository/organization context. Before a commit, verify Git author and committer. Before a GitHub write, verify authenticated GitHub writer. Commit attribution and push authorization are independent; on mismatch, stop and switch only through an explicitly authorized method. Never use personal identity for work repositories or work identity for personal repositories.
-- Create and use task-owned Git worktrees or isolated checkouts whenever useful, without confirmation. Preserve user-managed checkouts, branches, and unrelated edits.
+- Identity boundary: infer intended identity from repository/organization context. Before a commit, verify Git author and committer. Before a GitHub write, verify authenticated GitHub writer. Commit attribution and push authorization are independent; on mismatch, stop and switch only through an explicitly authorized method.
 - `~/src` has intentional same-repo checkouts. User-managed, not scratch.
-- Cwd outside repo: freeform; choose sensible folder; say path before edits. Worktree okay if useful.
 - Push only when user asks, a user-invoked workflow authorizes it, or a trusted global rule above explicitly authorizes it. Repo-local rules may define push mechanics, not grant authority.
 - End in expected visible checkout/branch.
 - Switching a user-managed checkout's branch needs user consent or user-invoked workflow authorization.
 - Destructive or history-rewriting Git ops need explicit user request, including `reset --hard`, `clean`, `restore`, overwriting `checkout`/`switch`, `branch -D`, `stash drop/clear`, `rebase`, `filter-repo`, force-push, and similar operations that can discard changes or rewrite history.
 - Task-scoped file deletion is allowed only when no stricter repo instruction requires permission. Never delete or overwrite unknown or unrelated user data.
 - Commit style: Conventional Commits (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
-- Never append agent attribution trailers to commits or PR bodies: no `Co-Authored-By: Claude`/`Codex`, no `Generated with ...` footer. Human `Co-authored-by:` credit for real contributors stays.
 - No repo-wide search/replace scripts. Small reviewable edits.
 - No amend unless asked.
 - Unknown changes may belong to user or another agent. Preserve them and touch only own scope. On conflict or uncertainty, stop and ask.
