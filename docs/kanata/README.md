@@ -11,8 +11,8 @@ Reference: [Ben Vallack's latest Voyager layout](https://configure.zsa.io/voyage
 
 ## Current layout images
 
-- Windows: [all layers](../../kanata/viz/out/windows.alice/all-layers.png), [base](../../kanata/viz/out/windows.alice/layers/01-base.png), [shortcuts](../../kanata/viz/out/windows.alice/layers/03-shortcut.png).
-- macOS: [all layers](../../kanata/viz/out/macos.laptop/all-layers.png), [base](../../kanata/viz/out/macos.laptop/layers/01-base.png), [shortcuts](../../kanata/viz/out/macos.laptop/layers/03-shortcut.png).
+- Windows: [all layers](../../kanata/viz/out/windows/all-layers.png), [base](../../kanata/viz/out/windows/layers/01-base.png), [shortcuts](../../kanata/viz/out/windows/layers/03-shortcut.png).
+- macOS: [all layers](../../kanata/viz/out/macos/all-layers.png), [base](../../kanata/viz/out/macos/layers/01-base.png), [shortcuts](../../kanata/viz/out/macos/layers/03-shortcut.png).
 
 The diagrams use soft colors to distinguish modifiers, layer controls, and key chords. On dual-role keys, the tap action sits above the divider and the hold action below it. Small corner labels identify the physical key. Layer headings show the entry keys from the base layout.
 
@@ -22,8 +22,8 @@ After editing `kanata/gen.clj`, regenerate both configurations and their images 
 cd kanata
 bb gen.clj
 cd ..
-node kanata/viz/index.js kanata/windows.alice.kbd
-node kanata/viz/index.js kanata/macos.laptop.kbd
+node kanata/viz/index.js kanata/windows.kbd
+node kanata/viz/index.js kanata/macos.kbd
 ```
 
 If dependencies are missing, run `npm ci --prefix kanata/viz` first. Output includes a combined sheet, a legend, and individual images under `kanata/viz/out/<layout>/layers/`, each in SVG and PNG. Add `--svg-only` to generate only SVG files. The physical arrangement is an ANSI-style reference, not an exact drawing of each device.

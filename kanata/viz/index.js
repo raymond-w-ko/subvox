@@ -29,8 +29,8 @@ const bounds = getKeyboardBounds(layout);
 // Output directory
 const kbdName = basename(kbdPath, '.kbd');
 const platform = kbdName.startsWith('macos') ? 'macos' : 'windows';
-const name = kbdName === 'windows.alice' ? 'Windows · Alice'
-  : kbdName === 'macos.laptop' ? 'macOS · Laptop' : kbdName;
+const name = kbdName === 'windows' ? 'Windows'
+  : kbdName === 'macos' ? 'macOS' : kbdName;
 const renderOptions = { platform, name, layers };
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 const outDir = join(moduleDir, 'out', kbdName);
@@ -59,7 +59,7 @@ async function main() {
     const filename = `${String(i + 1).padStart(2, '0')}-${layer.name.replace(/[^a-z0-9_-]/gi, '-')}`;
     await writeImage(join('layers', filename), svg);
     // Keep the existing Windows base-preview link current on every generation.
-    if (!svgOnly && kbdName === 'windows.alice' && layer.name === 'base') {
+    if (!svgOnly && kbdName === 'windows' && layer.name === 'base') {
       await sharp(Buffer.from(svg)).png().toFile(join(outDir, 'base-crop.png'));
     }
   }

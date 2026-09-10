@@ -63,9 +63,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def *env (atom nil))
-(defn is-laptop? [] (str/includes? @*env "laptop"))
-(defn is-macos? [] (str/includes? @*env "macos"))
-(defn is-windows? [] (str/includes? @*env "windows"))
+(defn is-macos? [] (= @*env "macos"))
+(defn is-windows? [] (= @*env "windows"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -101,32 +100,32 @@
 
 (defn primary-mod []
   (cond
-    (str/starts-with? @*env "macos.") :lmet
-    (str/starts-with? @*env "windows.") :lctl
+    (is-macos?) :lmet
+    (is-windows?) :lctl
     :else nop))
 
 (defn delete-word []
   (cond
-    (str/starts-with? @*env "macos.") :A-bspc
-    (str/starts-with? @*env "windows.") :C-bspc
+    (is-macos?) :A-bspc
+    (is-windows?) :C-bspc
     :else nop))
 
 (defn copy []
   (cond
-    (str/starts-with? @*env "macos.") :M-c
-    (str/starts-with? @*env "windows.") :C-c
+    (is-macos?) :M-c
+    (is-windows?) :C-c
     :else nop))
 
 (defn paste []
   (cond
-    (str/starts-with? @*env "macos.") :M-v
-    (str/starts-with? @*env "windows.") :C-v
+    (is-macos?) :M-v
+    (is-windows?) :C-v
     :else nop))
 
 (defn screenshot-area []
   (cond
-    (str/starts-with? @*env "macos.") :C-M-S-4
-    (str/starts-with? @*env "windows.") :M-S-s
+    (is-macos?) :C-M-S-4
+    (is-windows?) :M-S-s
     :else nop))
 
 (defn next-tab [] :C-tab)
@@ -134,20 +133,20 @@
 
 (defn outdent-line []
   (cond
-    (str/starts-with? @*env "macos.") :M-lbrc
-    (str/starts-with? @*env "windows.") :C-lbrc
+    (is-macos?) :M-lbrc
+    (is-windows?) :C-lbrc
     :else nop))
 
 (defn indent-line []
   (cond
-    (str/starts-with? @*env "macos.") :M-rbrc
-    (str/starts-with? @*env "windows.") :C-rbrc
+    (is-macos?) :M-rbrc
+    (is-windows?) :C-rbrc
     :else nop))
 
 (defn cycle-app-windows []
   (cond
-    (str/starts-with? @*env "macos.") :M-grv
-    (str/starts-with? @*env "windows.") :M-grv ;; there is no equivalent for M-grv on Windows
+    (is-macos?) :M-grv
+    (is-windows?) :M-grv ;; there is no equivalent for M-grv on Windows
     :else nop))
 
 (defn start-of-paragraph [] :A-lbrc)
@@ -419,7 +418,7 @@
 (defn gen-src-keys [{:as args :keys []}]
   (let [form (reduce (fn [acc key]
                        (cond
-                         (and (= key :fn) (not (is-laptop?))) acc
+                         (and (= key :fn) (not (is-macos?))) acc
                          :else (conj acc key)))
                      [] src-keys)
         form `(defsrc ~@form)]
@@ -436,7 +435,7 @@
             (= src-key (live-reload-key)) :lrld
             (= src-key (layer-switch-key)) :at/l_gaming
             (and is-strict (contains? banned-keys-when-strict src-key)) nop
-            (and (is-laptop?) (contains? fn-to-action-keys src-key)) (get fn-to-action-keys src-key)
+            (and (is-macos?) (contains? fn-to-action-keys src-key)) (get fn-to-action-keys src-key)
             (contains? qwerty-to-base-layer src-key) (get qwerty-to-base-layer src-key)
             :else src-key)
     :shortcut (let [m (gen-qwerty-to-shortcut-layer)]
@@ -462,7 +461,7 @@
 (defn gen-layer [{:as args :keys []} layer]
   (let [rf (fn [acc src-key]
              (cond
-               (and (= src-key :fn) (not (is-laptop?))) acc
+               (and (= src-key :fn) (not (is-macos?))) acc
                :else (let [dst-key (compute-dst-key layer src-key)
                            dst-key (if (symbol? dst-key)
                                      (with-meta dst-key {:comment (str src-key)})
@@ -495,10 +494,10 @@
       (gen-layer :fn)
       (write-kbd)))
 
-(reset! *env "windows.alice")
+(reset! *env "windows")
 (-> {:buffer []}
     (gen-kbd))
 
-(reset! *env "macos.laptop")
+(reset! *env "macos")
 (-> {:buffer []}
     (gen-kbd))

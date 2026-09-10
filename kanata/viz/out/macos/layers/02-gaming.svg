@@ -1,0 +1,414 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2335" height="962" viewBox="0 0 2335 962" role="img">
+<title>Gaming</title>
+<defs><style>text { font-family: 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif; }</style></defs>
+<rect width="2335" height="962" fill="#eef1f3"/>
+<rect x="20" y="12" width="2295" height="938" rx="28" fill="#fafbfc" stroke="#dce2e7"/>
+<text x="64" y="49" font-size="15" fill="#657480" font-weight="600" text-anchor="start" dominant-baseline="middle">02  /  MACOS</text>
+<text x="64" y="92" font-size="40" fill="#233342" font-weight="700" text-anchor="start" dominant-baseline="middle">Gaming</text>
+<text x="64" y="132" font-size="20" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">A direct layout for games.</text>
+<rect x="2107" y="61" width="164" height="48" rx="24" fill="#e9edf1"/>
+<text x="2189" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">PRESS  R Alt</text>
+<g data-source="f1"><title>F1: F1</title>
+<rect x="64" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="64" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="115" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F1</text>
+</g>
+<g data-source="f2"><title>F2: F2</title>
+<rect x="187.20000000000002" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="187.20000000000002" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="238.20000000000002" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F2</text>
+</g>
+<g data-source="f3"><title>F3: F3</title>
+<rect x="310.40000000000003" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="310.40000000000003" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="361.40000000000003" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F3</text>
+</g>
+<g data-source="f4"><title>F4: F4</title>
+<rect x="433.6" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="433.6" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="484.6" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F4</text>
+</g>
+<g data-source="f5"><title>F5: F5</title>
+<rect x="612.8000000000001" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="612.8000000000001" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="663.8000000000001" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F5</text>
+</g>
+<g data-source="f6"><title>F6: Reload</title>
+<rect x="736" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="736" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="748" y="182" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">F6</text>
+<text x="787" y="225" font-size="24.999999999999996" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Reload</text>
+</g>
+<g data-source="f7"><title>F7: F7</title>
+<rect x="859.1999999999999" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="859.1999999999999" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="910.1999999999999" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F7</text>
+</g>
+<g data-source="f8"><title>F8: F8</title>
+<rect x="982.3999999999999" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="982.3999999999999" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1033.3999999999999" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F8</text>
+</g>
+<g data-source="f9"><title>F9: F9</title>
+<rect x="1161.6" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1161.6" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1212.6" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F9</text>
+</g>
+<g data-source="f10"><title>F10: F10</title>
+<rect x="1284.7999999999997" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1284.7999999999997" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1335.7999999999997" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F10</text>
+</g>
+<g data-source="f11"><title>F11: F11</title>
+<rect x="1407.9999999999998" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1407.9999999999998" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1458.9999999999998" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F11</text>
+</g>
+<g data-source="f12"><title>F12: F12</title>
+<rect x="1531.1999999999998" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1531.1999999999998" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1582.1999999999998" y="215" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F12</text>
+</g>
+<g data-source="ins"><title>Insert: Insert</title>
+<rect x="1710.3999999999996" y="167" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1710.3999999999996" y="164" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1761.3999999999996" y="215" font-size="24.999999999999996" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Insert</text>
+</g>
+<g data-source="tab"><title>Tab: Tab</title>
+<rect x="64" y="419" width="158" height="102" rx="13" fill="#dce2e7"/>
+<rect x="64" y="416" width="158" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="143" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Tab</text>
+</g>
+<g data-source="q"><title>Q: Q</title>
+<rect x="243.20000000000002" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="243.20000000000002" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="294.20000000000005" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Q</text>
+</g>
+<g data-source="w"><title>W: W</title>
+<rect x="366.40000000000003" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="366.40000000000003" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="417.40000000000003" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">W</text>
+</g>
+<g data-source="e"><title>E: E</title>
+<rect x="489.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="489.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="540.6" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">E</text>
+</g>
+<g data-source="r"><title>R: R</title>
+<rect x="612.8000000000001" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="612.8000000000001" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="663.8000000000001" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">R</text>
+</g>
+<g data-source="t"><title>T: T</title>
+<rect x="736" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="736" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="787" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">T</text>
+</g>
+<g data-source="y"><title>Y: Y</title>
+<rect x="859.1999999999999" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="859.1999999999999" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="910.1999999999999" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Y</text>
+</g>
+<g data-source="u"><title>U: U</title>
+<rect x="982.3999999999999" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="982.3999999999999" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1033.3999999999999" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">U</text>
+</g>
+<g data-source="i"><title>I: I</title>
+<rect x="1105.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1105.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1156.6" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">I</text>
+</g>
+<g data-source="o"><title>O: O</title>
+<rect x="1228.7999999999997" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1228.7999999999997" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1279.7999999999997" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">O</text>
+</g>
+<g data-source="p"><title>P: P</title>
+<rect x="1351.9999999999998" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1351.9999999999998" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1402.9999999999998" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">P</text>
+</g>
+<g data-source="lbrc"><title>[: [</title>
+<rect x="1475.1999999999998" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1475.1999999999998" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1526.1999999999998" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">[</text>
+</g>
+<g data-source="rbrc"><title>]: ]</title>
+<rect x="1598.3999999999996" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1598.3999999999996" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1649.3999999999996" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">]</text>
+</g>
+<g data-source="bksl"><title>\: \</title>
+<rect x="1721.5999999999997" y="419" width="158" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1721.5999999999997" y="416" width="158" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1800.5999999999997" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">\</text>
+</g>
+<g data-source="grv"><title>`: `</title>
+<rect x="64" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="64" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="115" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">`</text>
+</g>
+<g data-source="1"><title>1: 1</title>
+<rect x="187.20000000000002" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="187.20000000000002" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="238.20000000000002" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">1</text>
+</g>
+<g data-source="2"><title>2: 2</title>
+<rect x="310.40000000000003" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="310.40000000000003" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="361.40000000000003" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">2</text>
+</g>
+<g data-source="3"><title>3: 3</title>
+<rect x="433.6" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="433.6" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="484.6" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">3</text>
+</g>
+<g data-source="4"><title>4: 4</title>
+<rect x="556.8000000000001" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="556.8000000000001" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="607.8000000000001" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">4</text>
+</g>
+<g data-source="5"><title>5: 5</title>
+<rect x="680" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="680" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="731" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">5</text>
+</g>
+<g data-source="6"><title>6: 6</title>
+<rect x="803.1999999999999" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="803.1999999999999" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="854.1999999999999" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">6</text>
+</g>
+<g data-source="7"><title>7: 7</title>
+<rect x="926.3999999999999" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="926.3999999999999" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="977.3999999999999" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">7</text>
+</g>
+<g data-source="8"><title>8: 8</title>
+<rect x="1049.6" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1049.6" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1100.6" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">8</text>
+</g>
+<g data-source="9"><title>9: 9</title>
+<rect x="1172.7999999999997" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1172.7999999999997" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1223.7999999999997" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">9</text>
+</g>
+<g data-source="0"><title>0: 0</title>
+<rect x="1295.9999999999998" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1295.9999999999998" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1346.9999999999998" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">0</text>
+</g>
+<g data-source="min"><title>-: -</title>
+<rect x="1419.1999999999998" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1419.1999999999998" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1470.1999999999998" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">-</text>
+</g>
+<g data-source="="><title>=: =</title>
+<rect x="1542.3999999999996" y="307" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1542.3999999999996" y="304" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1593.3999999999996" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">=</text>
+</g>
+<g data-source="bspc"><title>Backspace: Backspace</title>
+<rect x="1665.5999999999997" y="307" width="214" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1665.5999999999997" y="304" width="214" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1772.5999999999997" y="355" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Backspace</text>
+</g>
+<g data-source="caps"><title>Caps: Space</title>
+<rect x="64" y="531" width="186" height="102" rx="13" fill="#dce2e7"/>
+<rect x="64" y="528" width="186" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="76" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Caps</text>
+<text x="157" y="589" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Space</text>
+</g>
+<g data-source="a"><title>A: A</title>
+<rect x="271.20000000000005" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="271.20000000000005" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="322.20000000000005" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">A</text>
+</g>
+<g data-source="s"><title>S: S</title>
+<rect x="394.40000000000003" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="394.40000000000003" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="445.40000000000003" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">S</text>
+</g>
+<g data-source="d"><title>D: D</title>
+<rect x="517.6000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="517.6000000000001" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="568.6000000000001" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">D</text>
+</g>
+<g data-source="f"><title>F: F</title>
+<rect x="640.8000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="640.8000000000001" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="691.8000000000001" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">F</text>
+</g>
+<g data-source="g"><title>G: G</title>
+<rect x="764" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="764" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="815" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">G</text>
+</g>
+<g data-source="h"><title>H: H</title>
+<rect x="887.1999999999999" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="887.1999999999999" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="938.1999999999999" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">H</text>
+</g>
+<g data-source="j"><title>J: J</title>
+<rect x="1010.3999999999999" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1010.3999999999999" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1061.3999999999999" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">J</text>
+</g>
+<g data-source="k"><title>K: K</title>
+<rect x="1133.6" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1133.6" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1184.6" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">K</text>
+</g>
+<g data-source="l"><title>L: L</title>
+<rect x="1256.7999999999997" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1256.7999999999997" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1307.7999999999997" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">L</text>
+</g>
+<g data-source="scln"><title>;: ;</title>
+<rect x="1379.9999999999998" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1379.9999999999998" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1430.9999999999998" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">;</text>
+</g>
+<g data-source="apos"><title>': '</title>
+<rect x="1503.1999999999998" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1503.1999999999998" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1554.1999999999998" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">'</text>
+</g>
+<g data-source="ret"><title>Enter: Enter</title>
+<rect x="1626.3999999999996" y="531" width="242" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1626.3999999999996" y="528" width="242" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1747.3999999999996" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Enter</text>
+</g>
+<g data-source="lsft"><title>L Shift: L Shift</title>
+<rect x="64" y="643" width="242" height="102" rx="13" fill="#dce2e7"/>
+<rect x="64" y="640" width="242" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="185" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Shift</text>
+</g>
+<g data-source="z"><title>Z: Z</title>
+<rect x="327.2" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="327.2" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="378.2" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Z</text>
+</g>
+<g data-source="x"><title>X: X</title>
+<rect x="450.40000000000003" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="450.40000000000003" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="501.40000000000003" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">X</text>
+</g>
+<g data-source="c"><title>C: C</title>
+<rect x="573.6000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="573.6000000000001" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="624.6000000000001" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">C</text>
+</g>
+<g data-source="v"><title>V: V</title>
+<rect x="696.8000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="696.8000000000001" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="747.8000000000001" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">V</text>
+</g>
+<g data-source="b"><title>B: B</title>
+<rect x="820" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="820" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="871" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">B</text>
+</g>
+<g data-source="n"><title>N: N</title>
+<rect x="943.1999999999999" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="943.1999999999999" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="994.1999999999999" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">N</text>
+</g>
+<g data-source="m"><title>M: M</title>
+<rect x="1066.3999999999999" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1066.3999999999999" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1117.3999999999999" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">M</text>
+</g>
+<g data-source="comm"><title>,: ,</title>
+<rect x="1189.6" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1189.6" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1240.6" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">,</text>
+</g>
+<g data-source="."><title>.: .</title>
+<rect x="1312.7999999999997" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1312.7999999999997" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1363.7999999999997" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">.</text>
+</g>
+<g data-source="/"><title>/: /</title>
+<rect x="1435.9999999999998" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1435.9999999999998" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1486.9999999999998" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">/</text>
+</g>
+<g data-source="rsft"><title>R Shift: R Shift</title>
+<rect x="1559.1999999999998" y="643" width="298" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1559.1999999999998" y="640" width="298" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1708.1999999999998" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Shift</text>
+</g>
+<g data-source="fn"><title>Fn: Fn</title>
+<rect x="64" y="755" width="130" height="102" rx="13" fill="#dce2e7"/>
+<rect x="64" y="752" width="130" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="129" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Fn</text>
+</g>
+<g data-source="lctl"><title>L Ctrl: L Ctrl</title>
+<rect x="215.20000000000002" y="755" width="130" height="102" rx="13" fill="#dce2e7"/>
+<rect x="215.20000000000002" y="752" width="130" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="280.20000000000005" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Ctrl</text>
+</g>
+<g data-source="lalt"><title>L Alt: L Alt</title>
+<rect x="366.40000000000003" y="755" width="130" height="102" rx="13" fill="#dce2e7"/>
+<rect x="366.40000000000003" y="752" width="130" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="431.40000000000003" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Alt</text>
+</g>
+<g data-source="lmet"><title>L Cmd: L Cmd</title>
+<rect x="517.6000000000001" y="755" width="130" height="102" rx="13" fill="#dce2e7"/>
+<rect x="517.6000000000001" y="752" width="130" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="582.6000000000001" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Cmd</text>
+</g>
+<g data-source="spc"><title>Space: Space</title>
+<rect x="668.8000000000001" y="755" width="690" height="102" rx="13" fill="#dce2e7"/>
+<rect x="668.8000000000001" y="752" width="690" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1013.8000000000001" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Space</text>
+</g>
+<g data-source="rmet"><title>R Cmd: R Cmd</title>
+<rect x="1380" y="755" width="130" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1380" y="752" width="130" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1445" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Cmd</text>
+</g>
+<g data-source="ralt"><title>R Alt: SWITCH Base</title>
+<rect x="1531.2" y="755" width="130" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1531.2" y="752" width="130" height="102" rx="13" fill="#e0f1e9" stroke="#afd4c1" stroke-width="1.3"/>
+<text x="1543.2" y="770" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">R Alt</text>
+<text x="1596.2" y="795" font-size="11" fill="#2b6b50" font-weight="600" text-anchor="middle" dominant-baseline="middle">SWITCH</text>
+<text x="1596.2" y="822" font-size="27" fill="#2b6b50" font-weight="600" text-anchor="middle" dominant-baseline="middle">Base</text>
+</g>
+<g data-source="up"><title>↑: ↑</title>
+<rect x="2035.1999999999998" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="2035.1999999999998" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="2086.2" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">↑</text>
+</g>
+<g data-source="down"><title>↓: ↓</title>
+<rect x="2035.1999999999998" y="755" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="2035.1999999999998" y="752" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="2086.2" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">↓</text>
+</g>
+<g data-source="left"><title>←: ←</title>
+<rect x="1911.9999999999995" y="755" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1911.9999999999995" y="752" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1962.9999999999995" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">←</text>
+</g>
+<g data-source="right"><title>→: →</title>
+<rect x="2158.3999999999996" y="755" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="2158.3999999999996" y="752" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="2209.3999999999996" y="803" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">→</text>
+</g>
+<circle cx="70" cy="920" r="6" fill="#304351"/>
+<text x="87" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Key</text>
+<circle cx="385.2857142857143" cy="920" r="6" fill="#305d91"/>
+<text x="402.2857142857143" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Modifier</text>
+<circle cx="700.5714285714286" cy="920" r="6" fill="#675193"/>
+<text x="717.5714285714286" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Hold for layer</text>
+<circle cx="1015.8571428571429" cy="920" r="6" fill="#2b6b50"/>
+<text x="1032.857142857143" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Switch layer</text>
+<circle cx="1331.142857142857" cy="920" r="6" fill="#99513e"/>
+<text x="1348.142857142857" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Key chord</text>
+<circle cx="1646.4285714285713" cy="920" r="6" fill="#28666b"/>
+<text x="1663.4285714285713" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Tap / hold</text>
+<circle cx="1961.7142857142856" cy="920" r="6" fill="#84909b"/>
+<text x="1978.7142857142856" y="920" font-size="17" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">No action</text>
+</svg>
