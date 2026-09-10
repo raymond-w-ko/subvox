@@ -1,5 +1,6 @@
 node_modules
 __pycache__
+.cache/
 
 # symlink to result of nix build
 result*
