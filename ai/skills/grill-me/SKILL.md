@@ -1,6 +1,6 @@
 ---
 name: grill-me
-description: A relentless interview to sharpen and stress-test a plan, decision, or idea.
+description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
 disable-model-invocation: true
 ---
 
@@ -10,17 +10,23 @@ Work the tree in **rounds**. The **frontier** is every decision whose prerequisi
 
 Ask each round directly in the assistant message using the format below. Do not use a structured question tool.
 
-Each question should be formatted like so:
+Format a round like so:
 
 ```
 ❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
+
+➡️ <your recommended answer>
+
+---
+
+❓ **Q2** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
 
 ➡️ <your recommended answer>
 ```
 
 Each round the user answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
-Finding _facts_ is your job, never the user's. Use available filesystem, shell, web, and research tools to find anything you can determine without asking. Delegate only when the user explicitly requests a workflow or sub-agent. Gather facts needed by downstream questions first; meanwhile, ask any other frontier questions that do not depend on those facts.
+Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), use available filesystem, shell, web, and research tools to find it; don't ask the user for anything you could look up yourself. Delegate only when the user explicitly requests a workflow or sub-agent. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the findings; ask the rest of the frontier now.
 
 The _decisions_ are the user's: put each to them and wait.
 
