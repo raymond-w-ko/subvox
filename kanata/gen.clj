@@ -172,29 +172,29 @@
 
     ~@(tap-hold :normal :spc (primary-mod))
 
-    ~@(tap-hold :normal :f :at/l_shortcut)
-    ~@(tap-hold :normal :j :at/l_shortcut)
-    ~@(tap-hold :normal :d :at/l_sym1)
-    ~@(tap-hold :normal :k :at/l_sym1)
-    ~@(tap-hold :normal :s :at/l_misc)
-    ~@(tap-hold :normal :l :at/l_misc)
-    ~@(tap-hold :slow :a :at/l_num)
-    ~@(tap-hold :slow :scln :at/l_num)
+    ~@(tap-hold :normal :v :at/l_shortcut)
+    ~@(tap-hold :normal :m :at/l_shortcut)
+    ~@(tap-hold :normal :c :at/l_sym1)
+    ~@(tap-hold :normal :comm :at/l_sym1)
+    ~@(tap-hold :normal :x :at/l_misc)
+    ~@(tap-hold :normal :. :at/l_misc)
+    ~@(tap-hold :slow :z :at/l_num)
+    ~@(tap-hold :slow :/ :at/l_num)
 
-    ~@(tap-hold :normal :g :at/l_fn)
-    ~@(tap-hold :normal :h :at/l_fn)
+    ~@(tap-hold :normal :b :at/l_fn)
+    ~@(tap-hold :normal :n :at/l_fn)
 
-    ~@(tap-hold :slow :w :lctl)
-    ~@(tap-hold :normal :e :lalt)
-    ~@(tap-hold :normal :r :lmet)
+    ~@(tap-hold :slow :s :lctl)
+    ~@(tap-hold :normal :d :lalt)
+    ~@(tap-hold :normal :f :lmet)
 
-    ~@(tap-hold :slow :o :rctl)
-    ~@(tap-hold :normal :i :ralt)
-    ~@(tap-hold :slow :u :rmet) ;; this get's wrongly triggered with 'could'
+    ~@(tap-hold :slow :l :rctl)
+    ~@(tap-hold :normal :k :ralt)
+    ~@(tap-hold :slow :j :rmet)
 
     ;; this does not work out in practice because the pinky is not fast enough
-    ~@(tap-hold :glacial :q :lsft)
-    ~@(tap-hold :glacial :p :rsft)
+    ~@(tap-hold :glacial :a :lsft)
+    ~@(tap-hold :glacial :scln :rsft)
 
     ~@(tap-hold :d_h :normal :del :home)
     ~@(tap-hold :p_e :normal (outdent-line) :end)])
@@ -208,13 +208,11 @@
 
 (def qwerty-to-base-layer
   (->hash '[caps :at/os_lsft apos :at/os_rsft
-            q :at/q p :at/p
-
-            w :at/w e :at/e r :at/r
-            u :at/u o :at/o i :at/i
-
-            a :at/a s :at/s d :at/d f :at/f g :at/g h :at/h
+            a :at/a s :at/s d :at/d f :at/f
             j :at/j k :at/k l :at/l scln :at/scln
+
+            z :at/z x :at/x c :at/c v :at/v b :at/b
+            n :at/n m :at/m comm :at/comm . :at/. / :at//
 
             spc :at/spc
             rsft :at/os_rsft]))
@@ -233,13 +231,13 @@
 
             q tab
             w esc
-            e ~(previous-tab)
-            r ~(next-tab)
-            a ~(cycle-app-windows)
-            s :at/d_h ;; delete (tap) / home (hold)
             d :at/p_e ;; outdent (tap) / end (hold)
             f ~(indent-line)
-            z ~(screenshot-area)
+            g ~(screenshot-area)
+            z ~(cycle-app-windows)
+            x :at/d_h ;; delete (tap) / home (hold)
+            c ~(previous-tab)
+            v ~(next-tab)
 
             spc :at/spc
             rsft :at/os_rsft]))
@@ -250,7 +248,9 @@
             d ~(start-of-paragraph)
             f ~(select-to-start-of-paragraph)
             v ~(copy)
-            t ~(paste)
+            b ~(paste)
+            i pgup
+            k pgdn
 
             spc :at/spc
             rsft :at/os_rsft]))

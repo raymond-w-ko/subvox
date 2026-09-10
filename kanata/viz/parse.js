@@ -167,6 +167,7 @@ const KEY_LABELS = {
   'caps': 'Caps', 'grv': '`', 'min': '-', 'bksl': '\\',
   'lbrc': '[', 'rbrc': ']', 'scln': ';', 'apos': "'", 'comm': ',',
   'ins': 'Ins', 'del': 'Del', 'home': 'Home', 'end': 'End',
+  'pgup': 'Page Up', 'pgdn': 'Page Down',
   'up': '↑', 'down': '↓', 'left': '←', 'right': '→',
   'pp': '⏯', 'prev': '⏮', 'next': '⏭',
   'mute': '🔇', 'vold': '🔉', 'volu': '🔊',

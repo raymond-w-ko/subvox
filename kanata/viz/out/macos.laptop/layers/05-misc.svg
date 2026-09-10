@@ -7,7 +7,7 @@
 <text x="64" y="92" font-size="40" fill="#233342" font-weight="700" text-anchor="start" dominant-baseline="middle">App controls</text>
 <text x="64" y="132" font-size="20" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Application shortcuts and clipboard actions.</text>
 <rect x="2097" y="61" width="174" height="48" rx="24" fill="#e9edf1"/>
-<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  S  /  L</text>
+<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  X  /  .</text>
 <g data-source="f1"><title>F1: No action</title>
 <rect x="64" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="76" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F1</text>
@@ -85,11 +85,9 @@
 <text x="663.8000000000001" y="464.7857142857143" font-size="21.428571428571427" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Alt+</text>
 <text x="663.8000000000001" y="489.2142857142857" font-size="21.428571428571427" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shift+]</text>
 </g>
-<g data-source="t"><title>T: Cmd+V</title>
-<rect x="736" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="736" y="416" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
-<text x="748" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">T</text>
-<text x="787" y="477" font-size="27" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+V</text>
+<g data-source="t"><title>T: No action</title>
+<rect x="736" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="748" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">T</text>
 </g>
 <g data-source="y"><title>Y: No action</title>
 <rect x="859.1999999999999" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
@@ -99,9 +97,11 @@
 <rect x="982.3999999999999" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="994.3999999999999" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">U</text>
 </g>
-<g data-source="i"><title>I: No action</title>
-<rect x="1105.6" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="1117.6" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">I</text>
+<g data-source="i"><title>I: Page Up</title>
+<rect x="1105.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1105.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1117.6" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">I</text>
+<text x="1156.6" y="477" font-size="21.428571428571427" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Page Up</text>
 </g>
 <g data-source="o"><title>O: No action</title>
 <rect x="1228.7999999999997" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
@@ -216,9 +216,12 @@
 <rect x="1010.3999999999999" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="1022.3999999999999" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">J</text>
 </g>
-<g data-source="k"><title>K: No action</title>
-<rect x="1133.6" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="1145.6" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">K</text>
+<g data-source="k"><title>K: Page Down</title>
+<rect x="1133.6" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="1133.6" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1145.6" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">K</text>
+<text x="1184.6" y="574" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Page</text>
+<text x="1184.6" y="604" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Down</text>
 </g>
 <g data-source="l"><title>L: No action</title>
 <rect x="1256.7999999999997" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
@@ -258,9 +261,11 @@
 <text x="708.8000000000001" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">V</text>
 <text x="747.8000000000001" y="701" font-size="27" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+C</text>
 </g>
-<g data-source="b"><title>B: No action</title>
-<rect x="820" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="832" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">B</text>
+<g data-source="b"><title>B: Cmd+V</title>
+<rect x="820" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="820" y="640" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
+<text x="832" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">B</text>
+<text x="871" y="701" font-size="27" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+V</text>
 </g>
 <g data-source="n"><title>N: No action</title>
 <rect x="943.1999999999999" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>

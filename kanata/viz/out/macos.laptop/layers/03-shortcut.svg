@@ -7,7 +7,7 @@
 <text x="64" y="92" font-size="40" fill="#233342" font-weight="700" text-anchor="start" dominant-baseline="middle">Shortcuts</text>
 <text x="64" y="132" font-size="20" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Navigation, editing and tab control.</text>
 <rect x="2097" y="61" width="174" height="48" rx="24" fill="#e9edf1"/>
-<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  F  /  J</text>
+<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  V  /  M</text>
 <g data-source="f1"><title>F1: No action</title>
 <rect x="64" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="76" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F1</text>
@@ -76,19 +76,13 @@
 <text x="378.40000000000003" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">W</text>
 <text x="417.40000000000003" y="477" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Esc</text>
 </g>
-<g data-source="e"><title>E: Ctrl+Shift+Tab</title>
-<rect x="489.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="489.6" y="416" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
-<text x="501.6" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">E</text>
-<text x="540.6" y="453.3333333333333" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Ctrl+</text>
-<text x="540.6" y="477" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shift+</text>
-<text x="540.6" y="500.6666666666667" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Tab</text>
+<g data-source="e"><title>E: No action</title>
+<rect x="489.6" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="501.6" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">E</text>
 </g>
-<g data-source="r"><title>R: Ctrl+Tab</title>
-<rect x="612.8000000000001" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="612.8000000000001" y="416" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
-<text x="624.8000000000001" y="434" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">R</text>
-<text x="663.8000000000001" y="477" font-size="18.749999999999996" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Ctrl+Tab</text>
+<g data-source="r"><title>R: No action</title>
+<rect x="612.8000000000001" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="624.8000000000001" y="434" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">R</text>
 </g>
 <g data-source="t"><title>T: No action</title>
 <rect x="736" y="416" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
@@ -193,19 +187,13 @@
 <rect x="64" y="528" width="186" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="76" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">Caps</text>
 </g>
-<g data-source="a"><title>A: Cmd+`</title>
-<rect x="271.20000000000005" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="271.20000000000005" y="528" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
-<text x="283.20000000000005" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">A</text>
-<text x="322.20000000000005" y="589" font-size="27" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+`</text>
+<g data-source="a"><title>A: No action</title>
+<rect x="271.20000000000005" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="283.20000000000005" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">A</text>
 </g>
-<g data-source="s"><title>S: Delete; hold Home</title>
-<rect x="394.40000000000003" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="394.40000000000003" y="528" width="102" height="102" rx="13" fill="#e0f0f1" stroke="#b0d2d5" stroke-width="1.3"/>
-<text x="406.40000000000003" y="544" font-size="12" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">S</text>
-<text x="445.40000000000003" y="564" font-size="24" fill="#28666b" font-weight="600" text-anchor="middle" dominant-baseline="middle">Delete</text>
-<line x1="408.40000000000003" y1="583" x2="482.40000000000003" y2="583" stroke="#b0d2d5"/>
-<text x="445.40000000000003" y="605" font-size="18" fill="#28666b" font-weight="600" text-anchor="middle" dominant-baseline="middle">Home</text>
+<g data-source="s"><title>S: No action</title>
+<rect x="394.40000000000003" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
+<text x="406.40000000000003" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">S</text>
 </g>
 <g data-source="d"><title>D: Cmd+[; hold End</title>
 <rect x="517.6000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
@@ -221,9 +209,13 @@
 <text x="652.8000000000001" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">F</text>
 <text x="691.8000000000001" y="589" font-size="27" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+]</text>
 </g>
-<g data-source="g"><title>G: No action</title>
-<rect x="764" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="776" y="546" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">G</text>
+<g data-source="g"><title>G: Ctrl+Cmd+Shift+4</title>
+<rect x="764" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="764" y="528" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
+<text x="776" y="546" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">G</text>
+<text x="815" y="565.3333333333334" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Ctrl+</text>
+<text x="815" y="589" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+</text>
+<text x="815" y="612.6666666666666" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shift+4</text>
 </g>
 <g data-source="h"><title>H: No action</title>
 <rect x="887.1999999999999" y="528" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
@@ -265,25 +257,33 @@
 <rect x="64" y="640" width="242" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="76" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">L Shift</text>
 </g>
-<g data-source="z"><title>Z: Ctrl+Cmd+Shift+4</title>
+<g data-source="z"><title>Z: Cmd+`</title>
 <rect x="327.2" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
 <rect x="327.2" y="640" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
 <text x="339.2" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Z</text>
-<text x="378.2" y="677.3333333333334" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Ctrl+</text>
-<text x="378.2" y="701" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+</text>
-<text x="378.2" y="724.6666666666666" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shift+4</text>
+<text x="378.2" y="701" font-size="27" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Cmd+`</text>
 </g>
-<g data-source="x"><title>X: No action</title>
-<rect x="450.40000000000003" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="462.40000000000003" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">X</text>
+<g data-source="x"><title>X: Delete; hold Home</title>
+<rect x="450.40000000000003" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="450.40000000000003" y="640" width="102" height="102" rx="13" fill="#e0f0f1" stroke="#b0d2d5" stroke-width="1.3"/>
+<text x="462.40000000000003" y="656" font-size="12" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">X</text>
+<text x="501.40000000000003" y="676" font-size="24" fill="#28666b" font-weight="600" text-anchor="middle" dominant-baseline="middle">Delete</text>
+<line x1="464.40000000000003" y1="695" x2="538.4000000000001" y2="695" stroke="#b0d2d5"/>
+<text x="501.40000000000003" y="717" font-size="18" fill="#28666b" font-weight="600" text-anchor="middle" dominant-baseline="middle">Home</text>
 </g>
-<g data-source="c"><title>C: No action</title>
-<rect x="573.6000000000001" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="585.6000000000001" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">C</text>
+<g data-source="c"><title>C: Ctrl+Shift+Tab</title>
+<rect x="573.6000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="573.6000000000001" y="640" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
+<text x="585.6000000000001" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">C</text>
+<text x="624.6000000000001" y="677.3333333333334" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Ctrl+</text>
+<text x="624.6000000000001" y="701" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shift+</text>
+<text x="624.6000000000001" y="724.6666666666666" font-size="20.666666666666668" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Tab</text>
 </g>
-<g data-source="v"><title>V: No action</title>
-<rect x="696.8000000000001" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
-<text x="708.8000000000001" y="658" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">V</text>
+<g data-source="v"><title>V: Ctrl+Tab</title>
+<rect x="696.8000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
+<rect x="696.8000000000001" y="640" width="102" height="102" rx="13" fill="#fae9e4" stroke="#e8c2b5" stroke-width="1.3"/>
+<text x="708.8000000000001" y="658" font-size="13" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">V</text>
+<text x="747.8000000000001" y="701" font-size="18.749999999999996" fill="#99513e" font-weight="600" text-anchor="middle" dominant-baseline="middle">Ctrl+Tab</text>
 </g>
 <g data-source="b"><title>B: No action</title>
 <rect x="820" y="640" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>

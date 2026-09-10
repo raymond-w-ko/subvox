@@ -7,7 +7,7 @@
 <text x="64" y="92" font-size="40" fill="#233342" font-weight="700" text-anchor="start" dominant-baseline="middle">Symbols</text>
 <text x="64" y="132" font-size="20" fill="#657480" font-weight="400" text-anchor="start" dominant-baseline="middle">Punctuation, operators and brackets.</text>
 <rect x="2097" y="61" width="174" height="48" rx="24" fill="#e9edf1"/>
-<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  D  /  K</text>
+<text x="2184" y="85" font-size="17" fill="#233342" font-weight="600" text-anchor="middle" dominant-baseline="middle">HOLD  C  /  ,</text>
 <g data-source="f1"><title>F1: No action</title>
 <rect x="64" y="164" width="102" height="102" rx="13" fill="#f1f3f5" stroke="#e4e8ec" stroke-width="1.3"/>
 <text x="76" y="182" font-size="13" fill="#84909b" font-weight="400" text-anchor="start" dominant-baseline="middle">F1</text>

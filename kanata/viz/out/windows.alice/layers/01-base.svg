@@ -78,33 +78,25 @@
 <rect x="64" y="416" width="158" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
 <text x="143" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Tab</text>
 </g>
-<g data-source="q"><title>Q: Q; hold L Shift</title>
+<g data-source="q"><title>Q: Q</title>
 <rect x="243.20000000000002" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="243.20000000000002" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="294.20000000000005" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">Q</text>
-<line x1="257.20000000000005" y1="471" x2="331.20000000000005" y2="471" stroke="#b9cdeb"/>
-<text x="294.20000000000005" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Shift</text>
+<rect x="243.20000000000002" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="294.20000000000005" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Q</text>
 </g>
-<g data-source="w"><title>W: W; hold L Ctrl</title>
+<g data-source="w"><title>W: W</title>
 <rect x="366.40000000000003" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="366.40000000000003" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="417.40000000000003" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">W</text>
-<line x1="380.40000000000003" y1="471" x2="454.40000000000003" y2="471" stroke="#b9cdeb"/>
-<text x="417.40000000000003" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Ctrl</text>
+<rect x="366.40000000000003" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="417.40000000000003" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">W</text>
 </g>
-<g data-source="e"><title>E: E; hold L Alt</title>
+<g data-source="e"><title>E: E</title>
 <rect x="489.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="489.6" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="540.6" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">E</text>
-<line x1="503.6" y1="471" x2="577.6" y2="471" stroke="#b9cdeb"/>
-<text x="540.6" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Alt</text>
+<rect x="489.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="540.6" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">E</text>
 </g>
-<g data-source="r"><title>R: R; hold L Win</title>
+<g data-source="r"><title>R: R</title>
 <rect x="612.8000000000001" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="612.8000000000001" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="663.8000000000001" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R</text>
-<line x1="626.8000000000001" y1="471" x2="700.8000000000001" y2="471" stroke="#b9cdeb"/>
-<text x="663.8000000000001" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Win</text>
+<rect x="612.8000000000001" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="663.8000000000001" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">R</text>
 </g>
 <g data-source="t"><title>T: T</title>
 <rect x="736" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
@@ -116,33 +108,25 @@
 <rect x="859.1999999999999" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
 <text x="910.1999999999999" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Y</text>
 </g>
-<g data-source="u"><title>U: U; hold R Win</title>
+<g data-source="u"><title>U: U</title>
 <rect x="982.3999999999999" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="982.3999999999999" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="1033.3999999999999" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">U</text>
-<line x1="996.3999999999999" y1="471" x2="1070.3999999999999" y2="471" stroke="#b9cdeb"/>
-<text x="1033.3999999999999" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Win</text>
+<rect x="982.3999999999999" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1033.3999999999999" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">U</text>
 </g>
-<g data-source="i"><title>I: I; hold R Alt</title>
+<g data-source="i"><title>I: I</title>
 <rect x="1105.6" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1105.6" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="1156.6" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">I</text>
-<line x1="1119.6" y1="471" x2="1193.6" y2="471" stroke="#b9cdeb"/>
-<text x="1156.6" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Alt</text>
+<rect x="1105.6" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1156.6" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">I</text>
 </g>
-<g data-source="o"><title>O: O; hold R Ctrl</title>
+<g data-source="o"><title>O: O</title>
 <rect x="1228.7999999999997" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1228.7999999999997" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="1279.7999999999997" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">O</text>
-<line x1="1242.7999999999997" y1="471" x2="1316.7999999999997" y2="471" stroke="#b9cdeb"/>
-<text x="1279.7999999999997" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Ctrl</text>
+<rect x="1228.7999999999997" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1279.7999999999997" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">O</text>
 </g>
-<g data-source="p"><title>P: P; hold R Shift</title>
+<g data-source="p"><title>P: P</title>
 <rect x="1351.9999999999998" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1351.9999999999998" y="416" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
-<text x="1402.9999999999998" y="448" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">P</text>
-<line x1="1365.9999999999998" y1="471" x2="1439.9999999999998" y2="471" stroke="#b9cdeb"/>
-<text x="1402.9999999999998" y="493" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Shift</text>
+<rect x="1351.9999999999998" y="416" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="1402.9999999999998" y="467" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">P</text>
 </g>
 <g data-source="lbrc"><title>[: [</title>
 <rect x="1475.1999999999998" y="419" width="102" height="102" rx="13" fill="#dce2e7"/>
@@ -236,79 +220,71 @@
 <text x="157" y="571" font-size="11" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">ONE SHOT</text>
 <text x="157" y="598" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Shift</text>
 </g>
-<g data-source="a"><title>A: A; hold Numbers</title>
+<g data-source="a"><title>A: A; hold L Shift</title>
 <rect x="271.20000000000005" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="271.20000000000005" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="322.20000000000005" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">A</text>
-<line x1="285.20000000000005" y1="583" x2="359.20000000000005" y2="583" stroke="#cfc0e9"/>
-<text x="322.20000000000005" y="605" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Numbers</text>
+<rect x="271.20000000000005" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="322.20000000000005" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">A</text>
+<line x1="285.20000000000005" y1="583" x2="359.20000000000005" y2="583" stroke="#b9cdeb"/>
+<text x="322.20000000000005" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Shift</text>
 </g>
-<g data-source="s"><title>S: S; hold App controls</title>
+<g data-source="s"><title>S: S; hold L Ctrl</title>
 <rect x="394.40000000000003" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="394.40000000000003" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="445.40000000000003" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">S</text>
-<line x1="408.40000000000003" y1="583" x2="482.40000000000003" y2="583" stroke="#cfc0e9"/>
-<text x="445.40000000000003" y="594.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">App</text>
-<text x="445.40000000000003" y="615.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">controls</text>
+<rect x="394.40000000000003" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="445.40000000000003" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">S</text>
+<line x1="408.40000000000003" y1="583" x2="482.40000000000003" y2="583" stroke="#b9cdeb"/>
+<text x="445.40000000000003" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Ctrl</text>
 </g>
-<g data-source="d"><title>D: D; hold Symbols</title>
+<g data-source="d"><title>D: D; hold L Alt</title>
 <rect x="517.6000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="517.6000000000001" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="568.6000000000001" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">D</text>
-<line x1="531.6000000000001" y1="583" x2="605.6000000000001" y2="583" stroke="#cfc0e9"/>
-<text x="568.6000000000001" y="605" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Symbols</text>
+<rect x="517.6000000000001" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="568.6000000000001" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">D</text>
+<line x1="531.6000000000001" y1="583" x2="605.6000000000001" y2="583" stroke="#b9cdeb"/>
+<text x="568.6000000000001" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Alt</text>
 </g>
-<g data-source="f"><title>F: F; hold Shortcuts</title>
+<g data-source="f"><title>F: F; hold L Win</title>
 <rect x="640.8000000000001" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="640.8000000000001" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="691.8000000000001" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">F</text>
-<line x1="654.8000000000001" y1="583" x2="728.8000000000001" y2="583" stroke="#cfc0e9"/>
-<text x="691.8000000000001" y="605" font-size="16.666666666666664" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shortcuts</text>
+<rect x="640.8000000000001" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="691.8000000000001" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">F</text>
+<line x1="654.8000000000001" y1="583" x2="728.8000000000001" y2="583" stroke="#b9cdeb"/>
+<text x="691.8000000000001" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Win</text>
 </g>
-<g data-source="g"><title>G: G; hold Function keys</title>
+<g data-source="g"><title>G: G</title>
 <rect x="764" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="764" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="815" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">G</text>
-<line x1="778" y1="583" x2="852" y2="583" stroke="#cfc0e9"/>
-<text x="815" y="594.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Function</text>
-<text x="815" y="615.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">keys</text>
+<rect x="764" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="815" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">G</text>
 </g>
-<g data-source="h"><title>H: H; hold Function keys</title>
+<g data-source="h"><title>H: H</title>
 <rect x="887.1999999999999" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="887.1999999999999" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="938.1999999999999" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">H</text>
-<line x1="901.1999999999999" y1="583" x2="975.1999999999999" y2="583" stroke="#cfc0e9"/>
-<text x="938.1999999999999" y="594.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Function</text>
-<text x="938.1999999999999" y="615.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">keys</text>
+<rect x="887.1999999999999" y="528" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
+<text x="938.1999999999999" y="579" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">H</text>
 </g>
-<g data-source="j"><title>J: J; hold Shortcuts</title>
+<g data-source="j"><title>J: J; hold R Win</title>
 <rect x="1010.3999999999999" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1010.3999999999999" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="1061.3999999999999" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">J</text>
-<line x1="1024.3999999999999" y1="583" x2="1098.3999999999999" y2="583" stroke="#cfc0e9"/>
-<text x="1061.3999999999999" y="605" font-size="16.666666666666664" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shortcuts</text>
+<rect x="1010.3999999999999" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="1061.3999999999999" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">J</text>
+<line x1="1024.3999999999999" y1="583" x2="1098.3999999999999" y2="583" stroke="#b9cdeb"/>
+<text x="1061.3999999999999" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Win</text>
 </g>
-<g data-source="k"><title>K: K; hold Symbols</title>
+<g data-source="k"><title>K: K; hold R Alt</title>
 <rect x="1133.6" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1133.6" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="1184.6" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">K</text>
-<line x1="1147.6" y1="583" x2="1221.6" y2="583" stroke="#cfc0e9"/>
-<text x="1184.6" y="605" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Symbols</text>
+<rect x="1133.6" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="1184.6" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">K</text>
+<line x1="1147.6" y1="583" x2="1221.6" y2="583" stroke="#b9cdeb"/>
+<text x="1184.6" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Alt</text>
 </g>
-<g data-source="l"><title>L: L; hold App controls</title>
+<g data-source="l"><title>L: L; hold R Ctrl</title>
 <rect x="1256.7999999999997" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1256.7999999999997" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="1307.7999999999997" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">L</text>
-<line x1="1270.7999999999997" y1="583" x2="1344.7999999999997" y2="583" stroke="#cfc0e9"/>
-<text x="1307.7999999999997" y="594.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">App</text>
-<text x="1307.7999999999997" y="615.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">controls</text>
+<rect x="1256.7999999999997" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="1307.7999999999997" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">L</text>
+<line x1="1270.7999999999997" y1="583" x2="1344.7999999999997" y2="583" stroke="#b9cdeb"/>
+<text x="1307.7999999999997" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Ctrl</text>
 </g>
-<g data-source="scln"><title>;: ;; hold Numbers</title>
+<g data-source="scln"><title>;: ;; hold R Shift</title>
 <rect x="1379.9999999999998" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1379.9999999999998" y="528" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
-<text x="1430.9999999999998" y="560" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">;</text>
-<line x1="1393.9999999999998" y1="583" x2="1467.9999999999998" y2="583" stroke="#cfc0e9"/>
-<text x="1430.9999999999998" y="605" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Numbers</text>
+<rect x="1379.9999999999998" y="528" width="102" height="102" rx="13" fill="#e5eefb" stroke="#b9cdeb" stroke-width="1.3"/>
+<text x="1430.9999999999998" y="560" font-size="27" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">;</text>
+<line x1="1393.9999999999998" y1="583" x2="1467.9999999999998" y2="583" stroke="#b9cdeb"/>
+<text x="1430.9999999999998" y="605" font-size="18" fill="#305d91" font-weight="600" text-anchor="middle" dominant-baseline="middle">R Shift</text>
 </g>
 <g data-source="apos"><title>': ONE SHOT R Shift</title>
 <rect x="1503.1999999999998" y="531" width="102" height="102" rx="13" fill="#dce2e7"/>
@@ -327,55 +303,79 @@
 <rect x="64" y="640" width="242" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
 <text x="185" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">L Shift</text>
 </g>
-<g data-source="z"><title>Z: Z</title>
+<g data-source="z"><title>Z: Z; hold Numbers</title>
 <rect x="327.2" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="327.2" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="378.2" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">Z</text>
+<rect x="327.2" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="378.2" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Z</text>
+<line x1="341.2" y1="695" x2="415.2" y2="695" stroke="#cfc0e9"/>
+<text x="378.2" y="717" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Numbers</text>
 </g>
-<g data-source="x"><title>X: X</title>
+<g data-source="x"><title>X: X; hold App controls</title>
 <rect x="450.40000000000003" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="450.40000000000003" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="501.40000000000003" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">X</text>
+<rect x="450.40000000000003" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="501.40000000000003" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">X</text>
+<line x1="464.40000000000003" y1="695" x2="538.4000000000001" y2="695" stroke="#cfc0e9"/>
+<text x="501.40000000000003" y="706.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">App</text>
+<text x="501.40000000000003" y="727.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">controls</text>
 </g>
-<g data-source="c"><title>C: C</title>
+<g data-source="c"><title>C: C; hold Symbols</title>
 <rect x="573.6000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="573.6000000000001" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="624.6000000000001" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">C</text>
+<rect x="573.6000000000001" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="624.6000000000001" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">C</text>
+<line x1="587.6000000000001" y1="695" x2="661.6000000000001" y2="695" stroke="#cfc0e9"/>
+<text x="624.6000000000001" y="717" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Symbols</text>
 </g>
-<g data-source="v"><title>V: V</title>
+<g data-source="v"><title>V: V; hold Shortcuts</title>
 <rect x="696.8000000000001" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="696.8000000000001" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="747.8000000000001" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">V</text>
+<rect x="696.8000000000001" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="747.8000000000001" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">V</text>
+<line x1="710.8000000000001" y1="695" x2="784.8000000000001" y2="695" stroke="#cfc0e9"/>
+<text x="747.8000000000001" y="717" font-size="16.666666666666664" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shortcuts</text>
 </g>
-<g data-source="b"><title>B: B</title>
+<g data-source="b"><title>B: B; hold Function keys</title>
 <rect x="820" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="820" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="871" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">B</text>
+<rect x="820" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="871" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">B</text>
+<line x1="834" y1="695" x2="908" y2="695" stroke="#cfc0e9"/>
+<text x="871" y="706.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Function</text>
+<text x="871" y="727.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">keys</text>
 </g>
-<g data-source="n"><title>N: N</title>
+<g data-source="n"><title>N: N; hold Function keys</title>
 <rect x="943.1999999999999" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="943.1999999999999" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="994.1999999999999" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">N</text>
+<rect x="943.1999999999999" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="994.1999999999999" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">N</text>
+<line x1="957.1999999999999" y1="695" x2="1031.1999999999998" y2="695" stroke="#cfc0e9"/>
+<text x="994.1999999999999" y="706.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Function</text>
+<text x="994.1999999999999" y="727.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">keys</text>
 </g>
-<g data-source="m"><title>M: M</title>
+<g data-source="m"><title>M: M; hold Shortcuts</title>
 <rect x="1066.3999999999999" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1066.3999999999999" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="1117.3999999999999" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">M</text>
+<rect x="1066.3999999999999" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="1117.3999999999999" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">M</text>
+<line x1="1080.3999999999999" y1="695" x2="1154.3999999999999" y2="695" stroke="#cfc0e9"/>
+<text x="1117.3999999999999" y="717" font-size="16.666666666666664" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Shortcuts</text>
 </g>
-<g data-source="comm"><title>,: ,</title>
+<g data-source="comm"><title>,: ,; hold Symbols</title>
 <rect x="1189.6" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1189.6" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="1240.6" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">,</text>
+<rect x="1189.6" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="1240.6" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">,</text>
+<line x1="1203.6" y1="695" x2="1277.6" y2="695" stroke="#cfc0e9"/>
+<text x="1240.6" y="717" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Symbols</text>
 </g>
-<g data-source="."><title>.: .</title>
+<g data-source="."><title>.: .; hold App controls</title>
 <rect x="1312.7999999999997" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1312.7999999999997" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="1363.7999999999997" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">.</text>
+<rect x="1312.7999999999997" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="1363.7999999999997" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">.</text>
+<line x1="1326.7999999999997" y1="695" x2="1400.7999999999997" y2="695" stroke="#cfc0e9"/>
+<text x="1363.7999999999997" y="706.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">App</text>
+<text x="1363.7999999999997" y="727.5" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">controls</text>
 </g>
-<g data-source="/"><title>/: /</title>
+<g data-source="/"><title>/: /; hold Numbers</title>
 <rect x="1435.9999999999998" y="643" width="102" height="102" rx="13" fill="#dce2e7"/>
-<rect x="1435.9999999999998" y="640" width="102" height="102" rx="13" fill="#ffffff" stroke="#d5dce2" stroke-width="1.3"/>
-<text x="1486.9999999999998" y="691" font-size="27" fill="#304351" font-weight="600" text-anchor="middle" dominant-baseline="middle">/</text>
+<rect x="1435.9999999999998" y="640" width="102" height="102" rx="13" fill="#eee8fa" stroke="#cfc0e9" stroke-width="1.3"/>
+<text x="1486.9999999999998" y="672" font-size="27" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">/</text>
+<line x1="1449.9999999999998" y1="695" x2="1523.9999999999998" y2="695" stroke="#cfc0e9"/>
+<text x="1486.9999999999998" y="717" font-size="18" fill="#675193" font-weight="600" text-anchor="middle" dominant-baseline="middle">Numbers</text>
 </g>
 <g data-source="rsft"><title>R Shift: ONE SHOT R Shift</title>
 <rect x="1559.1999999999998" y="643" width="298" height="102" rx="13" fill="#dce2e7"/>
