@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // CLI: node index.js <path-to.kbd> [--svg-only]
-// Generates a single combined all-layers PNG + legend
+// Generates a combined sheet, individual layers, and a legend in SVG and PNG.
 
 import { readFileSync, mkdirSync, writeFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { parseKbd } from './parse.js';
 import { buildLayout, getKeyboardBounds } from './layout.js';
-import { renderAllLayersSvg, renderLegendSvg } from './render.js';
+import { renderAllLayersSvg, renderLayerSvg, renderLegendSvg } from './render.js';
 
 const args = process.argv.slice(2);
 if (args.length === 0) {
@@ -28,6 +28,10 @@ const bounds = getKeyboardBounds(layout);
 
 // Output directory
 const kbdName = basename(kbdPath, '.kbd');
+const platform = kbdName.startsWith('macos') ? 'macos' : 'windows';
+const name = kbdName === 'windows.alice' ? 'Windows · Alice'
+  : kbdName === 'macos.laptop' ? 'macOS · Laptop' : kbdName;
+const renderOptions = { platform, name, layers };
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 const outDir = join(moduleDir, 'out', kbdName);
 mkdirSync(outDir, { recursive: true });
@@ -36,25 +40,28 @@ console.log(`Parsing ${kbdPath}: ${defsrc.length} keys, ${layers.length} layers`
 console.log(`Output: ${outDir}`);
 
 async function main() {
-  // Combined all-layers image
-  const combinedSvg = renderAllLayersSvg(defsrc, layers, aliases, layout, bounds);
-  writeFileSync(join(outDir, 'all-layers.svg'), combinedSvg);
-
-  if (!svgOnly) {
-    await sharp(Buffer.from(combinedSvg))
-      .png()
-      .toFile(join(outDir, 'all-layers.png'));
-    console.log('  ✓ all-layers.png');
-  } else {
-    console.log('  ✓ all-layers.svg');
+  async function writeImage(filename, svg) {
+    writeFileSync(join(outDir, filename + '.svg'), svg);
+    if (!svgOnly) {
+      await sharp(Buffer.from(svg)).png().toFile(join(outDir, filename + '.png'));
+    }
+    console.log(`  ✓ ${filename}${svgOnly ? '.svg' : '.svg + .png'}`);
   }
 
-  // Legend
-  const legendSvg = renderLegendSvg();
-  writeFileSync(join(outDir, 'legend.svg'), legendSvg);
-  if (!svgOnly) {
-    await sharp(Buffer.from(legendSvg)).png().toFile(join(outDir, 'legend.png'));
-    console.log('  ✓ legend.png');
+  await writeImage('all-layers', renderAllLayersSvg(defsrc, layers, aliases, layout, bounds, renderOptions));
+  await writeImage('legend', renderLegendSvg());
+  const layerDir = join(outDir, 'layers');
+  mkdirSync(layerDir, { recursive: true });
+  for (let i = 0; i < layers.length; i++) {
+    const layer = layers[i];
+    const svg = renderLayerSvg(layer.name, defsrc, layer.keys, aliases, layout, bounds,
+      { ...renderOptions, index: i });
+    const filename = `${String(i + 1).padStart(2, '0')}-${layer.name.replace(/[^a-z0-9_-]/gi, '-')}`;
+    await writeImage(join('layers', filename), svg);
+    // Keep the existing Windows base-preview link current on every generation.
+    if (!svgOnly && kbdName === 'windows.alice' && layer.name === 'base') {
+      await sharp(Buffer.from(svg)).png().toFile(join(outDir, 'base-crop.png'));
+    }
   }
 
   console.log('Done!');
