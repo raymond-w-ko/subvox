@@ -92,6 +92,7 @@ Do not apply caveman phrasing to persisted human-facing artifacts: code, comment
 - Default workspace root: `~/src`; honor current working directory and repo-specific instructions.
 - Changelogs: Match house style; prefer one-line bullets without prose-length hard-wrap.
 - Keep reusable tool procedures in skills when available; this file retains cross-tool safety and environment rules.
+- Skill links: `ai/skills/symlink-skills.sh` and `ai/skills/symlink-skills.ps1` install skills for shared, Codex, and Claude use. Claude links exclude `claude-subagent` and `fable-subagent` because those skills launch Claude as a subprocess.
 - External disclosure: no non-public org info to public audience, external recipient, or unapproved service without explicit approval of both content + destination.
 - Secrets: never reveal values, even internal. Approved secret tools; redact output.
 
