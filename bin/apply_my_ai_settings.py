@@ -379,6 +379,10 @@ def setting_pi_gateway(state: State, base_url: str, key: str) -> None:
 
 
 def ensure_pi_anthropic_plugin_absent(state: State) -> bool:
+    if WINDOWS:
+        info("pi: skipping pi.sh plugin check on Windows")
+        return True
+
     plugin = "npm:pi-anthropic-oauth"
     binary = shutil.which("pi.sh")
     if binary is None:

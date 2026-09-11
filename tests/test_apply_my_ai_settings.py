@@ -264,6 +264,7 @@ class PiPluginTests(unittest.TestCase):
 
     def setUp(self):
         self.addCleanup(patch.stopall)
+        patch.object(app, "WINDOWS", False).start()
         self.which = patch.object(app.shutil, "which", return_value="/example/pi.sh").start()
         self.run = patch.object(app.subprocess, "run").start()
         self.output = io.StringIO()
@@ -282,6 +283,14 @@ class PiPluginTests(unittest.TestCase):
         self.run.assert_called_once_with(
             ["/example/pi.sh", "list"], capture_output=True, text=True, timeout=180
         )
+
+    def test_windows_skips_plugin_commands(self):
+        with patch.object(app, "WINDOWS", True):
+            for dry_run in (False, True):
+                self.assertTrue(self.check(dry_run=dry_run))
+                self.assertEqual(self.state.failures, 0)
+        self.which.assert_not_called()
+        self.run.assert_not_called()
 
     def test_installed_plugin_is_uninstalled_and_verified(self):
         self.run.side_effect = [self.result(self.listing), self.result(), self.result()]

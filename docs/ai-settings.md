@@ -42,7 +42,8 @@ The gateway step reads `base_url` and `api_key` and applies:
   `600` on Unix. It is ignored by Git because Home Manager links `~/.pi` into
   this repository.
 - `~/.pi/agent/auth.json`: removes the entire file after both Pi provider
-  overrides succeed and the conflicting plugin is confirmed absent, because
+  overrides succeed and the conflicting plugin is confirmed absent (the plugin
+  check is skipped on Windows), because
   saved credentials take precedence over proxy keys.
   This removes saved credentials for **all Pi providers**, not just OpenAI and
   Anthropic. Dry runs only report the removal; failed Pi overrides leave the
@@ -54,6 +55,8 @@ runs `pi.sh uninstall npm:pi-anthropic-oauth` and verifies removal with another
 `pi.sh list`. Its provider override conflicts with the proxy configuration.
 Dry runs only list packages and report the planned uninstall. `pi.sh` must be
 on PATH; package command output is not echoed because it can contain local data.
+On Windows, the script skips `pi.sh` discovery, listing, and uninstalling.
+Pi model overrides and auth-file removal still run.
 
 Use builtin `openai` for GPT models and builtin `anthropic` for Claude models.
 Pi default model selections are not changed. Restart Pi after applying.
