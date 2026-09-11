@@ -74,6 +74,7 @@ let
 
     # javascript
     nodejs_24
+    pnpm
     tsx
 
     # python
