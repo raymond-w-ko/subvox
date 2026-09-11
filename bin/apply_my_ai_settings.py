@@ -16,6 +16,9 @@ the keys a setting owns are touched, everything else in the file is kept
 usage:
     apply_my_ai_settings.py            # check and fix
     apply_my_ai_settings.py --dry-run  # check only, never write
+
+Gateway setup: put base_url and api_key in ~/.config/ai/proxy.json.
+See docs/ai-settings.md for details.
 """
 
 from __future__ import annotations
@@ -30,12 +33,15 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import tomlkit
 
 HOME = Path.home()
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
+CLAUDE_SETTINGS = HOME / ".claude" / "settings.json"
+AI_PROXY_CONFIG = HOME / ".config" / "ai" / "proxy.json"
 # (plugin id, marketplace name, github repo), managed through `claude plugin`
 CLAUDE_PLUGINS = [
     ("codex@openai-codex", "openai-codex", "openai/codex-plugin-cc"),
@@ -177,25 +183,38 @@ def ensure_entry(
     keys: list[str],
     desired: Any,
     label: str,
-) -> None:
+    *,
+    sensitive: bool = False,
+    create: bool = False,
+) -> bool:
     """Make sure `keys` in the TOML or JSON file at `path` equals `desired`.
 
     `desired` may be a scalar or a dict. A dict entry is replaced as a whole
     so stale keys go away; the rest of the file is left untouched.
     """
     dotted = ".".join(keys)
-    if not path.is_file():
+    # Even unrelated edits can include credentials in unified diff context.
+    sensitive = sensitive or path in (CODEX_CONFIG, CLAUDE_SETTINGS)
+    exists = path.is_file()
+    if not exists and not create:
         state.fail(f"{label}: {path} does not exist")
-        return
+        return False
 
     is_toml = path.suffix == ".toml"
-    text = path.read_text()
-    doc = tomlkit.parse(text) if is_toml else json.loads(text)
+    try:
+        text = path.read_text() if exists else ("" if is_toml else "{}\n")
+        doc = tomlkit.parse(text) if is_toml else json.loads(text)
+    except (OSError, ValueError, tomlkit.exceptions.ParseError):
+        state.fail(f"{label}: cannot read or parse {path}")
+        return False
+    if not isinstance(doc, dict):
+        state.fail(f"{label}: expected an object in {path}")
+        return False
 
     current = unwrap(get_path(doc, keys))
     if current == desired:
         ok(f"{label}: {dotted} already correct in {path}")
-        return
+        return True
 
     if is_toml:
         set_path(doc, keys, to_toml_value(desired), tomlkit.table)
@@ -207,13 +226,112 @@ def ensure_entry(
     if state.dry_run:
         would(f"{label}: set {dotted} in {path}")
     else:
-        path.write_text(new_text)
+        try:
+            if not exists:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with path.open("x", encoding="utf-8") as stream:
+                    if sensitive and not WINDOWS:
+                        os.chmod(path, 0o600)
+                    stream.write(new_text)
+            else:
+                if sensitive and not WINDOWS:
+                    path.chmod(0o600)
+                path.write_text(new_text)
+        except OSError:
+            state.fail(f"{label}: cannot write {path}")
+            return False
         fixed(f"{label}: set {dotted} in {path}")
-    info(f"{label}: {dotted} was {current!r}")
-    show_diff(path, text, new_text)
+    if sensitive:
+        info(f"{label}: values and diff hidden (contains credentials)")
+    else:
+        info(f"{label}: {dotted} was {current!r}")
+        show_diff(path, text, new_text)
+    return True
 
 
 # --- settings ---------------------------------------------------------------
+
+
+def setting_gateway(state: State) -> None:
+    header("CLIProxyAPI: codex and claude")
+    try:
+        proxy = json.loads(AI_PROXY_CONFIG.read_text())
+    except (OSError, ValueError):
+        state.fail(f"gateway: cannot read or parse {AI_PROXY_CONFIG}")
+        return
+    key = proxy.get("api_key") if isinstance(proxy, dict) else None
+    if (
+        not isinstance(key, str)
+        or not key
+        or any(c.isspace() for c in key)
+        or key == "YOUR_GATEWAY_KEY"
+    ):
+        state.fail(f"gateway: set a non-empty api_key string in {AI_PROXY_CONFIG}")
+        return
+    base_url = proxy.get("base_url")
+    try:
+        if (
+            not isinstance(base_url, str)
+            or not base_url
+            or any(c.isspace() for c in base_url)
+        ):
+            raise ValueError
+        url = urlsplit(base_url)
+        if (
+            url.scheme not in ("http", "https")
+            or not url.hostname
+            or url.username is not None
+            or url.password is not None
+            or url.query
+            or url.fragment
+        ):
+            raise ValueError
+        url.port  # Validate an explicit port before changing either client.
+    except ValueError:
+        state.fail(f"gateway: set base_url to an HTTP(S) root URL in {AI_PROXY_CONFIG}")
+        return
+    base_url = base_url.rstrip("/")
+    if base_url.endswith("/v1"):
+        base_url = base_url[:-3]
+
+    if ensure_entry(
+        state,
+        CODEX_CONFIG,
+        ["model_providers", "cliproxyapi"],
+        {
+            "name": "CLIProxyAPI",
+            "base_url": base_url + "/v1",
+            "wire_api": "responses",
+            "experimental_bearer_token": key,
+            "requires_openai_auth": False,
+        },
+        "codex",
+        sensitive=True,
+    ):
+        ensure_entry(
+            state,
+            CODEX_CONFIG,
+            ["model_provider"],
+            "cliproxyapi",
+            "codex",
+            sensitive=True,
+        )
+
+    for name, value in {
+        "ANTHROPIC_BASE_URL": base_url,
+        "ANTHROPIC_AUTH_TOKEN": key,
+        "ANTHROPIC_API_KEY": "",
+    }.items():
+        if not ensure_entry(
+            state,
+            CLAUDE_SETTINGS,
+            ["env", name],
+            value,
+            "claude",
+            sensitive=True,
+            create=True,
+        ):
+            break
 
 
 def setting_fff_mcp_binary(state: State) -> None:
@@ -440,6 +558,7 @@ SETTINGS: list[Callable[[State], None]] = [
     setting_codex_model,
     setting_codex_fff_mcp,
     setting_claude_fff_mcp,
+    setting_gateway,
     setting_claude_plugins,
 ]
 
