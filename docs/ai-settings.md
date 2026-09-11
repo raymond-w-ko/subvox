@@ -1,6 +1,6 @@
 # Local AI settings
 
-`bin/apply_my_ai_settings.py` configures Codex, Claude Code, and Pi to use CLIProxyAPI,
+`bin/apply_my_ai_settings.py` configures Codex, Claude Code, Pi, and Grok Build to use CLIProxyAPI,
 in addition to its existing model, MCP server, and plugin settings.
 
 Store the gateway URL and key in `~/.config/ai/proxy.json`, outside this repository:
@@ -8,12 +8,16 @@ Store the gateway URL and key in `~/.config/ai/proxy.json`, outside this reposit
 ```json
 {
   "base_url": "https://gateway.example.test",
-  "api_key": "YOUR_GATEWAY_KEY"
+  "api_key": "YOUR_GATEWAY_KEY",
+  "grok_model": "grok-4.6"
 }
 ```
 
 Replace the placeholder in a local editor. On Unix, use directory permissions
 `700` and file permissions `600`. Do not commit this file.
+`grok_model` is optional and defaults to `grok-4.6`. Set it to the Grok model ID
+exposed by your gateway. The selected model must support hosted search and image
+input to handle all configured Grok Build tasks.
 
 Preview and apply from the repository root:
 
@@ -49,6 +53,14 @@ The gateway step reads `base_url` and `api_key` and applies:
   Anthropic. Dry runs only report the removal; failed Pi overrides leave the
   auth file intact. Plugin command failures also preserve the auth file. The
   script never reads or displays its contents.
+- `~/.grok/config.toml` (or `$GROK_HOME/config.toml`): creates or replaces
+  `[model.proxy]` with the selected Grok model, gateway `/v1` URL, and plaintext
+  key. It uses `api_backend = "responses"` and enables `supports_backend_search`.
+  The `[models]` selections for default inference, web search, session summaries,
+  and image descriptions all use `proxy`. Other model entries and unrelated
+  settings are preserved. Writes use permissions `600` on Unix and hide values
+  and diffs. Changing the local key or `grok_model` and rerunning updates this
+  model entry. No Grok plugin, shell export, or credential-file deletion is needed.
 
 The script runs `pi.sh list` and, when `npm:pi-anthropic-oauth` is installed,
 runs `pi.sh uninstall npm:pi-anthropic-oauth` and verifies removal with another
@@ -64,7 +76,7 @@ Pi default model selections are not changed. Restart Pi after applying.
 Missing, malformed, empty, or placeholder keys fail the gateway step without
 changing gateway configurations or removing Pi credentials. Invalid URLs also
 fail before gateway edits. Other settings still run. All edits to Codex config,
-Claude settings, and Pi models
+Claude settings, Pi models, and Grok config
 hide old values and file diffs, including during dry runs, so unrelated changes
 cannot expose credentials in diff context. After key rotation or a URL change,
 run the script again and restart the clients. The old `secrets.json` file is no
@@ -77,4 +89,12 @@ URLs with embedded credentials, query strings, or fragments are rejected.
 Codex documents `experimental_bearer_token` as a
 [direct bearer token](https://developers.openai.com/codex/config-reference/).
 This setup uses it intentionally to keep key loading independent of the shell.
-All three client configuration files contain a plaintext copy of the key.
+All four client configuration files contain a plaintext copy of the key.
+
+Grok Build's [custom model settings](https://docs.x.ai/build/settings/reference#toml-values)
+select the protocol and endpoint independently of the model provider. Using
+`responses` does not select OpenAI: the gateway routes the configured Grok model
+ID. Hosted search requires a CLIProxyAPI version and upstream Grok account that
+support it; the script configures this capability but does not make live requests
+to verify it. Restart Grok Build after applying. Explicit command-line or
+environment model overrides can still supersede these config defaults.

@@ -37,6 +37,10 @@ class GatewayTests(unittest.TestCase):
                 "providers": {"other": {"baseUrl": "https://other.example.test"}},
             }),
             app.PI_AUTH: '{"other": {"key": "test-saved-pi-key"}}',
+            app.GROK_CONFIG: '# keep Grok comment\n[models]\ndefault = "old-model"\n'
+            'temperature = 0.7\n[ui]\ntheme = "keep-theme"\n'
+            '[model.other]\nmodel = "keep-model"\n'
+            '[model.proxy]\napi_key = "test-old-grok-key"\nenv_key = "OLD_KEY"\n',
         }
         self.writes = []
         self.output = io.StringIO()
@@ -257,6 +261,93 @@ class GatewayTests(unittest.TestCase):
         self.plugin_check.assert_called_once()
         self.unlink.assert_not_called()
         self.assertIn(app.PI_AUTH, self.files)
+
+    def test_grok_routes_all_model_tasks_through_proxy(self):
+        self.assertEqual(self.run_gateway().failures, 0)
+        config = tomlkit.parse(self.files[app.GROK_CONFIG])
+        self.assertEqual(config["model"]["proxy"], {
+            "name": "CLIProxyAPI",
+            "model": "grok-4.6",
+            "base_url": "https://gateway.example.test/v1",
+            "api_key": "test-new-key",
+            "api_backend": "responses",
+            "supports_backend_search": True,
+        })
+        for purpose in ("default", "web_search", "session_summary", "image_description"):
+            self.assertEqual(config["models"][purpose], "proxy")
+        self.assertEqual(config["models"]["temperature"], 0.7)
+        self.assertEqual(config["ui"]["theme"], "keep-theme")
+        self.assertEqual(config["model"]["other"]["model"], "keep-model")
+        self.assertIn("# keep Grok comment", self.files[app.GROK_CONFIG])
+        for value in ("test-new-key", "test-old-grok-key", "gateway.example.test"):
+            self.assertNotIn(value, self.output.getvalue())
+
+    def test_grok_model_and_key_rotation(self):
+        self.assertEqual(self.run_gateway().failures, 0)
+        proxy = json.loads(self.files[app.AI_PROXY_CONFIG])
+        proxy.update(grok_model="grok-custom-alias", api_key="test-rotated-key")
+        self.files[app.AI_PROXY_CONFIG] = json.dumps(proxy)
+        self.assertEqual(self.run_gateway().failures, 0)
+        config = tomlkit.parse(self.files[app.GROK_CONFIG])
+        self.assertEqual(config["model"]["proxy"]["model"], "grok-custom-alias")
+        self.assertEqual(config["model"]["proxy"]["api_key"], "test-rotated-key")
+        self.assertNotIn("test-rotated-key", self.output.getvalue())
+
+    def test_invalid_grok_model_prevents_gateway_changes(self):
+        for value in (None, "", "two words", 7, [], {}):
+            with self.subTest(value=value):
+                proxy = json.loads(self.files[app.AI_PROXY_CONFIG])
+                proxy["grok_model"] = value
+                self.files[app.AI_PROXY_CONFIG] = json.dumps(proxy)
+                before = self.files.copy()
+                self.assertEqual(self.run_gateway().failures, 1)
+                self.assertEqual(self.files, before)
+        self.unlink.assert_not_called()
+
+    def test_missing_grok_config_created_privately(self):
+        self.files.pop(app.GROK_CONFIG)
+
+        @contextmanager
+        def open_file(path, mode, encoding):
+            self.assertEqual((path, mode, encoding), (app.GROK_CONFIG, "x", "utf-8"))
+            stream = io.StringIO()
+            yield stream
+            self.files[path] = stream.getvalue()
+
+        with patch.object(Path, "open", open_file):
+            self.assertEqual(self.run_gateway().failures, 0)
+        config = tomlkit.parse(self.files[app.GROK_CONFIG])
+        self.assertEqual(config["models"]["web_search"], "proxy")
+        self.assertEqual(config["model"]["proxy"]["api_key"], "test-new-key")
+        if not app.WINDOWS:
+            self.os_chmod.assert_called_once_with(app.GROK_CONFIG, 0o600)
+
+    def test_missing_grok_config_dry_run_does_not_create_it(self):
+        self.files.pop(app.GROK_CONFIG)
+        self.assertEqual(self.run_gateway(dry_run=True).failures, 0)
+        self.assertNotIn(app.GROK_CONFIG, self.files)
+        self.open.assert_not_called()
+        self.mkdir.assert_not_called()
+        self.chmod.assert_not_called()
+
+    def test_malformed_grok_config_is_preserved(self):
+        self.files[app.GROK_CONFIG] = '[model.proxy\napi_key = "test-old-grok-key"'
+        before = self.files[app.GROK_CONFIG]
+        self.assertEqual(self.run_gateway().failures, 1)
+        self.assertEqual(self.files[app.GROK_CONFIG], before)
+        self.assertNotIn("test-old-grok-key", self.output.getvalue())
+
+    def test_failed_grok_model_write_preserves_model_selections(self):
+        def write(path, text):
+            if path == app.GROK_CONFIG:
+                raise PermissionError("test-private-detail")
+            self.write(path, text)
+
+        before = self.files[app.GROK_CONFIG]
+        with patch.object(Path, "write_text", write):
+            self.assertEqual(self.run_gateway().failures, 1)
+        self.assertEqual(self.files[app.GROK_CONFIG], before)
+        self.assertNotIn("test-private-detail", self.output.getvalue())
 
 
 class PiPluginTests(unittest.TestCase):

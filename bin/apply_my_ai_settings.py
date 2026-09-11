@@ -41,6 +41,7 @@ HOME = Path.home()
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
 CLAUDE_SETTINGS = HOME / ".claude" / "settings.json"
+GROK_CONFIG = Path(os.environ.get("GROK_HOME") or HOME / ".grok").expanduser() / "config.toml"
 PI_MODELS = HOME / ".pi" / "agent" / "models.json"
 PI_AUTH = HOME / ".pi" / "agent" / "auth.json"
 AI_PROXY_CONFIG = HOME / ".config" / "ai" / "proxy.json"
@@ -196,7 +197,7 @@ def ensure_entry(
     """
     dotted = ".".join(keys)
     # Even unrelated edits can include credentials in unified diff context.
-    sensitive = sensitive or path in (CODEX_CONFIG, CLAUDE_SETTINGS, PI_MODELS)
+    sensitive = sensitive or path in (CODEX_CONFIG, CLAUDE_SETTINGS, PI_MODELS, GROK_CONFIG)
     exists = path.is_file()
     if not exists and not create:
         state.fail(f"{label}: {path} does not exist")
@@ -255,7 +256,7 @@ def ensure_entry(
 
 
 def setting_gateway(state: State) -> None:
-    header("CLIProxyAPI: codex, claude, and pi")
+    header("CLIProxyAPI: codex, claude, pi, and grok")
     try:
         proxy = json.loads(AI_PROXY_CONFIG.read_text())
     except (OSError, ValueError):
@@ -295,6 +296,15 @@ def setting_gateway(state: State) -> None:
     base_url = base_url.rstrip("/")
     if base_url.endswith("/v1"):
         base_url = base_url[:-3]
+
+    grok_model = proxy.get("grok_model", "grok-4.6")
+    if (
+        not isinstance(grok_model, str)
+        or not grok_model
+        or any(c.isspace() for c in grok_model)
+    ):
+        state.fail(f"gateway: set grok_model to a model ID in {AI_PROXY_CONFIG}")
+        return
 
     if ensure_entry(
         state,
@@ -336,6 +346,32 @@ def setting_gateway(state: State) -> None:
             break
 
     setting_pi_gateway(state, base_url, key)
+    setting_grok_gateway(state, base_url, key, grok_model)
+
+
+def setting_grok_gateway(state: State, base_url: str, key: str, model: str) -> None:
+    if not ensure_entry(
+        state,
+        GROK_CONFIG,
+        ["model", "proxy"],
+        {
+            "name": "CLIProxyAPI",
+            "model": model,
+            "base_url": base_url + "/v1",
+            "api_key": key,
+            "api_backend": "responses",
+            "supports_backend_search": True,
+        },
+        "grok",
+        create=True,
+    ):
+        return
+
+    for purpose in ("default", "web_search", "session_summary", "image_description"):
+        if not ensure_entry(
+            state, GROK_CONFIG, ["models", purpose], "proxy", "grok", create=True
+        ):
+            return
 
 
 def setting_pi_gateway(state: State, base_url: str, key: str) -> None:
