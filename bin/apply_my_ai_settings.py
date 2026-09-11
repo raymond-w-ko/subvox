@@ -41,6 +41,8 @@ HOME = Path.home()
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
 CLAUDE_SETTINGS = HOME / ".claude" / "settings.json"
+PI_MODELS = HOME / ".pi" / "agent" / "models.json"
+PI_AUTH = HOME / ".pi" / "agent" / "auth.json"
 AI_PROXY_CONFIG = HOME / ".config" / "ai" / "proxy.json"
 # (plugin id, marketplace name, github repo), managed through `claude plugin`
 CLAUDE_PLUGINS = [
@@ -194,7 +196,7 @@ def ensure_entry(
     """
     dotted = ".".join(keys)
     # Even unrelated edits can include credentials in unified diff context.
-    sensitive = sensitive or path in (CODEX_CONFIG, CLAUDE_SETTINGS)
+    sensitive = sensitive or path in (CODEX_CONFIG, CLAUDE_SETTINGS, PI_MODELS)
     exists = path.is_file()
     if not exists and not create:
         state.fail(f"{label}: {path} does not exist")
@@ -253,7 +255,7 @@ def ensure_entry(
 
 
 def setting_gateway(state: State) -> None:
-    header("CLIProxyAPI: codex and claude")
+    header("CLIProxyAPI: codex, claude, and pi")
     try:
         proxy = json.loads(AI_PROXY_CONFIG.read_text())
     except (OSError, ValueError):
@@ -332,6 +334,87 @@ def setting_gateway(state: State) -> None:
             create=True,
         ):
             break
+
+    setting_pi_gateway(state, base_url, key)
+
+
+def setting_pi_gateway(state: State, base_url: str, key: str) -> None:
+    # Pi interprets $ references and leading ! commands in apiKey strings.
+    pi_key = key.replace("$", "$$")
+    if pi_key.startswith("!"):
+        pi_key = "$" + pi_key
+    for provider, desired in {
+        "openai": {"baseUrl": base_url + "/v1", "apiKey": pi_key},
+        "anthropic": {
+            "baseUrl": base_url,
+            "apiKey": pi_key,
+            "authHeader": True,
+            "headers": {"x-api-key": ""},
+        },
+    }.items():
+        if not ensure_entry(
+            state,
+            PI_MODELS,
+            ["providers", provider],
+            desired,
+            "pi",
+            create=True,
+        ):
+            return
+
+    if not ensure_pi_anthropic_plugin_absent(state):
+        return
+
+    # Stored credentials take precedence over the gateway keys in models.json.
+    try:
+        if not PI_AUTH.exists() and not PI_AUTH.is_symlink():
+            ok(f"pi: {PI_AUTH} already absent")
+        elif state.dry_run:
+            would(f"pi: remove {PI_AUTH} (all saved provider credentials)")
+        else:
+            PI_AUTH.unlink()
+            fixed(f"pi: removed {PI_AUTH} (all saved provider credentials)")
+    except OSError:
+        state.fail(f"pi: cannot remove {PI_AUTH}")
+
+
+def ensure_pi_anthropic_plugin_absent(state: State) -> bool:
+    plugin = "npm:pi-anthropic-oauth"
+    binary = shutil.which("pi.sh")
+    if binary is None:
+        state.fail("pi: pi.sh is not on PATH; cannot check conflicting plugin")
+        return False
+
+    def run(*args: str) -> str:
+        proc = subprocess.run(
+            [binary, *args], capture_output=True, text=True, timeout=180
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(f"pi.sh {' '.join(args)} failed (exit {proc.returncode})")
+        return proc.stdout
+
+    def installed() -> bool:
+        return plugin in {line.strip() for line in run("list").splitlines()}
+
+    try:
+        if not installed():
+            ok(f"pi: {plugin} already absent")
+            return True
+        if state.dry_run:
+            would(f"pi.sh uninstall {plugin}")
+            return True
+        run("uninstall", plugin)
+        if installed():
+            state.fail(f"pi: {plugin} still installed after uninstall")
+            return False
+    except RuntimeError as error:
+        state.fail(str(error))
+        return False
+    except (OSError, subprocess.TimeoutExpired):
+        state.fail("pi: package command could not complete")
+        return False
+    fixed(f"pi: uninstalled {plugin} (restart pi to unload)")
+    return True
 
 
 def setting_fff_mcp_binary(state: State) -> None:
