@@ -80,6 +80,7 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(provider["base_url"], "https://gateway.example.test/v1")
         self.assertEqual(provider["wire_api"], "responses")
         self.assertFalse(provider["requires_openai_auth"])
+        self.assertTrue(provider["supports_websockets"])
         self.assertNotIn("env_key", provider)
         claude = json.loads(self.files[app.CLAUDE_SETTINGS])
         self.assertEqual(claude["enabledPlugins"], {"keep-plugin": True})

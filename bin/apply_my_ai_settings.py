@@ -316,6 +316,7 @@ def setting_gateway(state: State) -> None:
             "wire_api": "responses",
             "experimental_bearer_token": key,
             "requires_openai_auth": False,
+            "supports_websockets": True,
         },
         "codex",
         sensitive=True,

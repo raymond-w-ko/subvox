@@ -30,7 +30,8 @@ The gateway step reads `base_url` and `api_key` and applies:
 
 - `~/.codex/config.toml`: selects `cliproxyapi` and replaces its provider table
   with the Responses API endpoint, `experimental_bearer_token` containing the
-  local key, and `requires_openai_auth = false`. It removes the old `env_key`
+  local key, `requires_openai_auth = false`, and `supports_websockets = true`.
+  It removes the old `env_key`
   reference, so no shell export is needed. Codex's config must already exist.
 - `~/.claude/settings.json`: merges `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`,
   and an empty `ANTHROPIC_API_KEY` into `env`, preserving other settings and
