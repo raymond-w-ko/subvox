@@ -41,6 +41,7 @@ HOME = Path.home()
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
 CLAUDE_SETTINGS = HOME / ".claude" / "settings.json"
+CLAUDE_INSTALLED_PLUGINS = HOME / ".claude" / "plugins" / "installed_plugins.json"
 GROK_CONFIG = Path(os.environ.get("GROK_HOME") or HOME / ".grok").expanduser() / "config.toml"
 PI_MODELS = HOME / ".pi" / "agent" / "models.json"
 PI_AUTH = HOME / ".pi" / "agent" / "auth.json"
@@ -48,7 +49,7 @@ AI_PROXY_CONFIG = HOME / ".config" / "ai" / "proxy.json"
 # (plugin id, marketplace name, github repo), managed through `claude plugin`
 CLAUDE_PLUGINS = [
     ("codex@openai-codex", "openai-codex", "openai/codex-plugin-cc"),
-    ("fable-advisor@fable-advisor", "fable-advisor", "DannyMac180/fable-advisor"),
+    ("fable-advisor@fable-advisor", "fable-advisor", "raymond-w-ko/fable-advisor"),
 ]
 WINDOWS = os.name == "nt"
 FFF_MCP_NAME = "fff-mcp.exe" if WINDOWS else "fff-mcp"
@@ -606,13 +607,52 @@ def ensure_claude_plugin(state: State, plugin_id: str, marketplace: str, repo: s
     `extraKnownMarketplaces` and `enabledPlugins` entries to settings.json
     themselves, so nothing is edited by hand here. When the plugin is already
     installed, the marketplace and plugin are updated to the latest release.
+
+    A marketplace name comes from its marketplace.json, so a fork keeps the
+    upstream name. When the known marketplace points at a different repo (e.g.
+    upstream instead of the fork), the plugin is uninstalled and the marketplace
+    removed and re-added from `repo` before installing.
     """
     header(f"claude: plugin {plugin_id}")
+
+    def known_marketplaces() -> dict[str, dict[str, Any]]:
+        return {m["name"]: m for m in claude_json("plugin", "marketplace", "list")}
+
+    def known_repos() -> dict[str, str]:
+        return {name: m.get("repo", "") for name, m in known_marketplaces().items()}
+
+    def marketplace_sha() -> str | None:
+        """HEAD of the marketplace checkout, i.e. the commit an install would fetch."""
+        location = known_marketplaces().get(marketplace, {}).get("installLocation")
+        if not location:
+            return None
+        proc = subprocess.run(
+            ["git", "-C", location, "rev-parse", "HEAD"], capture_output=True, text=True
+        )
+        return proc.stdout.strip() or None
+
     try:
-        marketplaces = {m["name"] for m in claude_json("plugin", "marketplace", "list")}
+        repos = known_repos()
     except (OSError, RuntimeError, json.JSONDecodeError, KeyError) as error:
         state.fail(f"cannot query claude marketplaces: {error}")
         return
+
+    if marketplace in repos and repos[marketplace] != repo:
+        stale = repos[marketplace]
+        if state.dry_run:
+            would(f"claude plugin uninstall {plugin_id} --scope user")
+            would(f"claude plugin marketplace remove {marketplace}  # was {stale}")
+            would(f"claude plugin marketplace add {repo}")
+            would(f"claude plugin install {plugin_id} --scope user -y")
+            return
+        claude_run("plugin", "uninstall", plugin_id, "--scope", "user")
+        claude_run("plugin", "marketplace", "remove", marketplace)
+        repos = known_repos()
+        if marketplace in repos:
+            state.fail(f"marketplace {marketplace} ({stale}) still present after remove")
+            return
+        fixed(f"removed marketplace {marketplace} ({stale}) and its plugin")
+    marketplaces = set(repos)
 
     if marketplace not in marketplaces:
         if state.dry_run:
@@ -636,6 +676,17 @@ def ensure_claude_plugin(state: State, plugin_id: str, marketplace: str, repo: s
                 return plugin
         return None
 
+    def installed_sha() -> str | None:
+        """`claude plugin list --json` omits the commit, so read the registry file."""
+        try:
+            entries = json.loads(CLAUDE_INSTALLED_PLUGINS.read_text())["plugins"][plugin_id]
+        except (OSError, ValueError, KeyError):
+            return None
+        for entry in entries:
+            if entry.get("scope") == "user":
+                return entry.get("gitCommitSha")
+        return None
+
     plugin = installed()
     if plugin is None:
         if state.dry_run:
@@ -649,13 +700,32 @@ def ensure_claude_plugin(state: State, plugin_id: str, marketplace: str, repo: s
         fixed(f"installed {plugin_id} {plugin.get('version')} (user scope)")
     elif state.dry_run:
         ok(f"{plugin_id} {plugin.get('version')} installed (user scope)")
+        head, current = marketplace_sha(), installed_sha()
+        if head and current and head != current:
+            would(f"reinstall {plugin_id} (marketplace cache at {head[:12]}, installed {current[:12]})")
     else:
         before = plugin.get("version")
         claude_run("plugin", "update", plugin_id, "--scope", "user", "-y")
         plugin = installed() or plugin
         after = plugin.get("version")
+        # `claude plugin update` only compares version strings, so a fork that
+        # changes code without bumping plugin.json looks up to date. Compare the
+        # installed commit against the refreshed marketplace checkout instead.
+        head, current = marketplace_sha(), installed_sha()
         if after != before:
             fixed(f"updated {plugin_id} {before} -> {after} (restart claude to apply)")
+        elif head and current and head != current:
+            claude_run("plugin", "uninstall", plugin_id, "--scope", "user")
+            claude_run("plugin", "install", plugin_id, "--scope", "user", "-y")
+            plugin = installed()
+            if plugin is None:
+                state.fail(f"{plugin_id} missing after reinstall")
+                return
+            current = installed_sha()
+            if current != head:
+                state.fail(f"{plugin_id} still at {current} after reinstall, expected {head}")
+                return
+            fixed(f"reinstalled {plugin_id} at {head[:12]} (restart claude to apply)")
         else:
             ok(f"{plugin_id} {after} is the latest version")
 
