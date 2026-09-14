@@ -65,9 +65,9 @@ The macOS bracket shortcuts use the same GUI modifier as Ben's Win label. Window
 | Sym A: W | Shift+2 (`@` on US QWERTY) | Alt+3 |
 | Sym A: S | Underscore | @ |
 | Sym A: bottom left | Z = tilde, C = double quote, V = apostrophe | These keys are disabled |
-| Sym B: copy / paste | V / B use Ctrl on Windows, Command on macOS; T is unassigned | V / T use Win |
+| Sym B: copy / paste | C / V use Ctrl on Windows, Command on macOS; B and T are unassigned | V / T use Win |
 
-The macOS copy/paste bindings use the same GUI modifier as Ben, but paste is on B. The left-hand Alt+bracket bindings already match. Symbol output still depends on the host keyboard layout.
+The macOS copy/paste bindings use the same GUI modifier as Ben, but copy/paste are on C / V. Hold X or . to enter App controls, then press C to copy or V to paste. These bindings do not change the base-layer holds or the previous/next tab actions on the separate Shortcuts layer. The left-hand Alt+bracket bindings already match. Symbol output still depends on the host keyboard layout.
 
 ## Numbers and gaming
 

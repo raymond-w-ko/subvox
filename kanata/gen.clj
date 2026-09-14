@@ -246,8 +246,8 @@
             r ~(select-to-end-of-paragraph)
             d ~(start-of-paragraph)
             f ~(select-to-start-of-paragraph)
-            v ~(copy)
-            b ~(paste)
+            c ~(copy)
+            v ~(paste)
             i pgup
             k pgdn
 
