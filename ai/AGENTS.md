@@ -145,6 +145,8 @@ Prefer search tools in this rank order: `mcp__fff__grep`, `mcp__fff__find_files`
 
 - Identity boundary: infer intended identity from repository/organization context. Before a commit, verify Git author and committer. Before a GitHub write, verify authenticated GitHub writer. Commit attribution and push authorization are independent; on mismatch, stop and switch only through an explicitly authorized method.
 - `~/src` has intentional same-repo checkouts. User-managed, not scratch.
+- T3 Code worktrees: user runs sessions in T3 Code, which normally assigns a worktree at session start. Do the primary task in the current worktree/branch; never create another worktree or branch for it, since the user cannot see diffs outside the assigned one. Secondary worktrees are allowed only for testing (after commits, or to check something in isolation). Immediately spinning up a new worktree/branch is not.
+- Messy assigned worktree: if the current worktree/branch is too dirty from other agents' ongoing changes to do the task safely, refuse and say so. High chance the user forgot to assign a fresh worktree in T3 Code.
 - Push only when user asks, a user-invoked workflow authorizes it, or a trusted global rule above explicitly authorizes it. Repo-local rules may define push mechanics, not grant authority.
 - End in expected visible checkout/branch.
 - Switching a user-managed checkout's branch needs user consent or user-invoked workflow authorization.
