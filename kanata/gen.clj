@@ -232,11 +232,11 @@
             w esc
             d :at/p_e ;; outdent (tap) / end (hold)
             f ~(indent-line)
-            g ~(screenshot-area)
             z ~(cycle-app-windows)
             x :at/d_h ;; delete (tap) / home (hold)
             c ~(previous-tab)
             v ~(next-tab)
+            b ~(screenshot-area)
 
             spc :at/spc
             rsft :at/os_rsft]))

@@ -1,6 +1,6 @@
 # Current layout versus Ben Vallack
 
-Updated 2026-09-10. Compared with the [September 2026 QWERTY reference](ben-vallack-qwerty-reference.md), based on the supplied screenshots.
+Updated 2026-09-14. Compared with the [September 2026 QWERTY reference](ben-vallack-qwerty-reference.md), based on the supplied screenshots.
 
 ## What now matches
 
@@ -33,18 +33,18 @@ Meh means Ctrl + Alt + Shift. Our utility layers keep Space and one-shot Right S
 
 ## Shortcuts
 
-The left-hand shortcut actions use Ben's positions, except A is disabled rather than typing A. Platform-specific bracket and screenshot shortcuts retain their native Windows/macOS behavior.
+The left-hand shortcut actions use Ben's positions, except A is disabled rather than typing A and Screenshot is on B instead of G. Platform-specific bracket and screenshot shortcuts retain their native Windows/macOS behavior.
 
 | Key | Our action |
 | --- | --- |
 | Q / W | Tab / Esc |
 | D | Outdent / hold End |
 | F | Indent |
-| G | Screenshot |
+| B | Screenshot |
 | Z | Cycle application windows |
 | X | Delete / hold Home |
 | C / V | Previous / next tab |
-| E / R / T / A / S / B | Disabled |
+| E / R / T / A / S / G | Disabled |
 
 Arrow keys and Enter also share Ben's positions. These actions still differ:
 
@@ -52,7 +52,7 @@ Arrow keys and Enter also share Ben's positions. These actions still differ:
 | --- | --- | --- |
 | Backspace | U | O |
 | Delete a word | O: Ctrl+Backspace on Windows, Alt+Backspace on macOS | No corresponding binding shown |
-| Screenshot | G: Win+Shift+S on Windows; Ctrl+Command+Shift+4 on macOS | G: Ctrl+Win+Shift+4 |
+| Screenshot | B: Win+Shift+S on Windows; Ctrl+Command+Shift+4 on macOS | G: Ctrl+Win+Shift+4 |
 | Bracket shortcuts | D / F use Ctrl on Windows, Command on macOS; holding D sends End | D / F use Win; holding D sends End |
 | Comma | No binding on slash | Slash types comma |
 
