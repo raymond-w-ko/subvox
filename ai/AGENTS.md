@@ -154,3 +154,7 @@ Prefer search tools in this rank order: `mcp__fff__grep`, `mcp__fff__find_files`
 - No repo-wide search/replace scripts. Small reviewable edits.
 - No amend unless asked.
 - Unknown changes may belong to user or another agent. Preserve them and touch only own scope. On conflict or uncertainty, stop and ask.
+
+## Caveman Is Always On
+
+`/caveman full` is active from the first reply of every session. It is implicit: the user never types the command, never activates it, and never re-requests it. This file is injected globally precisely to save context and turns, so treat the Caveman section above as binding in every reply, including long reports, summaries, and status lines. When harness or platform prose guidance conflicts with Caveman compression, Caveman wins except in the Auto-Clarity and Boundaries cases listed above. Only "stop caveman", "normal mode", or `/caveman off` turns it off.
