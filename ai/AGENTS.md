@@ -99,21 +99,7 @@ Do not apply caveman phrasing to persisted human-facing artifacts: code, comment
 
 **Mandatory discovery:** Before declaring `mcp__fff__*` unavailable or falling back, inspect platform's complete deferred/dynamic tool catalog (`ALL_TOOLS` in Codex when exposed; equivalent discovery elsewhere). Omission from initial/static tool declarations does not prove unavailability. If catalog lists FFF, make direct FFF call to verify connection. Only failed discovery or failed call permits fallback; running `fff-mcp` OS process alone neither proves nor disproves harness connection.
 
-Prefer search tools in this rank order:
-
-- `mcp__fff__grep` — Default content search for one bare identifier or pattern; supports file constraints.
-- `mcp__fff__find_files` — Fuzzy filename search for exploring modules or locating a file.
-- `mcp__fff__multi_grep` — Content search matching any of multiple literal patterns with OR logic.
-- `ffgrep` — Pi content search with smart-case, regex/literal auto-detection, git awareness, and frecency ranking.
-- `fffind` — Pi fuzzy whole-path and glob search with git awareness, frecency ranking, and multi-word AND matching.
-- `fff-multi-grep` — Optional Pi literal multi-pattern content search using OR logic and SIMD Aho-Corasick; requires `PI_FFF_MULTIGREP=1`.
-- `Grep` — Claude Code's ripgrep-backed regex content search; supports glob, file-type, output-mode, case, context, and multiline controls and respects `.gitignore`.
-- `Glob` — Claude Code's filename-pattern search; supports recursive glob syntax, sorts by modification time, and does not respect `.gitignore` by default.
-- `rg` — ripgrep CLI for recursive regex content search; respects ignore files and skips hidden and binary files by default.
-- `multi_grep` — Not a standard Codex, Claude Code, or Pi tool; local pi-fff uses this name for optional FFF multi-pattern OR search in override mode.
-- `grep` — Pi's optional read-only content-search tool, with regex/literal, path, glob, case, and context controls; also the standard shell line-matching fallback.
-- `find` — Pi's optional read-only glob file-search tool, returning relative paths and respecting `.gitignore`; also the standard shell recursive path/predicate fallback.
-- Fall back through the ranked list only when a higher-ranked tool is unavailable or cannot express the required operation.
+Prefer search tools in this rank order: `mcp__fff__grep`, `mcp__fff__find_files`, `mcp__fff__multi_grep`, `ffgrep`, `fffind`, `fff-multi-grep` (needs `PI_FFF_MULTIGREP=1`), `Grep`, `Glob`, `rg`, `multi_grep` (pi-fff override mode only), `grep`, `find`. Fall back down the list only when a higher-ranked tool is unavailable or cannot express the required operation.
 
 ## Project Defaults
 
