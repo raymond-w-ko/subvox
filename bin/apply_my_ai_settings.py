@@ -38,6 +38,8 @@ from urllib.parse import urlsplit
 import tomlkit
 
 HOME = Path.home()
+# this script lives in subvox/bin, so the repo root is one level up
+SUBVOX_ROOT = Path(__file__).resolve().parent.parent
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
 CLAUDE_SETTINGS = HOME / ".claude" / "settings.json"
@@ -503,6 +505,9 @@ def setting_fff_mcp_binary(state: State) -> None:
             capture_output=True,
             text=True,
             timeout=10,
+            # fff-mcp refuses to start in $HOME to avoid over-indexing, so run
+            # the smoke test from the subvox checkout instead
+            cwd=SUBVOX_ROOT,
             env={**os.environ, **FFF_MCP_ENV},
         )
         first_line = proc.stdout.splitlines()[0] if proc.stdout else ""
