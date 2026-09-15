@@ -10,6 +10,8 @@ let
   developmentPackages = import ../packages/development.nix { inherit pkgs inputs; };
 in
 {
+  imports = [ ./starship.nix ];
+
   home.packages = developmentPackages.forHome;
 
   home.sessionVariables = {
