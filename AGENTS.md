@@ -34,6 +34,13 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 - `home/.pi/agent/extensions/pi-rko-compact-tool-display/` contains the `pi-rko-compact-tool-display` pi extension.
 - A local `pi` source checkout is usually available at `~/src/pi`.
 
+## Layout
+- `home/*.nix` (Home Manager) is deployed two ways: embedded in every system config, and standalone.
+  - NixOS hosts (`nixvac`, `wsl2`) import `modules/nixos/home-manager.nix` via `modules/nixos/base.nix`; `macos` wires `home-manager.darwinModules` in `hosts/macos/default.nix`. All three import `home/common.nix`.
+  - `homeConfigurations."rko@linux|macos|linux-arm"` in `flake.nix` are the standalone fallback for machines without a system config.
+- To deploy a `home/` change on a host with a system config, run `./scripts/rebuild switch <host>` (e.g. `nixvac`). The standalone `rko@<platform>` target is redundant there.
+- Before claiming what a target does or does not deploy, grep `modules/` and `hosts/` too, not only `flake.nix` and `hosts/<host>/`.
+
 ## Commands
 ```sh
 # validate
