@@ -406,16 +406,27 @@ def setting_pi_gateway(state: State, base_url: str, key: str) -> None:
         return
 
     # Stored credentials take precedence over the gateway keys in models.json.
+    auth_exists = PI_AUTH.exists() or PI_AUTH.is_symlink()
+    auth_is_empty = False
+    if PI_AUTH.is_file():
+        try:
+            auth_is_empty = json.loads(PI_AUTH.read_text()) == {}
+        except (OSError, ValueError):
+            pass
     try:
-        if not PI_AUTH.exists() and not PI_AUTH.is_symlink():
+        if not auth_exists:
             ok(f"pi: {PI_AUTH} already absent")
+        elif auth_is_empty:
+            ok(f"pi: {PI_AUTH} already contains an empty object")
         elif state.dry_run:
-            would(f"pi: remove {PI_AUTH} (all saved provider credentials)")
+            would(f"pi: replace {PI_AUTH} with an empty object (all saved provider credentials)")
         else:
-            PI_AUTH.unlink()
-            fixed(f"pi: removed {PI_AUTH} (all saved provider credentials)")
+            PI_AUTH.write_text("{}\n")
+            if not WINDOWS:
+                PI_AUTH.chmod(0o600)
+            fixed(f"pi: cleared {PI_AUTH} (all saved provider credentials)")
     except OSError:
-        state.fail(f"pi: cannot remove {PI_AUTH}")
+        state.fail(f"pi: cannot clear {PI_AUTH}")
 
 
 def ensure_pi_anthropic_plugin_absent(state: State) -> bool:

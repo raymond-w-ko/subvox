@@ -168,7 +168,7 @@ class GatewayTests(unittest.TestCase):
             self.assertEqual(self.run_gateway().failures, 1)
             self.assertEqual(self.files[app.CLAUDE_SETTINGS], text)
 
-    def test_pi_builtin_overrides_and_auth_removal(self):
+    def test_pi_builtin_overrides_and_auth_clearing(self):
         with redirect_stdout(self.output):
             app.setting_pi_gateway(app.State(False), "https://gateway.example.test", "test-new-key")
         providers = json.loads(self.files[app.PI_MODELS])["providers"]
@@ -180,8 +180,8 @@ class GatewayTests(unittest.TestCase):
             "baseUrl": "https://gateway.example.test", "apiKey": "test-new-key",
             "authHeader": True, "headers": {"x-api-key": ""},
         })
-        self.unlink.assert_called_once_with(app.PI_AUTH)
-        self.assertNotIn(app.PI_AUTH, self.files)
+        self.assertEqual(self.files[app.PI_AUTH], "{}\n")
+        self.unlink.assert_not_called()
         for private in ("test-new-key", "test-saved-pi-key", "gateway.example.test"):
             self.assertNotIn(private, self.output.getvalue())
 
@@ -199,7 +199,7 @@ class GatewayTests(unittest.TestCase):
         for name in ("openai", "anthropic"):
             self.assertEqual(providers[name]["apiKey"], "$!$${TEST_KEY}$$suffix")
 
-    def test_missing_pi_models_created_before_auth_removal(self):
+    def test_missing_pi_models_created_before_auth_clearing(self):
         self.files.pop(app.PI_MODELS)
 
         @contextmanager
@@ -209,17 +209,18 @@ class GatewayTests(unittest.TestCase):
             yield stream
             self.files[path] = stream.getvalue()
 
-        def unlink(path):
-            providers = json.loads(self.files[app.PI_MODELS])["providers"]
-            self.assertEqual(set(providers), {"openai", "anthropic"})
-            self.files.pop(path)
+        def write(path, text):
+            if path == app.PI_AUTH:
+                providers = json.loads(self.files[app.PI_MODELS])["providers"]
+                self.assertEqual(set(providers), {"openai", "anthropic"})
+            self.write(path, text)
 
-        self.unlink.side_effect = unlink
-        with patch.object(Path, "open", open_file):
+        with patch.object(Path, "open", open_file), patch.object(Path, "write_text", write):
             self.assertEqual(self.run_gateway().failures, 0)
         if not app.WINDOWS:
             self.os_chmod.assert_called_once_with(app.PI_MODELS, 0o600)
-        self.unlink.assert_called_once_with(app.PI_AUTH)
+        self.assertEqual(self.files[app.PI_AUTH], "{}\n")
+        self.unlink.assert_not_called()
 
     def test_failed_pi_write_keeps_credentials(self):
         def write(path, text):
@@ -240,21 +241,30 @@ class GatewayTests(unittest.TestCase):
         self.assertIn(app.PI_AUTH, self.files)
         self.unlink.assert_not_called()
 
-    def test_auth_removal_failure_is_reported_without_contents(self):
-        self.unlink.side_effect = PermissionError("test-saved-pi-key")
-        self.assertEqual(self.run_gateway().failures, 1)
+    def test_auth_clearing_failure_is_reported_without_contents(self):
+        def write(path, text):
+            if path == app.PI_AUTH:
+                raise PermissionError("test-saved-pi-key")
+            self.write(path, text)
+
+        with patch.object(Path, "write_text", write):
+            self.assertEqual(self.run_gateway().failures, 1)
         self.assertIn(app.PI_AUTH, self.files)
         self.assertNotIn("test-saved-pi-key", self.output.getvalue())
 
-    def test_pi_auth_is_never_read(self):
+    def test_pi_auth_is_read_without_leaking_credentials(self):
+        reads = []
+
         def read(path):
-            if path == app.PI_AUTH:
-                raise AssertionError("must not read saved credentials")
+            reads.append(path)
             return self.files[path]
 
         with patch.object(Path, "read_text", read):
             self.assertEqual(self.run_gateway().failures, 0)
-        self.unlink.assert_called_once_with(app.PI_AUTH)
+        self.assertIn(app.PI_AUTH, reads)
+        self.assertEqual(self.files[app.PI_AUTH], "{}\n")
+        self.unlink.assert_not_called()
+        self.assertNotIn("test-saved-pi-key", self.output.getvalue())
 
     def test_pi_plugin_failure_preserves_auth(self):
         self.plugin_check.return_value = False
