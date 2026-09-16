@@ -414,17 +414,17 @@ def setting_pi_gateway(state: State, base_url: str, key: str) -> None:
         except (OSError, ValueError):
             pass
     try:
-        if not auth_exists:
-            ok(f"pi: {PI_AUTH} already absent")
-        elif auth_is_empty:
+        if auth_is_empty:
             ok(f"pi: {PI_AUTH} already contains an empty object")
         elif state.dry_run:
-            would(f"pi: replace {PI_AUTH} with an empty object (all saved provider credentials)")
+            action = "replace" if auth_exists else "create"
+            would(f"pi: {action} {PI_AUTH} with an empty object (all saved provider credentials)")
         else:
             PI_AUTH.write_text("{}\n")
             if not WINDOWS:
                 PI_AUTH.chmod(0o600)
-            fixed(f"pi: cleared {PI_AUTH} (all saved provider credentials)")
+            action = "cleared" if auth_exists else "created"
+            fixed(f"pi: {action} {PI_AUTH} (all saved provider credentials)")
     except OSError:
         state.fail(f"pi: cannot clear {PI_AUTH}")
 

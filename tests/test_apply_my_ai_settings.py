@@ -192,6 +192,18 @@ class GatewayTests(unittest.TestCase):
         self.assertIn("all saved provider credentials", self.output.getvalue())
         self.unlink.assert_not_called()
 
+    def test_missing_pi_auth_is_created(self):
+        self.files.pop(app.PI_AUTH)
+        self.assertEqual(self.run_gateway().failures, 0)
+        self.assertEqual(self.files[app.PI_AUTH], "{}\n")
+        self.assertIn(f"created {app.PI_AUTH}", self.output.getvalue())
+
+    def test_missing_pi_auth_dry_run_reports_creation(self):
+        self.files.pop(app.PI_AUTH)
+        self.assertEqual(self.run_gateway(dry_run=True).failures, 0)
+        self.assertNotIn(app.PI_AUTH, self.files)
+        self.assertIn(f"create {app.PI_AUTH}", self.output.getvalue())
+
     def test_pi_key_syntax_is_literal(self):
         with redirect_stdout(self.output):
             app.setting_pi_gateway(app.State(False), "https://gateway.example.test", "!${TEST_KEY}$suffix")
