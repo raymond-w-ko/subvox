@@ -100,6 +100,7 @@ label_autohide_multiplier = 2
 "f" = "action left_click"
 "d" = "action middle_click"
 "s" = "action right_click"
+";" = "action feed ctrl+;"
 
 "Ctrl+C" = "idle"
 "Ctrl+J" = "action scroll_down"
@@ -126,13 +127,19 @@ scroll_step = 1
 "Shift+I" = "__disabled__"
 "Shift+U" = "__disabled__"
 "Shift+R" = "__disabled__"
+"d" = "__disabled__"
 
 "Ctrl+C" = "idle"
-"y" = "action feed ctrl+y"
+"Ctrl+D" = "action page_down"
+"Ctrl+U" = "action page_up"
 
-"Enter" = "action left_click"
-"Shift+Enter" = "action middle_click"
-"Ctrl+Enter" = "action right_click"
+"w" = "action move_mouse --center"
+"r" = "action left_click --toggle"
+"g" = "action move_mouse"
+"f" = "action left_click"
+"s" = "action right_click"
+
+"y" = "action feed ctrl+y"
 
 # ============================================================================
 # Held Repeat
