@@ -126,6 +126,7 @@ scroll_step = 100
 "Shift+U" = "__disabled__"
 "Shift+R" = "__disabled__"
 "d" = "__disabled__"
+"gg" = "__disabled__"
 
 "Ctrl+C" = "idle"
 "Ctrl+D" = "action page_down"

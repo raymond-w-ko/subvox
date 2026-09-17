@@ -37,7 +37,7 @@ These intentionally override the Dvorak-to-QWERTY physical mapping. For example,
 
 ## Disabled Sentinel Rule
 
-Copy every `__disabled__` entry from the author config 1:1. Do not convert its key by physical position. The key names a hardcoded Neru default rather than a user binding.
+Copy every `__disabled__` entry from the author config 1:1. Do not convert its key by physical position. The key names a hardcoded Neru default rather than a user binding. Add a literal sentinel when a translated single-key binding would shadow a hardcoded sequence.
 
 Neru declares the relevant hardcoded defaults in `internal/config/config_defaults.go`:
 
@@ -85,6 +85,7 @@ Recursive grid semantic controls:
 Scroll disabled defaults:
 
 - Author and active both disable `Shift+L`, `Shift+M`, `Shift+I`, `Shift+U`, `Shift+R`, and `d`.
+- Active configs also disable hardcoded `gg = action go_top`. Translated `g = action move_mouse` would otherwise shadow `gg` and fail validation.
 - The literal `d` sentinel takes precedence over the physical conversion of author `e = action middle_click`, which would also use active `d`. The active scroll table therefore omits that translated middle-click binding.
 - Result: verified as literal default removal, not physical conversion.
 
@@ -104,6 +105,7 @@ Corrections after checking Neru's hardcoded defaults:
 
 - Every `__disabled__` entry is copied 1:1 and stays exempt from Dvorak-to-QWERTY conversion.
 - Active configs include the author's literal scroll `d` sentinel.
+- Active configs disable hardcoded scroll `gg` because translated single-key `g` shadows that sequence.
 - The translated scroll middle-click binding is omitted because it collides with that reserved `d` key.
 - Active config no longer disables scroll `Shift+G`, preserving Neru's built-in go-bottom binding.
 
