@@ -40,6 +40,7 @@ import tomlkit
 HOME = Path.home()
 # this script lives in subvox/bin, so the repo root is one level up
 SUBVOX_ROOT = Path(__file__).resolve().parent.parent
+SKILLS_DIR = SUBVOX_ROOT / "ai" / "skills"
 CODEX_CONFIG = HOME / ".codex" / "config.toml"
 CLAUDE_CONFIG = HOME / ".claude.json"
 CLAUDE_SETTINGS = HOME / ".claude" / "settings.json"
@@ -801,6 +802,84 @@ def setting_claude_agents_md(state: State) -> None:
     )
 
 
+def setting_skill_symlinks(state: State) -> None:
+    """Link shared skills into Codex, Agents, and Claude skill directories.
+    The helper links directories under ai/skills into each harness skill directory.
+    The shell/PowerShell helper stays the single source of truth for the target list and skip rules.
+    Dry-run mode passes through to the helper without creating directories or links.
+    """
+    header("skills: symlink shared skills into codex, agents, and claude")
+    script = SKILLS_DIR / ("symlink-skills.ps1" if WINDOWS else "symlink-skills.sh")
+    if not script.is_file():
+        state.fail(f"skills: {script} is missing")
+        return
+
+    if WINDOWS:
+        executable = shutil.which("pwsh") or shutil.which("powershell")
+        if executable is None:
+            state.fail("skills: pwsh or powershell not on PATH")
+            return
+        cmd = [executable, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script)]
+        if state.dry_run:
+            cmd.append("-DryRun")
+    else:
+        cmd = ["bash", str(script)]
+        if state.dry_run:
+            cmd.append("--dry-run")
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        state.fail(f"skills: cannot run {script.name}: {error}")
+        return
+    if result.returncode != 0:
+        stderr = next((line.strip() for line in reversed(result.stderr.splitlines()) if line.strip()), "(no stderr)")
+        state.fail(f"skills: {script.name} exited {result.returncode}: {stderr}")
+        return
+
+    target: str | None = None
+    existing = 0
+    missing_manifest: set[str] = set()
+    for raw_line in result.stdout.splitlines():
+        line = raw_line.rstrip()
+        if not line:
+            continue
+        if line.startswith("== ") and line.endswith(" =="):
+            if target is not None:
+                ok(f"skills: {target}: {existing} already linked")
+            target = line[3:-3]
+            existing = 0
+        elif line.startswith("linked: "):
+            dest = line[len("linked: ") :].split(" -> ", 1)[0]
+            fixed(f"skills: linked {dest}")
+        elif line.startswith("would link: "):
+            dest = line[len("would link: ") :].split(" -> ", 1)[0]
+            would(f"skills: link {dest}")
+        elif line.startswith("exists: "):
+            dest = line[len("exists: ") :]
+            existing += 1
+            dest_path = Path(dest)
+            expected = SKILLS_DIR / dest_path.name
+            if not dest_path.exists():
+                state.warn(f"skills: {dest} is a broken link")
+            elif dest_path.resolve() != expected.resolve():
+                state.warn(f"skills: {dest} points at {dest_path.resolve()}, not {expected}")
+        elif line.startswith("skip (Claude subagent skill): "):
+            path = line[len("skip (Claude subagent skill): ") :]
+            skill_name = Path(path.rstrip("/\\")).name
+            info(f"skills: skipped Claude subagent skill {skill_name} for {target}")
+        elif line.startswith("skip (no SKILL.md): "):
+            path = line[len("skip (no SKILL.md): ") :]
+            # the helper reports this once per target; warn once per directory
+            if path not in missing_manifest:
+                missing_manifest.add(path)
+                state.warn(f"skills: {path} has no SKILL.md")
+        else:
+            state.warn(f"skills: unexpected line from {script.name}: {line}")
+    if target is not None:
+        ok(f"skills: {target}: {existing} already linked")
+
+
 SETTINGS: list[Callable[[State], None]] = [
     setting_fff_mcp_binary,
     setting_codex_model,
@@ -809,6 +888,7 @@ SETTINGS: list[Callable[[State], None]] = [
     setting_gateway,
     setting_claude_plugins,
     setting_claude_agents_md,
+    setting_skill_symlinks,
 ]
 
 
