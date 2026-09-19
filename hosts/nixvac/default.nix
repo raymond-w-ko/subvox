@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, user, ... }:
 {
   imports = [
     ../../modules/nixos/base.nix
@@ -20,6 +20,9 @@
   security.sudo.extraConfig = ''
     @includedir /etc/sudoers.d
   '';
+
+  # Static files served over the tailnet by `tailscale serve --bg /var/www/html`.
+  systemd.tmpfiles.rules = [ "d /var/www/html 0755 ${user} users -" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
