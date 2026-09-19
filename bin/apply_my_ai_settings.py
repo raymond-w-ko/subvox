@@ -763,6 +763,44 @@ def setting_claude_plugins(state: State) -> None:
         ensure_claude_plugin(state, plugin_id, marketplace, repo)
 
 
+def setting_claude_agents_md(state: State) -> None:
+    """Enable agents-md@builtin, a mod that ships inside Claude Code.
+    Its option is read only from user, --settings, or managed settings, never a project's .claude/settings.json.
+    claude-md-and-agents-md loads AGENTS.md beside CLAUDE.md and deduplicates @-imported files.
+    The change applies at the next context build: new conversation, /clear, or compaction.
+    The mod is behind the GrowthBook flag tengu_agents_md_mod (default off); GrowthBook is not fetched for gateway users, so the script seeds the flag in the disk cache ~/.claude.json.
+    A future Claude Code release may drop the gate, at which point the seed is harmless.
+    """
+    header("claude: built-in agents-md mod")
+    # built-in mods are gated on a GrowthBook flag; gateway users never fetch it, so seed the disk cache
+    if not ensure_entry(
+        state,
+        CLAUDE_CONFIG,
+        ["cachedGrowthBookFeatures", "tengu_agents_md_mod"],
+        True,
+        "claude",
+        sensitive=True,
+    ):
+        return
+    if not ensure_entry(
+        state,
+        CLAUDE_SETTINGS,
+        ["enabledPlugins", "agents-md@builtin"],
+        True,
+        "claude",
+        create=True,
+    ):
+        return
+    ensure_entry(
+        state,
+        CLAUDE_SETTINGS,
+        ["pluginConfigs", "agents-md@builtin", "options", "instructionFiles"],
+        "claude-md-and-agents-md",
+        "claude",
+        create=True,
+    )
+
+
 SETTINGS: list[Callable[[State], None]] = [
     setting_fff_mcp_binary,
     setting_codex_model,
@@ -770,6 +808,7 @@ SETTINGS: list[Callable[[State], None]] = [
     setting_claude_fff_mcp,
     setting_gateway,
     setting_claude_plugins,
+    setting_claude_agents_md,
 ]
 
 

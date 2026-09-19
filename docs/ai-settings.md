@@ -71,6 +71,22 @@ on PATH; package command output is not echoed because it can contain local data.
 On Windows, the script skips `pi.sh` discovery, listing, and uninstalling.
 Pi model overrides and auth-file removal still run.
 
+The agents-md step enables Claude Code's built-in `agents-md` mod, which loads
+`AGENTS.md` files as project instructions. It runs independently of the gateway
+step. Claude Code 2.1.x ships the mod off behind the GrowthBook flag
+`tengu_agents_md_mod`, and gateway users never fetch GrowthBook, so the script
+writes `cachedGrowthBookFeatures.tengu_agents_md_mod = true` into
+`~/.claude.json`, sets `enabledPlugins["agents-md@builtin"]` to `true`, and sets
+`pluginConfigs["agents-md@builtin"].options.instructionFiles` to
+`claude-md-and-agents-md` in `~/.claude/settings.json`. A later Claude Code run
+that fetches GrowthBook may overwrite the cached flag; rerun the script to
+re-seed it. That mode loads every `AGENTS.md` beside `CLAUDE.md`; a file
+`CLAUDE.md` already `@`-imports is not loaded twice. Project
+`.claude/settings.json` is not read for this option. The mode applies at the
+next context build (new conversation, `/clear`, or compaction). Verify with
+`claude -p --tools "" --strict-mcp-config` in a repository holding only an
+`AGENTS.md`.
+
 Use builtin `openai` for GPT models and builtin `anthropic` for Claude models.
 Pi default model selections are not changed. Restart Pi after applying.
 
