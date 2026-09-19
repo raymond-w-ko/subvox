@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+dry_run=false
+if (( $# > 1 )); then
+  printf 'usage: symlink-skills.sh [--dry-run]\n' >&2
+  exit 2
+fi
+case "${1-}" in
+  "") ;;
+  --dry-run|-n) dry_run=true ;;
+  *)
+    printf 'usage: symlink-skills.sh [--dry-run]\n' >&2
+    exit 2
+    ;;
+esac
+
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 claude_skills_dir="$HOME/.claude/skills"
 
@@ -15,7 +29,9 @@ targets=(
 
 link_into() {
   local skills_dir="$1"
-  mkdir -p "$skills_dir"
+  if ! $dry_run; then
+    mkdir -p "$skills_dir"
+  fi
 
   for skill_path in "$script_dir"/*/; do
     [[ -d "$skill_path" ]] || continue
@@ -37,8 +53,12 @@ link_into() {
       continue
     fi
 
-    ln -s "$skill_path" "$dest"
-    printf 'linked: %s -> %s\n' "$dest" "$skill_path"
+    if $dry_run; then
+      printf 'would link: %s -> %s\n' "$dest" "$skill_path"
+    else
+      ln -s "$skill_path" "$dest"
+      printf 'linked: %s -> %s\n' "$dest" "$skill_path"
+    fi
   done
 }
 

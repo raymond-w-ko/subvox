@@ -1,5 +1,7 @@
 [CmdletBinding()]
-param()
+param(
+  [switch] $DryRun
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -23,10 +25,13 @@ $targets = @(
 function Add-SkillLinks {
   param(
     [Parameter(Mandatory)]
-    [string] $SkillsDirectory
+    [string] $SkillsDirectory,
+    [switch] $DryRun
   )
 
-  New-Item -ItemType Directory -Path $SkillsDirectory -Force | Out-Null
+  if (-not $DryRun) {
+    New-Item -ItemType Directory -Path $SkillsDirectory -Force | Out-Null
+  }
 
   foreach ($skill in Get-ChildItem -LiteralPath $PSScriptRoot -Directory) {
     $manifest = Join-Path $skill.FullName 'SKILL.md'
@@ -51,12 +56,16 @@ function Add-SkillLinks {
       continue
     }
 
-    New-Item -ItemType SymbolicLink -Path $destination -Target $skill.FullName | Out-Null
-    Write-Output "linked: $destination -> $($skill.FullName)"
+    if ($DryRun) {
+      Write-Output "would link: $destination -> $($skill.FullName)"
+    } else {
+      New-Item -ItemType SymbolicLink -Path $destination -Target $skill.FullName | Out-Null
+      Write-Output "linked: $destination -> $($skill.FullName)"
+    }
   }
 }
 
 foreach ($target in $targets) {
   Write-Output "`n== $target =="
-  Add-SkillLinks -SkillsDirectory $target
+  Add-SkillLinks -SkillsDirectory $target -DryRun:$DryRun
 }
