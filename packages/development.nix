@@ -143,6 +143,9 @@ let
     openssl
     pkg-config
     mactop
+    # GNU coreutils as g-prefixed binaries (gtimeout, gtail, ...): macOS ships
+    # no `timeout`, and unprefixed coreutils would shadow the BSD tools.
+    coreutils-prefixed
   ];
 
   platform =
