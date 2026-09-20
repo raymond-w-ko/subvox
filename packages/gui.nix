@@ -18,9 +18,6 @@ let
 
   darwin = with pkgs; [
     kanata
-    aerospace
-    sketchybar
-    raycast
   ];
 
   platform =
