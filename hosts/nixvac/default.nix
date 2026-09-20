@@ -15,6 +15,9 @@
     chromium
     google-chrome
     ghostty.terminfo
+    # Headless browser MCP server for the Codex `astra-operator` lane; the
+    # package bundles a NixOS-patched Chromium, so no Playwright download.
+    playwright-mcp
   ];
 
   security.sudo.extraConfig = ''
