@@ -176,6 +176,9 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(providers["openai"], {
             "baseUrl": "https://gateway.example.test/v1", "apiKey": "test-new-key",
         })
+        self.assertEqual(providers["xai"], {
+            "baseUrl": "https://gateway.example.test/v1", "apiKey": "test-new-key",
+        })
         self.assertEqual(providers["anthropic"], {
             "baseUrl": "https://gateway.example.test", "apiKey": "test-new-key",
             "authHeader": True, "headers": {"x-api-key": ""},
@@ -208,7 +211,7 @@ class GatewayTests(unittest.TestCase):
         with redirect_stdout(self.output):
             app.setting_pi_gateway(app.State(False), "https://gateway.example.test", "!${TEST_KEY}$suffix")
         providers = json.loads(self.files[app.PI_MODELS])["providers"]
-        for name in ("openai", "anthropic"):
+        for name in ("openai", "xai", "anthropic"):
             self.assertEqual(providers[name]["apiKey"], "$!$${TEST_KEY}$$suffix")
 
     def test_missing_pi_models_created_before_auth_clearing(self):
@@ -224,7 +227,7 @@ class GatewayTests(unittest.TestCase):
         def write(path, text):
             if path == app.PI_AUTH:
                 providers = json.loads(self.files[app.PI_MODELS])["providers"]
-                self.assertEqual(set(providers), {"openai", "anthropic"})
+                self.assertEqual(set(providers), {"openai", "xai", "anthropic"})
             self.write(path, text)
 
         with patch.object(Path, "open", open_file), patch.object(Path, "write_text", write):

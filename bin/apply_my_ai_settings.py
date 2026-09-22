@@ -386,6 +386,7 @@ def setting_pi_gateway(state: State, base_url: str, key: str) -> None:
         pi_key = "$" + pi_key
     for provider, desired in {
         "openai": {"baseUrl": base_url + "/v1", "apiKey": pi_key},
+        "xai": {"baseUrl": base_url + "/v1", "apiKey": pi_key},
         "anthropic": {
             "baseUrl": base_url,
             "apiKey": pi_key,

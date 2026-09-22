@@ -38,20 +38,20 @@ The gateway step reads `base_url` and `api_key` and applies:
   environment variables. The file is created if missing. Writes use permissions
   `600` on Unix because this file contains the plaintext key. Codex config writes
   also use `600` on Unix.
-- `~/.pi/agent/models.json`: replaces the `openai` and `anthropic` provider
+- `~/.pi/agent/models.json`: replaces the `openai`, `xai`, and `anthropic` provider
   overrides with the gateway URL and key, preserving other providers. Builtin
-  model lists and capabilities remain available. OpenAI uses `/v1`; Anthropic
+  model lists and capabilities remain available. OpenAI and xAI use `/v1`; Anthropic
   uses the root URL with bearer authentication and an empty `x-api-key` header.
   Pi key syntax is escaped so keys are treated literally, not as commands or
   environment references. The file is created if missing and uses permissions
   `600` on Unix. It is ignored by Git because Home Manager links `~/.pi` into
   this repository.
-- `~/.pi/agent/auth.json`: removes the entire file after both Pi provider
+- `~/.pi/agent/auth.json`: removes the entire file after the Pi provider
   overrides succeed and the conflicting plugin is confirmed absent (the plugin
   check is skipped on Windows), because
   saved credentials take precedence over proxy keys.
-  This removes saved credentials for **all Pi providers**, not just OpenAI and
-  Anthropic. Dry runs only report the removal; failed Pi overrides leave the
+  This removes saved credentials for **all Pi providers**, not just OpenAI, xAI,
+  and Anthropic. Dry runs only report the removal; failed Pi overrides leave the
   auth file intact. Plugin command failures also preserve the auth file. The
   script never reads or displays its contents.
 - `~/.grok/config.toml` (or `$GROK_HOME/config.toml`): creates or replaces
@@ -97,7 +97,8 @@ the Claude target because they spawn Claude. Dry runs pass `--dry-run`
 helper scripts remain the single source of truth for targets and skip rules and
 can still be run on their own.
 
-Use builtin `openai` for GPT models and builtin `anthropic` for Claude models.
+Use builtin `openai` for GPT models, builtin `xai` for Grok models, and builtin
+`anthropic` for Claude models.
 Pi default model selections are not changed. Restart Pi after applying.
 
 Missing, malformed, empty, or placeholder keys fail the gateway step without
