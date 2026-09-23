@@ -26,6 +26,19 @@ Preview and apply from the repository root:
 ./bin/apply_my_ai_settings.py
 ```
 
+The fff-mcp step keeps `~/bin/fff-mcp` (`~/.local/bin/fff-mcp.exe` on Windows)
+at the newest stable release of [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff).
+It lists releases with `gh release list --json`, so the lookup uses the `gh` login
+instead of the anonymous API rate limit, skips drafts, prereleases, and nightly
+tags, and orders the remaining tags by semver rather than publish date. When the
+installed binary is missing, or `fff-mcp --version` reports something older than
+that release, it downloads the `fff-mcp-<target>` asset with `gh release download`,
+verifies the published `.sha256`, and swaps it into place, replacing an older
+binary or a symlink to a local build. Linux uses the static musl build so the same
+binary also runs on NixOS. An installed version equal to or newer than the latest
+stable release is kept. Dry runs only report the download. The step then runs an
+MCP `initialize` handshake and registers the path with Codex and Claude Code.
+
 The gateway step reads `base_url` and `api_key` and applies:
 
 - `~/.codex/config.toml`: selects `cliproxyapi` and replaces its provider table

@@ -25,11 +25,15 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import hashlib
 import json
 import os
+import platform
+import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -55,8 +59,12 @@ CLAUDE_PLUGINS = [
     ("fable-advisor@fable-advisor", "fable-advisor", "raymond-w-ko/fable-advisor"),
 ]
 WINDOWS = os.name == "nt"
+FFF_REPO = "dmtrKovalenko/fff"
 FFF_MCP_NAME = "fff-mcp.exe" if WINDOWS else "fff-mcp"
-FFF_MCP_CANDIDATES = [HOME / "bin" / FFF_MCP_NAME, HOME / ".local" / "bin" / FFF_MCP_NAME]
+# upstream's installer defaults to ~/.local/bin; on unix ~/bin is where the
+# other hand-installed binaries live, so keep it there
+FFF_MCP_DIR = HOME / ".local" / "bin" if WINDOWS else HOME / "bin"
+FFF_MCP_BIN = FFF_MCP_DIR / FFF_MCP_NAME
 FFF_MCP_ENV = {"FFF_MCP_IDLE_TIMEOUT_SECS": "0"}
 
 # --- colors -----------------------------------------------------------------
@@ -474,33 +482,167 @@ def ensure_pi_anthropic_plugin_absent(state: State) -> bool:
     return True
 
 
-def setting_fff_mcp_binary(state: State) -> None:
-    header("fff-mcp binary")
-    found = [p for p in FFF_MCP_CANDIDATES if p.is_symlink() or p.exists()]
-    if not found:
-        state.fail("no fff-mcp found, looked in " + ", ".join(map(str, FFF_MCP_CANDIDATES)))
-        return
-    binary = found[0]
-    if len(found) > 1:
-        info("using " + str(binary) + ", ignoring " + ", ".join(map(str, found[1:])))
-    if binary.is_symlink():
-        target = binary.resolve()
-        if not target.is_file():
-            state.fail(f"{binary} is a symlink to {target}, which does not exist")
-            return
-        ok(f"{binary} -> {target}")
-    elif binary.is_file():
-        state.warn(f"{binary} is a regular file, expected a symlink to the real binary")
-    else:
-        state.fail(f"{binary} is not a file")
-        return
-    if not os.access(binary, os.X_OK):
-        state.fail(f"{binary} is not executable")
-        return
-    ok(f"{binary} is an executable binary")
-    state.fff_mcp_bin = binary
+# --- fff-mcp release download ------------------------------------------------
 
-    # Speak enough MCP to make sure the binary actually starts and answers.
+# (major, minor, patch, 1 for a release / 0 for a prerelease). Tuple order
+# matches semver precedence closely enough: a prerelease sorts below the
+# release it precedes, and build metadata is ignored.
+Version = tuple[int, int, int, int]
+
+VERSION_RE = re.compile(r"v?(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?")
+
+
+def parse_version(text: str) -> Version | None:
+    """Parse "v0.11.0" or "0.11.1-nightly.e3f694a"; None if not a version."""
+    match = VERSION_RE.fullmatch(text.strip())
+    if match is None:
+        return None
+    major, minor, patch, prerelease, _build = match.groups()
+    return (int(major), int(minor), int(patch), 0 if prerelease else 1)
+
+
+def fff_mcp_target() -> str | None:
+    """Rust target triple used in the upstream release asset names."""
+    machine = platform.machine().lower()
+    arch = {"x86_64": "x86_64", "amd64": "x86_64", "aarch64": "aarch64", "arm64": "aarch64"}.get(machine)
+    if arch is None:
+        return None
+    if WINDOWS:
+        return f"{arch}-pc-windows-msvc"
+    if sys.platform == "darwin":
+        return f"{arch}-apple-darwin"
+    if sys.platform.startswith("linux"):
+        # the static musl build runs on any distro, including NixOS without nix-ld
+        return f"{arch}-unknown-linux-musl"
+    return None
+
+
+def installed_fff_mcp_version(binary: Path) -> str | None:
+    """Version string reported by `fff-mcp --version`, or None if unusable."""
+    if not binary.is_file() or not os.access(binary, os.X_OK):
+        return None
+    try:
+        proc = subprocess.run(
+            [str(binary), "--version"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            cwd=SUBVOX_ROOT,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    # the output looks like "fff-mcp 0.11.0 (95fd777c2529fc7b4d7572dabff64cc07268f2c5)"
+    words = proc.stdout.split()
+    if proc.returncode != 0 or len(words) < 2:
+        return None
+    return words[1]
+
+
+def gh_json(args: list[str]) -> Any:
+    """Run a `gh` command that prints JSON and return the parsed value."""
+    if shutil.which("gh") is None:
+        raise RuntimeError("gh is not installed")
+    try:
+        proc = subprocess.run(["gh", *args], capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RuntimeError(f"gh {' '.join(args[:2])}: {error}") from error
+    if proc.returncode != 0:
+        detail = proc.stderr.strip().splitlines()
+        raise RuntimeError(f"gh {' '.join(args[:2])}: {detail[-1] if detail else f'exit {proc.returncode}'}")
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError(f"gh {' '.join(args[:2])} printed invalid JSON: {error}") from error
+
+
+def latest_fff_mcp_release(target: str) -> tuple[str, str]:
+    """Newest stable upstream release that ships fff-mcp for target: (tag, asset).
+
+    `gh` makes the API calls with the logged-in token, so they are not subject
+    to the anonymous rate limit. Releases are ordered by semver rather than by
+    publish date, so a backported patch of an older minor never wins.
+    """
+    releases = gh_json(
+        [
+            "release",
+            "list",
+            "--repo",
+            FFF_REPO,
+            "--exclude-drafts",
+            "--exclude-pre-releases",
+            "--limit",
+            "50",
+            "--json",
+            "tagName",
+        ]
+    )
+    stable: list[tuple[Version, str]] = []
+    for release in releases:
+        tag = release.get("tagName", "")
+        version = parse_version(tag)
+        # tags such as "nightly" or "0.11.1-nightly.e3f694a" are never stable,
+        # whatever the prerelease flag says
+        if version is not None and version[3] == 1:
+            stable.append((version, tag))
+    if not stable:
+        raise RuntimeError(f"{FFF_REPO} has no stable release")
+    stable.sort(reverse=True)
+    wanted = f"fff-mcp-{target}" + (".exe" if WINDOWS else "")
+    # a stable release missing our asset is a broken release, so only look a few back
+    for _version, tag in stable[:3]:
+        release = gh_json(["release", "view", tag, "--repo", FFF_REPO, "--json", "assets"])
+        names = {asset["name"] for asset in release.get("assets", [])}
+        if wanted in names and f"{wanted}.sha256" in names:
+            return tag, wanted
+        executables = sorted(n for n in names if n.startswith("fff-mcp-") and not n.endswith(".sha256"))
+        info(f"{tag} has no {wanted}; executables: {', '.join(executables) or 'none'}")
+    raise RuntimeError(f"no recent stable release of {FFF_REPO} ships {wanted}")
+
+
+def download_fff_mcp(tag: str, asset: str, dest: Path) -> None:
+    """Download asset from release tag, verify its sha256, and install it at dest."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    # download next to dest so the final os.replace stays on one filesystem
+    with tempfile.TemporaryDirectory(dir=dest.parent, prefix=".fff-mcp-") as tmp:
+        try:
+            subprocess.run(
+                [
+                    "gh",
+                    "release",
+                    "download",
+                    tag,
+                    "--repo",
+                    FFF_REPO,
+                    "--pattern",
+                    asset,
+                    "--pattern",
+                    f"{asset}.sha256",
+                    "--dir",
+                    tmp,
+                    "--clobber",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+        except subprocess.CalledProcessError as error:
+            raise RuntimeError(f"gh release download: {error.stderr.strip()}") from error
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise RuntimeError(f"gh release download: {error}") from error
+        downloaded = Path(tmp) / asset
+        # the .sha256 file is "<hex>  <asset name>"
+        expected = (Path(tmp) / f"{asset}.sha256").read_text().split()[0].lower()
+        actual = hashlib.sha256(downloaded.read_bytes()).hexdigest()
+        if actual != expected:
+            raise RuntimeError(f"sha256 mismatch for {asset}: expected {expected}, got {actual}")
+        downloaded.chmod(0o755)
+        # replaces an older binary or a symlink to a local build in one step
+        os.replace(downloaded, dest)
+
+
+def check_fff_mcp_handshake(state: State, binary: Path) -> None:
+    """Speak enough MCP to make sure the binary actually starts and answers."""
     request = {
         "jsonrpc": "2.0",
         "id": 1,
@@ -540,6 +682,66 @@ def setting_fff_mcp_binary(state: State) -> None:
         state.fail(f"MCP initialize returned no serverInfo: {first_line[:200]}")
         return
     ok(f"MCP initialize handshake works ({server.get('name')} {server.get('version')})")
+
+
+def setting_fff_mcp_binary(state: State) -> None:
+    header("fff-mcp binary")
+    binary = FFF_MCP_BIN
+    installed = installed_fff_mcp_version(binary)
+    if installed is None and (binary.is_symlink() or binary.exists()):
+        state.warn(f"{binary} exists but does not report a version, it will be replaced")
+    elif binary.is_symlink():
+        info(f"{binary} is a symlink to {binary.resolve()}")
+
+    # a missing binary is a failure; a binary that merely cannot be checked
+    # against upstream right now is a warning
+    report = state.warn if installed else state.fail
+    target = fff_mcp_target()
+    wanted: tuple[str, str] | None = None
+    if target is None:
+        report(f"upstream ships no fff-mcp build for {sys.platform}/{platform.machine()}")
+    else:
+        try:
+            wanted = latest_fff_mcp_release(target)
+        except RuntimeError as error:
+            report(f"could not look up the latest fff-mcp release: {error}")
+
+    if wanted is not None:
+        tag, asset = wanted
+        latest = parse_version(tag)
+        current = parse_version(installed) if installed else None
+        if installed and current is None:
+            state.warn(f"{binary} reports version {installed!r}, which is not a version")
+        if current is not None and latest is not None and current >= latest:
+            if current == latest:
+                ok(f"{binary} is {installed}, the latest stable release ({tag})")
+            else:
+                info(f"{binary} is {installed}, ahead of the latest stable release {tag}, keeping it")
+        elif state.dry_run:
+            replacing = f", replacing {installed}" if installed else ""
+            would(f"download {asset} from {FFF_REPO} {tag} to {binary}{replacing}")
+        else:
+            try:
+                download_fff_mcp(tag, asset, binary)
+            except RuntimeError as error:
+                state.fail(f"download of {FFF_REPO} {tag} failed: {error}")
+            else:
+                was = installed
+                installed = installed_fff_mcp_version(binary)
+                replaced = f" (replaced {was})" if was else ""
+                fixed(f"downloaded {asset} from {FFF_REPO} {tag} to {binary}, sha256 verified{replaced}")
+
+    if installed is None:
+        if state.dry_run and wanted is not None:
+            # let the MCP config steps preview the path the download will create
+            info("skipping the MCP handshake until the binary is downloaded")
+            state.fff_mcp_bin = binary
+            return
+        state.fail(f"no usable fff-mcp at {binary}")
+        return
+    ok(f"{binary} is executable, version {installed}")
+    state.fff_mcp_bin = binary
+    check_fff_mcp_handshake(state, binary)
 
 
 def setting_codex_fff_mcp(state: State) -> None:
