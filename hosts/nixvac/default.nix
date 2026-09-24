@@ -4,6 +4,7 @@
     ../../modules/nixos/base.nix
     ../../modules/nixos/server.nix
     ../../modules/nixos/virtualisation/proxmox-guest.nix
+    ../../modules/shared/gui.nix
     ./hardware-configuration.nix
     ./networking.nix
   ];
