@@ -1,6 +1,7 @@
 { pkgs }:
 with pkgs;
 [
+  nerd-fonts.symbols-only
   nerd-fonts.droid-sans-mono
   nerd-fonts.jetbrains-mono
   noto-fonts
