@@ -50,12 +50,12 @@ esac
 # artificial analysis int vs cost frontier in general,
 # default is sol cause astra may be too reward hacked.
 models=(
-  openai/gpt-5.6-sol
+  openai/gpt-6.1-sol
   openai/gpt-6-astra
   openrouter/meta/muse-spark-1.3
   openrouter/xiaomi/mimo-v2.6-pro
   xai/grok-4.7
-  openai/gpt-5.6-luna
+  openai/gpt-6-luna
 )
 
 exec env OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}" \
