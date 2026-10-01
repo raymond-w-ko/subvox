@@ -18,6 +18,8 @@
 
   programs.nix-ld.enable = true;
 
+  services.gvfs.enable = true; # Mount, trash, and other functionalities
+
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
