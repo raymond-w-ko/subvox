@@ -12,6 +12,7 @@
   nix.settings.trusted-users = [ user ];
   nix.gc.dates = "weekly";
 
+  environment.systemPackages = [ pkgs.trash-cli ];
   environment.localBinInPath = true;
   environment.sessionVariables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
   environment.sessionVariables.LIBRARY_PATH = "${pkgs.sqlite.out}/lib:${pkgs.openssl.out}/lib";
