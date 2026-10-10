@@ -1,4 +1,4 @@
-auto-update = off
+auto-update-channel = tip
 
 window-padding-x = 6
 window-padding-y = 6
