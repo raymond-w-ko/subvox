@@ -50,7 +50,7 @@ let db: SqliteConnection | undefined;
 let disabled = Sqlite === undefined;
 
 function getDb(): SqliteConnection | undefined {
-	if (disabled) return undefined;
+	if (disabled || !Sqlite) return undefined;
 	if (db) return db;
 	const dir = join(homedir(), ".cache");
 	try {
@@ -59,7 +59,7 @@ function getDb(): SqliteConnection | undefined {
 		/* read-only home — sqlite just won't persist */
 	}
 	try {
-		db = new (Sqlite as any)(join(dir, "pi-rko-compact-tool-display.sqlite3"));
+		db = new Sqlite(join(dir, "pi-rko-compact-tool-display.sqlite3"));
 		db.exec(
 			"CREATE TABLE IF NOT EXISTS cache(key TEXT PRIMARY KEY, label TEXT NOT NULL, created_at INTEGER NOT NULL)",
 		);

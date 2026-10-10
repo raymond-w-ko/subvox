@@ -1,18 +1,20 @@
 {
+  "extends": "../../../../../../src/pi/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2023"],
+    "target": "ES2024",
+    "lib": ["ES2024"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "strict": false,
-    "noImplicitAny": false,
+    "strict": true,
+    "noImplicitAny": true,
     "noImplicitThis": false,
-    "strictNullChecks": false,
-    "types": ["node"]
+    "strictNullChecks": true,
+    "types": ["node"],
+    "typeRoots": ["../../../../../../src/pi/node_modules/@types"]
   },
-  "include": ["index.ts", "index.test.ts", "hashline.test-extension.ts", "translate.ts", "llm.ts", "cache.ts", "debug-log.ts", "config.ts"]
+  "include": ["index.ts", "index.test.ts", "hashline.test-extension.ts", "tools.test-extension.ts", "translate.ts", "llm.ts", "cache.ts", "debug-log.ts", "config.ts", "../../../../../../src/pi/packages/coding-agent/src/utils/highlight-js.d.ts"]
 }

@@ -46,7 +46,10 @@ tools before Pi binds the runtime, while reload needs renderers before
 
 External `todo`, `ffgrep`, and `fffind` tools also receive renderer-only overrides,
 preserving their original schemas, state, and execution while replacing only TUI
-rendering.
+rendering. Renderer registration uses `pi.registerToolRenderer((toolName, next) => renderers)`.
+Each resolver returns compact renderers for its supported tools and calls `next()`
+for other names. Tool definitions remain unchanged, and renderers can resolve
+before the external tool is registered.
 
 No `npm install` needed — Pi's jiti loader provides `@earendil-works/pi-*` as
 virtual modules.
@@ -59,16 +62,20 @@ Already dropped in `~/.pi/agent/extensions/` (auto-discovered). Restart pi or ru
 ## Verify
 
 ```sh
-# Typecheck from this directory
-npx tsc -p tsconfig.json
-
-# Integration tests through Pi's real extension loader
 cd ~/src/pi
-node_modules/.bin/tsx ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/index.test.ts
+
+# Typecheck against the current Pi source API
+node node_modules/typescript/bin/tsc -p ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/tsconfig.json
+
+# Offline integration tests through Pi's real extension loader, without a build
+PI_OFFLINE=1 node --import ./scripts/issues/register.mjs --test ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/index.test.ts
 ```
 
-Typecheck uses the `node_modules` symlink to `~/src/pi/node_modules`. Integration
-tests also expect the documented `~/src/pi-hashline-edit-pro` checkout.
+Typecheck inherits source aliases from `~/src/pi/tsconfig.json` and uses that
+checkout's Node types. Integration tests use local tool fixtures for external-tool
+ownership, resolver fallback, collapsed/expanded output, and Hashline edge cases.
+The additional real-Hashline test runs when `~/src/pi-hashline-edit-pro/index.ts`
+is present; otherwise only that optional test is skipped.
 
 ## Config
 
@@ -128,6 +135,7 @@ command is already shown, so a miss costs nothing).
 - `index.ts` — entry + all renderers
 - `index.test.ts` — real-loader regression tests for file-tool integration
 - `hashline.test-extension.ts` — Hashline-mode integration test entry point
+- `tools.test-extension.ts` — offline external-tool and Hashline-shaped fixtures
 - `llm.ts` — Pi-native one-shot completion bridge (reuses provider/auth)
 - `translate.ts` — background bash translator + in-flight dedupe
 - `cache.ts` — persistent SQLite cache (`node:sqlite`, ~/.cache)
