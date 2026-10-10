@@ -1,5 +1,12 @@
 # subvox
 
+## User executables
+
+All host and standalone Home Manager profiles add `$HOME/.local/bin` to `PATH`
+through `home/common.nix`. NixOS hosts also enable `environment.localBinInPath`.
+Apply the configuration with `./scripts/rebuild switch <target>`, then start a new
+shell to pick up the updated path.
+
 ## GVfs
 
 NixOS hosts enable GVfs for mounting, trash, and other file-management features.

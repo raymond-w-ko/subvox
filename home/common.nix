@@ -13,6 +13,7 @@ in
   imports = [ ./starship.nix ];
 
   home.packages = developmentPackages.forHome;
+  home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
 
   home.sessionVariables = {
     LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
@@ -38,7 +39,8 @@ in
   home.file.".codex/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
   home.file.".grok/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
-  home.file.".config/opencode/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
+  home.file.".config/opencode/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
 
   programs.direnv = {
     enable = true;
