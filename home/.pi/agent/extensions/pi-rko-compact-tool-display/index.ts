@@ -29,7 +29,6 @@ import type {
   EditToolDetails,
   ExtensionAPI,
   ReadToolDetails,
-  ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
 import {
   createBashTool,
@@ -255,6 +254,13 @@ function renderSearchResult(result: any, { expanded, isPartial }: any, theme: an
 }
 
 // --- external tools ---
+interface ExternalSearchArgs {
+  pattern?: string;
+  path?: string;
+  limit?: number;
+  cursor?: string;
+}
+
 function renderTodoCall(args: any, theme: any, context?: any): Text {
   beginRenderedCall(context);
   const action = String(args.action || "...");
@@ -280,28 +286,39 @@ function renderTodoResult(result: any, { expanded, isPartial }: any, theme: any,
 }
 
 function registerExternalRenderers(pi: ExtensionAPI): void {
-  pi.registerToolRenderer("todo", {
-    renderShell: "self",
-    renderCall: renderTodoCall,
-    renderResult: renderTodoResult,
-  });
-  pi.registerToolRenderer("ffgrep", {
-    renderShell: "self",
-    renderCall: (args: any, theme: any, context?: any) => {
-      const extra = args.limit !== undefined ? ` (limit ${args.limit})` : args.cursor ? " (page)" : "";
-      return renderSearchCall(theme, "ffgrep", `/${args.pattern || ""}/`, getScope(args), extra, context);
-    },
-    renderResult: (result: any, options: any, theme: any, context?: any) =>
-      renderSearchResult(result, options, theme, "ffgrep", context),
-  });
-  pi.registerToolRenderer("fffind", {
-    renderShell: "self",
-    renderCall: (args: any, theme: any, context?: any) => {
-      const extra = args.limit !== undefined ? ` (limit ${args.limit})` : args.cursor ? " (page)" : "";
-      return renderSearchCall(theme, "fffind", args.pattern || "", getScope(args), extra, context);
-    },
-    renderResult: (result: any, options: any, theme: any, context?: any) =>
-      renderSearchResult(result, options, theme, "fffind", context),
+  pi.registerToolRenderer((toolName, next) => {
+    switch (toolName) {
+      case "todo":
+        return {
+          renderShell: "self",
+          renderCall: renderTodoCall,
+          renderResult: renderTodoResult,
+        };
+      case "ffgrep":
+        return {
+          renderShell: "self",
+          renderCall: (args, theme, context) => {
+            const searchArgs = args as ExternalSearchArgs;
+            const extra = searchArgs.limit !== undefined ? ` (limit ${searchArgs.limit})` : searchArgs.cursor ? " (page)" : "";
+            return renderSearchCall(theme, "ffgrep", `/${searchArgs.pattern || ""}/`, getScope(searchArgs), extra, context);
+          },
+          renderResult: (result, options, theme, context) =>
+            renderSearchResult(result, options, theme, "ffgrep", context),
+        };
+      case "fffind":
+        return {
+          renderShell: "self",
+          renderCall: (args, theme, context) => {
+            const searchArgs = args as ExternalSearchArgs;
+            const extra = searchArgs.limit !== undefined ? ` (limit ${searchArgs.limit})` : searchArgs.cursor ? " (page)" : "";
+            return renderSearchCall(theme, "fffind", searchArgs.pattern || "", getScope(searchArgs), extra, context);
+          },
+          renderResult: (result, options, theme, context) =>
+            renderSearchResult(result, options, theme, "fffind", context),
+        };
+      default:
+        return next();
+    }
   });
 }
 
@@ -535,26 +552,35 @@ function registerBuiltin(
     },
     renderCall: renderers.renderCall as any,
     renderResult: renderers.renderResult as any,
-  } as unknown as ToolDefinition);
+  });
 }
 
 function registerHashlineRenderers(pi: ExtensionAPI): void {
-  pi.registerToolRenderer("read", {
-    renderShell: "self",
-    renderCall: renderReadCall,
-    renderResult: renderReadResult,
-  });
-  pi.registerToolRenderer("replace", {
-    renderShell: "self",
-    renderCall: (args, theme, ctx) => renderHashlineCall("replace", args, theme, ctx),
-    renderResult: (result, options, theme, ctx) =>
-      renderHashlineResult(result, options, theme, ctx, "replace", "replacing"),
-  });
-  pi.registerToolRenderer("undo_last_replace", {
-    renderShell: "self",
-    renderCall: (args, theme, ctx) => renderHashlineCall("undo", args, theme, ctx),
-    renderResult: (result, options, theme, ctx) =>
-      renderHashlineResult(result, options, theme, ctx, "undo_last_replace", "undoing"),
+  pi.registerToolRenderer((toolName, next) => {
+    switch (toolName) {
+      case "read":
+        return {
+          renderShell: "self",
+          renderCall: renderReadCall,
+          renderResult: renderReadResult,
+        };
+      case "replace":
+        return {
+          renderShell: "self",
+          renderCall: (args, theme, ctx) => renderHashlineCall("replace", args, theme, ctx),
+          renderResult: (result, options, theme, ctx) =>
+            renderHashlineResult(result, options, theme, ctx, "replace", "replacing"),
+        };
+      case "undo_last_replace":
+        return {
+          renderShell: "self",
+          renderCall: (args, theme, ctx) => renderHashlineCall("undo", args, theme, ctx),
+          renderResult: (result, options, theme, ctx) =>
+            renderHashlineResult(result, options, theme, ctx, "undo_last_replace", "undoing"),
+        };
+      default:
+        return next();
+    }
   });
 }
 
