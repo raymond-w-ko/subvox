@@ -34,6 +34,11 @@
 
   environment.variables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
 
+  environment.systemPackages = with pkgs; [
+    docker
+    colima
+  ];
+
   environment.shells = with pkgs; [
     bash
     fish
