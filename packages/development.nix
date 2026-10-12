@@ -58,6 +58,7 @@ let
     fd
     jq
     ncdu
+    gdu
     imagemagick
     zip
     unzip

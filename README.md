@@ -7,6 +7,13 @@ through `home/common.nix`. NixOS hosts also enable `environment.localBinInPath`.
 Apply the configuration with `./scripts/rebuild switch <target>`, then start a new
 shell to pick up the updated path.
 
+## Disk usage
+
+All host and standalone Home Manager profiles include `gdu`, an interactive disk
+usage analyzer. It is supported on x86_64 Linux, aarch64 Linux, and aarch64 macOS.
+Run `gdu` to inspect the current directory or `gdu /path/to/directory` for another
+location.
+
 ## Docker on macOS
 
 The `macos` system configuration installs the Docker CLI and Colima. Colima runs
