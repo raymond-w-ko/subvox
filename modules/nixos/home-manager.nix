@@ -15,7 +15,7 @@
     };
 
     users.${user} = {
-      imports = [ ../../home/common.nix ];
+      imports = [ ../home/common.nix ];
       home.stateVersion = "26.05";
     };
   };

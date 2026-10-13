@@ -5,6 +5,6 @@
   services.neru = {
     enable = true;
     package = pkgs.neru-source;
-    config = builtins.readFile ../configs/neru-qwerty.toml;
+    config = builtins.readFile ../../configs/neru-qwerty.toml;
   };
 }

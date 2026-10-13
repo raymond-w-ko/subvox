@@ -68,9 +68,12 @@
         }:
         let
           platformGuiModule =
-            if nixpkgs.lib.hasSuffix "-darwin" system then ./home/darwin.nix else ./home/linux.nix;
+            if nixpkgs.lib.hasSuffix "-darwin" system then
+              ./modules/home/darwin.nix
+            else
+              ./modules/home/linux.nix;
           guiModules = nixpkgs.lib.optionals gui [
-            ./home/gui.nix
+            ./modules/home/gui.nix
             platformGuiModule
           ];
         in
@@ -78,7 +81,7 @@
           pkgs = packageConfig.mkPkgs system;
           extraSpecialArgs = specialArgs;
           modules = [
-            ./home/common.nix
+            ./modules/home/common.nix
           ]
           ++ guiModules
           ++ extraModules

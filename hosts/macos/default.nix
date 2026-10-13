@@ -53,9 +53,9 @@
     };
 
     users.${user}.imports = [
-      ../../home/common.nix
-      ../../home/gui.nix
-      ../../home/darwin.nix
+      ../../modules/home/common.nix
+      ../../modules/home/gui.nix
+      ../../modules/home/darwin.nix
     ];
   };
 }

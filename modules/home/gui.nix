@@ -2,7 +2,7 @@
 let
   repoDir = "${config.home.homeDirectory}/subvox";
   dotfilesDir = "${repoDir}/home";
-  guiPackages = import ../packages/gui.nix { inherit pkgs; };
+  guiPackages = import ../../packages/gui.nix { inherit pkgs; };
 in
 {
   home.packages = guiPackages.forHome;

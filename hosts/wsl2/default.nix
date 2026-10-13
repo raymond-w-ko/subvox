@@ -58,7 +58,7 @@
   environment.sessionVariables.GDK_BACKEND = "x11";
 
   home-manager.users.${user}.imports = [
-    ../../home/gui.nix
-    ../../home/linux.nix
+    ../../modules/home/gui.nix
+    ../../modules/home/linux.nix
   ];
 }

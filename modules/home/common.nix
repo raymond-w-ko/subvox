@@ -7,7 +7,7 @@
 let
   repoDir = "${config.home.homeDirectory}/subvox";
   dotfilesDir = "${repoDir}/home";
-  developmentPackages = import ../packages/development.nix { inherit pkgs inputs; };
+  developmentPackages = import ../../packages/development.nix { inherit pkgs inputs; };
 in
 {
   imports = [ ./starship.nix ];
