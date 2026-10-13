@@ -18,6 +18,25 @@ through `modules/home/common.nix`. NixOS hosts also enable
 `./scripts/rebuild switch <target>`, then start a new shell to pick up the updated
 path.
 
+## GitHub Actions artifacts
+
+`scripts/artifact-management.py` requires Python 3 and an authenticated `gh` CLI.
+By default, it lists artifacts across all repositories owned by the authenticated
+user, including private repositories. Organization repositories are excluded.
+Pass `OWNER/REPO` to list only that repository.
+
+```sh
+./scripts/artifact-management.py
+./scripts/artifact-management.py raymond-w-ko/fff
+./scripts/artifact-management.py --delete raymond-w-ko/fff
+```
+
+`--delete` permanently deletes every artifact in the explicitly named repository.
+It cannot delete across all repositories. The script fetches all artifact pages
+before deleting and stops on API errors. Successful deletions are not rolled back.
+
+Run the offline tests with `python3 -B -m unittest discover -s scripts -p 'test_artifact_management.py'`.
+
 ## Bun
 
 The shared overlay replaces `pkgs.bun` with `pkgs/bun/package.nix`, a local copy
