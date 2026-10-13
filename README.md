@@ -18,6 +18,20 @@ through `modules/home/common.nix`. NixOS hosts also enable
 `./scripts/rebuild switch <target>`, then start a new shell to pick up the updated
 path.
 
+## Bun
+
+The shared overlay replaces `pkgs.bun` with `pkgs/bun/package.nix`, a local copy
+of the upstream nixpkgs expression pinned to Bun 1.4.3 for a required bug fix.
+The archive SHA-256 hashes are verified for x86_64 Linux, aarch64 Linux, and
+aarch64 macOS. Both host configurations and standalone Home Manager profiles
+use this package, including `programs.bun`.
+
+The expression is based on
+[`pkgs/by-name/bu/bun/package.nix`](https://github.com/NixOS/nixpkgs/blob/4ba99f3209788ed04f01af38f77ddb803ad6ec63/pkgs/by-name/bu/bun/package.nix).
+It is vendored rather than fetched from a moving `master` URL during evaluation.
+To update the pin, change the version and all three archive hashes in
+`pkgs/bun/package.nix`. Apply it with `./scripts/rebuild switch <target>`.
+
 ## Disk usage
 
 All host and standalone Home Manager profiles include `gdu`, an interactive disk
