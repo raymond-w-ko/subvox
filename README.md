@@ -1,18 +1,31 @@
 # subvox
 
+## Home files
+
+`home/` mirrors the user's `$HOME` and holds static files that Home Manager
+symlinks or stages into matching home paths. Home Manager modules live in
+`modules/home/`, and package lists live in `packages/`.
+
+Deployment mappings are explicit in the Home Manager modules. For example,
+`~/.pi` links to `subvox/home/.pi`, making `subvox/home/.pi/agent` available at
+`~/.pi/agent`. The `home/.gdu.yaml` file is linked to `~/.gdu.yaml`.
+
 ## User executables
 
 All host and standalone Home Manager profiles add `$HOME/.local/bin` to `PATH`
-through `home/common.nix`. NixOS hosts also enable `environment.localBinInPath`.
-Apply the configuration with `./scripts/rebuild switch <target>`, then start a new
-shell to pick up the updated path.
+through `modules/home/common.nix`. NixOS hosts also enable
+`environment.localBinInPath`. Apply the configuration with
+`./scripts/rebuild switch <target>`, then start a new shell to pick up the updated
+path.
 
 ## Disk usage
 
 All host and standalone Home Manager profiles include `gdu`, an interactive disk
 usage analyzer. It is supported on x86_64 Linux, aarch64 Linux, and aarch64 macOS.
 Run `gdu` to inspect the current directory or `gdu /path/to/directory` for another
-location.
+location. The shared `home/.gdu.yaml` configuration enables background and
+parallel deletion, uses black text on a red background for the selected row,
+and uses white text on a purple background for marked entries.
 
 ## Docker on macOS
 

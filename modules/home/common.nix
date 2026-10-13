@@ -38,6 +38,7 @@ in
     config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".codex/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".pi/".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.pi";
+  home.file.".gdu.yaml".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.gdu.yaml";
   home.file.".grok/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
   home.file.".config/opencode/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${repoDir}/ai/AGENTS.md";
