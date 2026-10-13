@@ -33,6 +33,7 @@ in
       })
     ];
 
+  bun = final.callPackage ../pkgs/bun/package.nix { };
   mactop = prev.callPackage ../pkgs/mactop/package.nix { };
   raycast = prev.callPackage ../pkgs/raycast/package.nix { };
 
