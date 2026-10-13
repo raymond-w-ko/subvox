@@ -3,7 +3,7 @@ delete-in-parallel: true
 style:
   selected-row:
     text-color: black
-    background-color: "#ff0000"
+    background-color: blue
   marked:
-    text-color: white
-    background-color: "#6600cc"
+    text-color: black
+    background-color: red
