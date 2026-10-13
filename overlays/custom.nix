@@ -35,7 +35,6 @@ in
 
   bun = final.callPackage ../pkgs/bun/package.nix { };
   mactop = prev.callPackage ../pkgs/mactop/package.nix { };
-  raycast = prev.callPackage ../pkgs/raycast/package.nix { };
 
   inherit zigPackages zig;
   zig_0_13 = zigPackages."0.13";
