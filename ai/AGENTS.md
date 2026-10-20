@@ -1,5 +1,5 @@
 # AGENTS.md
 
-- If there is a GLOSSARY.md relevant to what we are working on, use it.
-- Explain things 80% of the way to ASD-STE100. Output in the spirit of law of ASD-STE100, not letter of the law.
-- When the user asks for an explaination, and the output is substantive, prefer output in HTML when the harness supports rendering it.
+- If the project has a GLOSSARY.md, read it first. Use its terms exactly in code, docs, and replies.
+- Write explanations in a loose ASD-STE100 style: short sentences, one idea per sentence, active voice, common words, and define each technical term at first use. Clarity is more important than strict compliance.
+- If an explanation is long (more than a few paragraphs, or it needs a table, diagram, or comparison) and the harness can render HTML, give it as HTML.
