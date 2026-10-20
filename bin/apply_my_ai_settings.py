@@ -781,7 +781,7 @@ def setting_claude_fff_mcp(state: State) -> None:
 def setting_codex_model(state: State) -> None:
     header("codex: model")
     for key, value in {
-        "model": "gpt-6-astra",
+        "model": "gpt-6.1-sol",
         "model_reasoning_effort": "high",
     }.items():
         ensure_entry(state, CODEX_CONFIG, [key], value, "codex")

@@ -26,6 +26,10 @@ Preview and apply from the repository root:
 ./bin/apply_my_ai_settings.py
 ```
 
+The Codex model step writes `model = "gpt-6.1-sol"` and
+`model_reasoning_effort = "high"` to `~/.codex/config.toml`, preserving unrelated
+settings. The config file must already exist.
+
 The fff-mcp step keeps `~/bin/fff-mcp` (`~/.local/bin/fff-mcp.exe` on Windows)
 at the newest stable release of [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff).
 It lists releases with `gh release list --json`, so the lookup uses the `gh` login

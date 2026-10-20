@@ -141,9 +141,16 @@ class GatewayTests(unittest.TestCase):
             claude = json.loads(self.files[app.CLAUDE_SETTINGS])
             self.assertEqual(claude["env"]["ANTHROPIC_BASE_URL"], "https://gateway.example.test")
 
-    def test_unrelated_codex_edit_does_not_leak_provider_token(self):
+    def test_codex_model_settings_preserve_provider_without_leaking_token(self):
+        before = tomlkit.parse(self.files[app.CODEX_CONFIG])
         with redirect_stdout(self.output):
-            app.setting_codex_model(app.State(False))
+            state = app.State(False)
+            app.setting_codex_model(state)
+        self.assertEqual(state.failures, 0)
+        config = tomlkit.parse(self.files[app.CODEX_CONFIG])
+        self.assertEqual(config["model"], "gpt-6.1-sol")
+        self.assertEqual(config["model_reasoning_effort"], "high")
+        self.assertEqual(config["model_providers"], before["model_providers"])
         self.assertNotIn("test-old-codex-key", self.output.getvalue())
 
     def test_missing_claude_settings_created_privately(self):
