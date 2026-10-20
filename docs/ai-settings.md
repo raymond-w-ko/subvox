@@ -84,6 +84,14 @@ on PATH; package command output is not echoed because it can contain local data.
 On Windows, the script skips `pi.sh` discovery, listing, and uninstalling.
 Pi model overrides and auth-file removal still run.
 
+The Claude plugin step keeps the Codex plugin installed and updated. Fable
+Advisor is commented out in the install list and is explicitly uninstalled when
+`fable-advisor@fable-advisor` is installed at user scope, including when disabled.
+The script uses `claude plugin uninstall ... --scope user` and queries the plugin
+list again to verify removal. Dry runs only report the planned uninstall. The
+Fable Advisor marketplace, project-scoped installations, and unrelated plugins
+are left intact. Restart Claude Code after removal to unload the plugin.
+
 The agents-md step enables Claude Code's built-in `agents-md` mod, which loads
 `AGENTS.md` files as project instructions. It runs independently of the gateway
 step. Claude Code 2.1.x ships the mod off behind the GrowthBook flag

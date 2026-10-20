@@ -56,8 +56,9 @@ AI_PROXY_CONFIG = HOME / ".config" / "ai" / "proxy.json"
 # (plugin id, marketplace name, github repo), managed through `claude plugin`
 CLAUDE_PLUGINS = [
     ("codex@openai-codex", "openai-codex", "openai/codex-plugin-cc"),
-    ("fable-advisor@fable-advisor", "fable-advisor", "raymond-w-ko/fable-advisor"),
+    # ("fable-advisor@fable-advisor", "fable-advisor", "raymond-w-ko/fable-advisor"),
 ]
+CLAUDE_UNINSTALL_PLUGINS = ["fable-advisor@fable-advisor"]
 WINDOWS = os.name == "nt"
 FFF_REPO = "dmtrKovalenko/fff"
 FFF_MCP_NAME = "fff-mcp.exe" if WINDOWS else "fff-mcp"
@@ -962,7 +963,41 @@ def ensure_claude_plugin(state: State, plugin_id: str, marketplace: str, repo: s
             state.fail(f"{plugin_id} still disabled after enable")
 
 
+def ensure_claude_plugin_absent(state: State, plugin_id: str) -> None:
+    """Remove a previously managed user plugin, leaving its marketplace intact."""
+    header(f"claude: remove plugin {plugin_id}")
+
+    def installed() -> bool:
+        plugins = claude_json("plugin", "list")
+        if not isinstance(plugins, list) or any(not isinstance(plugin, dict) for plugin in plugins):
+            raise ValueError("expected a plugin list")
+        return any(
+            plugin.get("id") == plugin_id and plugin.get("scope") == "user"
+            for plugin in plugins
+        )
+
+    try:
+        if not installed():
+            ok(f"{plugin_id} already absent (user scope)")
+            return
+        if state.dry_run:
+            would(f"claude plugin uninstall {plugin_id} --scope user")
+            return
+        if not claude_run("plugin", "uninstall", plugin_id, "--scope", "user"):
+            state.fail(f"cannot uninstall {plugin_id} (user scope)")
+            return
+        if installed():
+            state.fail(f"{plugin_id} still installed after uninstall (user scope)")
+            return
+    except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired):
+        state.fail(f"cannot check or uninstall {plugin_id} (user scope)")
+        return
+    fixed(f"uninstalled {plugin_id} (user scope; restart claude to apply)")
+
+
 def setting_claude_plugins(state: State) -> None:
+    for plugin_id in CLAUDE_UNINSTALL_PLUGINS:
+        ensure_claude_plugin_absent(state, plugin_id)
     for plugin_id, marketplace, repo in CLAUDE_PLUGINS:
         ensure_claude_plugin(state, plugin_id, marketplace, repo)
 

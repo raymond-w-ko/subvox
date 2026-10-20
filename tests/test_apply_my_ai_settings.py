@@ -457,6 +457,105 @@ class PiPluginTests(unittest.TestCase):
         self.assertNotIn("private-output", self.output.getvalue())
 
 
+class ClaudePluginRemovalTests(unittest.TestCase):
+    plugin_id = "fable-advisor@fable-advisor"
+
+    def setUp(self):
+        self.addCleanup(patch.stopall)
+        self.query = patch.object(app, "claude_json", return_value=[]).start()
+        self.run = patch.object(app, "claude_run", return_value=True).start()
+        self.output = io.StringIO()
+        self.plugin = {"id": self.plugin_id, "scope": "user", "enabled": True}
+
+    def apply(self, dry_run=False):
+        state = app.State(dry_run)
+        with redirect_stdout(self.output):
+            app.ensure_claude_plugin_absent(state, self.plugin_id)
+        return state
+
+    def test_absent_plugin_does_not_run_uninstall(self):
+        self.assertEqual(self.apply().failures, 0)
+        self.query.assert_called_once_with("plugin", "list")
+        self.run.assert_not_called()
+
+    def test_installed_or_disabled_plugin_is_uninstalled_and_verified(self):
+        for enabled in (True, False):
+            with self.subTest(enabled=enabled):
+                self.plugin["enabled"] = enabled
+                self.query.reset_mock()
+                self.run.reset_mock()
+                self.query.side_effect = [[self.plugin], []]
+                self.assertEqual(self.apply().failures, 0)
+                self.run.assert_called_once_with(
+                    "plugin", "uninstall", self.plugin_id, "--scope", "user"
+                )
+                self.assertEqual(self.query.call_args_list, [call("plugin", "list")] * 2)
+
+    def test_project_and_unrelated_plugins_are_not_removed(self):
+        self.query.return_value = [
+            {"id": self.plugin_id, "scope": "project"},
+            {"id": "codex@openai-codex", "scope": "user"},
+        ]
+        self.assertEqual(self.apply().failures, 0)
+        self.run.assert_not_called()
+
+    def test_dry_run_only_queries_and_reports_uninstall(self):
+        self.query.return_value = [self.plugin]
+        self.assertEqual(self.apply(dry_run=True).failures, 0)
+        self.query.assert_called_once_with("plugin", "list")
+        self.run.assert_not_called()
+        self.assertIn(f"claude plugin uninstall {self.plugin_id} --scope user", self.output.getvalue())
+        self.assertNotIn("FIXED", self.output.getvalue())
+
+    def test_successful_exit_without_removal_is_failure(self):
+        self.query.return_value = [self.plugin]
+        self.assertEqual(self.apply().failures, 1)
+        self.assertEqual(self.query.call_count, 2)
+        self.assertIn("still installed after uninstall", self.output.getvalue())
+        self.assertNotIn("FIXED", self.output.getvalue())
+
+    def test_uninstall_nonzero_exit_is_failure(self):
+        self.query.return_value = [self.plugin]
+        self.run.return_value = False
+        self.assertEqual(self.apply().failures, 1)
+        self.query.assert_called_once_with("plugin", "list")
+        self.assertNotIn("FIXED", self.output.getvalue())
+
+    def test_query_errors_prevent_uninstall(self):
+        for error in (OSError(), RuntimeError(), ValueError(),
+                      subprocess.TimeoutExpired("claude", 60)):
+            with self.subTest(error=type(error)):
+                self.query.side_effect = error
+                self.assertEqual(self.apply().failures, 1)
+                self.run.assert_not_called()
+
+    def test_malformed_listing_is_failure(self):
+        for listing in (None, {}, "invalid", [None]):
+            with self.subTest(listing=listing):
+                self.query.return_value = listing
+                self.assertEqual(self.apply().failures, 1)
+                self.run.assert_not_called()
+
+    def test_uninstall_and_verification_errors_are_reported(self):
+        self.query.return_value = [self.plugin]
+        self.run.side_effect = subprocess.TimeoutExpired("claude", 180)
+        self.assertEqual(self.apply().failures, 1)
+        self.run.side_effect = None
+        self.query.side_effect = [[self.plugin], RuntimeError("verification failed")]
+        self.assertEqual(self.apply().failures, 1)
+        self.assertNotIn("FIXED", self.output.getvalue())
+
+    def test_settings_remove_fable_without_reinstalling_it(self):
+        with patch.object(app, "ensure_claude_plugin") as install:
+            state = app.State(False)
+            with redirect_stdout(self.output):
+                app.setting_claude_plugins(state)
+        self.assertEqual(state.failures, 0)
+        self.assertIn(self.plugin_id, app.CLAUDE_UNINSTALL_PLUGINS)
+        self.assertNotIn(self.plugin_id, [entry[0] for entry in app.CLAUDE_PLUGINS])
+        install.assert_called_once_with(state, "codex@openai-codex", "openai-codex", "openai/codex-plugin-cc")
+
+
 class SkillSymlinkTests(unittest.TestCase):
     """Use an in-memory filesystem; never touch the user's skill directories."""
 
