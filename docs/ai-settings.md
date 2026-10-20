@@ -100,15 +100,21 @@ next context build (new conversation, `/clear`, or compaction). Verify with
 `claude -p --tools "" --strict-mcp-config` in a repository holding only an
 `AGENTS.md`.
 
-The skills step runs `ai/skills/symlink-skills.sh` (or `symlink-skills.ps1` on
-Windows) to link every skill directory under `ai/skills/` into `~/.codex/skills`
-(or `$CODEX_HOME/skills`), `~/.agents/skills`, and `~/.claude/skills`. Skills
-already linked are counted, links that are broken or point elsewhere are
-reported as warnings, and `claude-subagent` and `fable-subagent` are skipped for
-the Claude target because they spawn Claude. Dry runs pass `--dry-run`
-(`-DryRun` on Windows) to the helper so no directory or link is created. The
-helper scripts remain the single source of truth for targets and skip rules and
-can still be run on their own.
+The skills step directly links every skill directory containing `SKILL.md`
+under `ai/skills/` into `~/.codex/skills` (or `$CODEX_HOME/skills`),
+`~/.agents/skills`, and `~/.claude/skills`. No shell or PowerShell helper is
+needed. On Windows, creating symbolic links requires Developer Mode or an
+account with symlink privileges; failures are reported without replacing entries.
+
+Before linking, the script removes dangling symlinks directly inside each target
+skill directory, including links left behind by removed skills. It does not
+recurse into skill directories or delete real files, real directories, or valid
+links. A dangling link for a current skill is removed and recreated with the
+correct target. Correct links are counted; existing files, directories, and links
+pointing elsewhere are preserved and reported as warnings. Directories without
+`SKILL.md` are skipped with a warning. `claude-subagent` and `fable-subagent` are
+skipped for the Claude target because they spawn Claude. Dry runs report cleanup
+and linking without creating directories, removing links, or writing files.
 
 Use builtin `openai` for GPT models, builtin `xai` for Grok models, and builtin
 `anthropic` for Claude models.

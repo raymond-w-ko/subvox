@@ -1006,80 +1006,77 @@ def setting_claude_agents_md(state: State) -> None:
 
 
 def setting_skill_symlinks(state: State) -> None:
-    """Link shared skills into Codex, Agents, and Claude skill directories.
-    The helper links directories under ai/skills into each harness skill directory.
-    The shell/PowerShell helper stays the single source of truth for the target list and skip rules.
-    Dry-run mode passes through to the helper without creating directories or links.
-    """
+    """Link shared skills and remove dangling links in each target's top level."""
     header("skills: symlink shared skills into codex, agents, and claude")
-    script = SKILLS_DIR / ("symlink-skills.ps1" if WINDOWS else "symlink-skills.sh")
-    if not script.is_file():
-        state.fail(f"skills: {script} is missing")
-        return
-
-    if WINDOWS:
-        executable = shutil.which("pwsh") or shutil.which("powershell")
-        if executable is None:
-            state.fail("skills: pwsh or powershell not on PATH")
-            return
-        cmd = [executable, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script)]
-        if state.dry_run:
-            cmd.append("-DryRun")
-    else:
-        cmd = ["bash", str(script)]
-        if state.dry_run:
-            cmd.append("--dry-run")
-
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
-    except (OSError, subprocess.TimeoutExpired) as error:
-        state.fail(f"skills: cannot run {script.name}: {error}")
-        return
-    if result.returncode != 0:
-        stderr = next((line.strip() for line in reversed(result.stderr.splitlines()) if line.strip()), "(no stderr)")
-        state.fail(f"skills: {script.name} exited {result.returncode}: {stderr}")
+        sources = sorted(SKILLS_DIR.iterdir())
+    except OSError as error:
+        state.fail(f"skills: cannot read {SKILLS_DIR}: {error}")
         return
 
-    target: str | None = None
-    existing = 0
-    missing_manifest: set[str] = set()
-    for raw_line in result.stdout.splitlines():
-        line = raw_line.rstrip()
-        if not line:
+    skills = []
+    for source in sources:
+        if not source.is_dir():
             continue
-        if line.startswith("== ") and line.endswith(" =="):
-            if target is not None:
-                ok(f"skills: {target}: {existing} already linked")
-            target = line[3:-3]
-            existing = 0
-        elif line.startswith("linked: "):
-            dest = line[len("linked: ") :].split(" -> ", 1)[0]
-            fixed(f"skills: linked {dest}")
-        elif line.startswith("would link: "):
-            dest = line[len("would link: ") :].split(" -> ", 1)[0]
-            would(f"skills: link {dest}")
-        elif line.startswith("exists: "):
-            dest = line[len("exists: ") :]
-            existing += 1
-            dest_path = Path(dest)
-            expected = SKILLS_DIR / dest_path.name
-            if not dest_path.exists():
-                state.warn(f"skills: {dest} is a broken link")
-            elif dest_path.resolve() != expected.resolve():
-                state.warn(f"skills: {dest} points at {dest_path.resolve()}, not {expected}")
-        elif line.startswith("skip (Claude subagent skill): "):
-            path = line[len("skip (Claude subagent skill): ") :]
-            skill_name = Path(path.rstrip("/\\")).name
-            info(f"skills: skipped Claude subagent skill {skill_name} for {target}")
-        elif line.startswith("skip (no SKILL.md): "):
-            path = line[len("skip (no SKILL.md): ") :]
-            # the helper reports this once per target; warn once per directory
-            if path not in missing_manifest:
-                missing_manifest.add(path)
-                state.warn(f"skills: {path} has no SKILL.md")
-        else:
-            state.warn(f"skills: unexpected line from {script.name}: {line}")
-    if target is not None:
+        if not (source / "SKILL.md").is_file():
+            state.warn(f"skills: {source} has no SKILL.md")
+            continue
+        skills.append(source)
+
+    claude_target = HOME / ".claude" / "skills"
+    targets = [
+        Path(os.environ.get("CODEX_HOME") or HOME / ".codex").expanduser() / "skills",
+        HOME / ".agents" / "skills",
+        claude_target,
+    ]
+    for target in dict.fromkeys(targets):
+        try:
+            if not state.dry_run:
+                target.mkdir(parents=True, exist_ok=True)
+            entries = sorted(target.iterdir()) if target.exists() else []
+        except OSError as error:
+            state.fail(f"skills: cannot access {target}: {error}")
+            continue
+
+        removed = set()
+        for entry in entries:
+            if not entry.is_symlink():
+                continue
+            try:
+                try:
+                    entry.stat()
+                except FileNotFoundError:
+                    # Unlink only the dangling link, never its target or real entries.
+                    if state.dry_run:
+                        would(f"skills: remove broken symlink {entry}")
+                    else:
+                        entry.unlink()
+                        fixed(f"skills: removed broken symlink {entry}")
+                    removed.add(entry)
+            except OSError as error:
+                state.fail(f"skills: cannot check or remove {entry}: {error}")
+
+        existing = 0
+        for source in skills:
+            if target == claude_target and source.name in ("claude-subagent", "fable-subagent"):
+                info(f"skills: skipped Claude subagent skill {source.name} for {target}")
+                continue
+            dest = target / source.name
+            try:
+                # Dry runs must model cleanup without changing the filesystem.
+                if dest not in removed and (dest.exists() or dest.is_symlink()):
+                    if dest.is_symlink() and dest.resolve() == source.resolve():
+                        existing += 1
+                    else:
+                        state.warn(f"skills: keeping existing {dest}; expected a symlink to {source}")
+                    continue
+                if state.dry_run:
+                    would(f"skills: link {dest} -> {source}")
+                else:
+                    dest.symlink_to(source, target_is_directory=True)
+                    fixed(f"skills: linked {dest} -> {source}")
+            except OSError as error:
+                state.fail(f"skills: cannot link {dest}: {error}")
         ok(f"skills: {target}: {existing} already linked")
 
 

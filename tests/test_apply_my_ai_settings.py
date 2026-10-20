@@ -457,5 +457,165 @@ class PiPluginTests(unittest.TestCase):
         self.assertNotIn("private-output", self.output.getvalue())
 
 
+class SkillSymlinkTests(unittest.TestCase):
+    """Use an in-memory filesystem; never touch the user's skill directories."""
+
+    def setUp(self):
+        self.home = Path("/test-home")
+        self.source = Path("/test-repo/ai/skills")
+        self.targets = [self.home / name / "skills" for name in (".codex", ".agents", ".claude")]
+        self.directories = {self.source}
+        self.files = set()
+        self.links = {}
+        self.output = io.StringIO()
+        self.addCleanup(patch.stopall)
+        patch.object(app, "HOME", self.home).start()
+        patch.object(app, "SKILLS_DIR", self.source).start()
+        patch.dict(app.os.environ, {"CODEX_HOME": ""}).start()
+        patch.object(Path, "iterdir", lambda path: self.iterdir(path)).start()
+        patch.object(Path, "exists", lambda path: self.exists(path)).start()
+        patch.object(Path, "is_dir", lambda path: path in self.directories).start()
+        patch.object(Path, "is_file", lambda path: path in self.files).start()
+        patch.object(Path, "is_symlink", lambda path: path in self.links).start()
+        patch.object(Path, "resolve", lambda path: self.links.get(path, path)).start()
+        patch.object(Path, "stat", lambda path: self.stat(path)).start()
+        self.mkdir = patch.object(Path, "mkdir", autospec=True).start()
+        self.mkdir.side_effect = lambda path, **kwargs: self.directories.add(path)
+        self.unlink = patch.object(Path, "unlink", autospec=True).start()
+        self.unlink.side_effect = lambda path: self.links.pop(path)
+        self.symlink = patch.object(Path, "symlink_to", autospec=True).start()
+        self.symlink.side_effect = lambda path, source, **kwargs: self.links.update({path: source})
+        self.run = patch.object(app.subprocess, "run").start()
+
+    def exists(self, path):
+        resolved = self.links.get(path, path)
+        return resolved in self.directories or resolved in self.files
+
+    def stat(self, path):
+        if not self.exists(path):
+            raise FileNotFoundError(str(path))
+        return object()
+
+    def iterdir(self, path):
+        if path not in self.directories:
+            raise FileNotFoundError(str(path))
+        return iter(entry for entry in self.directories | self.files | self.links.keys()
+                    if entry.parent == path)
+
+    def add_skill(self, name="review", manifest=True):
+        source = self.source / name
+        self.directories.add(source)
+        if manifest:
+            self.files.add(source / "SKILL.md")
+        return source
+
+    def apply(self, dry_run=False):
+        state = app.State(dry_run)
+        with redirect_stdout(self.output):
+            app.setting_skill_symlinks(state)
+        self.run.assert_not_called()
+        return state
+
+    def test_links_all_targets_and_is_idempotent(self):
+        source = self.add_skill()
+        self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(self.links, {target / source.name: source for target in self.targets})
+        self.assertEqual(self.symlink.call_count, 3)
+        self.assertEqual(self.apply().warnings, 0)
+        self.assertEqual(self.symlink.call_count, 3)
+        self.symlink.assert_called_with(self.targets[-1] / source.name, source, target_is_directory=True)
+
+    def test_codex_home_override(self):
+        source = self.add_skill()
+        with patch.dict(app.os.environ, {"CODEX_HOME": "/custom-codex"}):
+            self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(self.links[Path("/custom-codex/skills/review")], source)
+        self.assertNotIn(self.targets[0], self.directories)
+
+    def test_skip_missing_manifest_and_claude_subagents(self):
+        self.add_skill("no-manifest", manifest=False)
+        for name in ("claude-subagent", "fable-subagent"):
+            self.add_skill(name)
+        state = self.apply()
+        self.assertEqual(state.warnings, 1)
+        self.assertEqual(len(self.links), 4)
+        self.assertFalse(any(path.parent == self.targets[2] for path in self.links))
+
+    def test_removes_deleted_skills_and_repairs_current_skill(self):
+        source = self.add_skill()
+        self.directories.update(self.targets)
+        stale = self.targets[0] / "removed-skill"
+        broken_current = self.targets[0] / source.name
+        self.links.update({stale: self.source / "removed-skill",
+                           broken_current: Path("/old-checkout/review")})
+        self.assertEqual(self.apply().failures, 0)
+        self.assertNotIn(stale, self.links)
+        self.assertEqual(self.links[broken_current], source)
+        self.assertCountEqual(self.unlink.call_args_list, [call(stale), call(broken_current)])
+
+    def test_preserves_real_entries_valid_foreign_links_and_nested_links(self):
+        source = self.add_skill()
+        self.directories.update(self.targets)
+        local_dir = self.targets[0] / source.name
+        local_file = self.targets[1] / source.name
+        foreign_link = self.targets[2] / source.name
+        foreign_source = Path("/other-skills/review")
+        self.directories.update({local_dir, foreign_source})
+        self.files.add(local_file)
+        self.links[foreign_link] = foreign_source
+        nested = local_dir / "nested-broken-link"
+        self.links[nested] = Path("/missing")
+        before = self.links.copy()
+        self.assertEqual(self.apply().warnings, 3)
+        self.assertEqual(self.links, before)
+        self.unlink.assert_not_called()
+        self.symlink.assert_not_called()
+
+    def test_dry_run_reports_cleanup_and_relink_without_mutation(self):
+        self.add_skill()
+        self.directories.add(self.targets[0])
+        broken = self.targets[0] / "review"
+        self.links[broken] = Path("/missing")
+        before = self.links.copy()
+        self.assertEqual(self.apply(dry_run=True).failures, 0)
+        self.assertEqual(self.links, before)
+        self.assertIn("remove broken symlink", self.output.getvalue())
+        self.assertEqual(self.output.getvalue().count("skills: link "), 3)
+        self.mkdir.assert_not_called()
+        self.unlink.assert_not_called()
+        self.symlink.assert_not_called()
+
+    def test_missing_source_does_not_clean_targets(self):
+        self.directories.remove(self.source)
+        self.assertEqual(self.apply().failures, 1)
+        self.mkdir.assert_not_called()
+        self.unlink.assert_not_called()
+        self.symlink.assert_not_called()
+
+    def test_link_failure_does_not_stop_other_targets(self):
+        self.add_skill()
+        self.symlink.side_effect = [PermissionError("symlink privilege required"), None, None]
+        self.assertEqual(self.apply().failures, 1)
+        self.assertEqual(self.symlink.call_count, 3)
+
+    def test_unlink_failure_preserves_broken_link(self):
+        self.add_skill()
+        self.directories.add(self.targets[0])
+        broken = self.targets[0] / "review"
+        self.links[broken] = Path("/missing")
+        self.unlink.side_effect = PermissionError("cannot unlink")
+        state = self.apply()
+        self.assertEqual(state.failures, 1)
+        self.assertEqual(self.links[broken], Path("/missing"))
+        self.assertEqual(self.symlink.call_count, 2)
+
+    def test_stat_permission_error_is_not_treated_as_dangling(self):
+        self.directories.add(self.targets[0])
+        self.links[self.targets[0] / "inaccessible"] = Path("/private")
+        with patch.object(Path, "stat", side_effect=PermissionError("cannot stat")):
+            self.assertEqual(self.apply().failures, 1)
+        self.unlink.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
