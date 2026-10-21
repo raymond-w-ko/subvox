@@ -26,6 +26,11 @@ in
           };
         });
 
+        # Fixed-port tests can collide with other builds or services on Darwin.
+        pytest-httpbin = python-prev.pytest-httpbin.overridePythonAttrs (old: {
+          disabledTests = (old.disabledTests or [ ]) ++ [ "test_fixed_port_environment_variables" ];
+        });
+
         # Upstream race: https://github.com/ipython/ipython/issues/12164
         ipython = python-prev.ipython.overridePythonAttrs (old: {
           disabledTests = (old.disabledTests or [ ]) ++ [ "test_system_interrupt" ];
