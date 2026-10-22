@@ -208,7 +208,7 @@ in
     enableZshIntegration = true;
     enableFishIntegration = true;
     shellWrapperName = "lg";
-    settings.gui.theme.lightTheme = false;
+    settings.gui.theme.lightTheme = true;
   };
 
   programs.neovim = {
