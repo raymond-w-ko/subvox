@@ -2,7 +2,7 @@
 local function set_hl()
   vim.api.nvim_set_hl(0, "LeapLabel", { fg = "#000000", bg = "#ffff00", ctermfg = 11 })
   vim.api.nvim_set_hl(0, "LeapMatch", {})
-  vim.api.nvim_set_hl(0, "LeapBackdropDim", { fg = "#6c6c6c", ctermfg = 242, nocombine = true })
+  vim.api.nvim_set_hl(0, "LeapBackdropDim", { fg = "#6c6c6c", ctermfg = 8, nocombine = true })
 end
 
 local function apply_colors()
