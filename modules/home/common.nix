@@ -74,7 +74,7 @@ in
     enable = true;
     interactiveShellInit = ''
       set fish_greeting
-      fish_config theme choose base16-default
+      fish_config theme choose default-rgb
       set -gx fish_prompt_pwd_dir_length 3
       set -gx fish_prompt_pwd_full_dirs 3
 
