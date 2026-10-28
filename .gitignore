@@ -25,6 +25,7 @@ home/.pi/agent/*.jsonl
 home/.pi/agent/models-store.json
 
 home/.pi/web-search-cache/
+home/.pi/agent/pi-web-access/
 
 # machine-specific, not general
 home/.pi/agent/powerline-footer/
