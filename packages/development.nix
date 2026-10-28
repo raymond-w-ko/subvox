@@ -110,6 +110,9 @@ let
     # ai tools
     inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     claude-code
+
+    # lean
+    lean4
   ];
 
   linux = with pkgs; [
