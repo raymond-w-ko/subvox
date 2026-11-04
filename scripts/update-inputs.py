@@ -16,16 +16,24 @@ import hashlib
 import json
 import os
 import platform
+import re
+import select
 import shlex
 import shutil
+import sys
 import tempfile
+import termios
+import time
+import tty
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from rich.color import Color
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
+from textual.theme import Theme
 from textual.widgets import Button, Checkbox, Footer, Header, Label, RichLog, Static
 
 HIGH_FREQUENCY = ("neru", "claude-code", "codex-cli-nix")
@@ -36,6 +44,103 @@ GROUPS = {
     "core": CORE,
     "all": ALL_INPUTS,
 }
+
+
+# Base colors are exact xterm-256 palette entries. The launcher also selects
+# 256-color output so Textual's generated shades use the same palette.
+UPDATE_THEMES = {
+    "dark": Theme(
+        name="subvox-dark",
+        dark=True,
+        primary="#5fafff",  # 75
+        secondary="#af87ff",  # 141
+        accent="#5fd7d7",  # 80
+        foreground="#eeeeee",  # 255
+        background="#1c1c1c",  # 234
+        surface="#262626",  # 235
+        panel="#303030",  # 236
+        success="#87d75f",  # 113
+        warning="#ffd75f",  # 221
+        error="#ff5f5f",  # 203
+        variables={"button-color-foreground": "#1c1c1c"},
+    ),
+    "light": Theme(
+        name="subvox-light",
+        dark=False,
+        primary="#005faf",  # 25
+        secondary="#8700af",  # 91
+        accent="#005f87",  # 24
+        foreground="#262626",  # 235
+        background="#eeeeee",  # 255
+        surface="#e4e4e4",  # 254
+        panel="#dadada",  # 253
+        success="#008700",  # 28
+        warning="#875f00",  # 94
+        error="#af0000",  # 124
+        variables={"button-color-foreground": "#ffffff"},  # 231
+    ),
+}
+
+
+BACKGROUND_RESPONSE = re.compile(
+    rb"\x1b\]11;rgb:([0-9a-fA-F]{1,4})/([0-9a-fA-F]{1,4})/"
+    rb"([0-9a-fA-F]{1,4})(?:\x07|\x1b\\)"
+)
+
+
+def query_terminal_background() -> tuple[float, float, float] | None:
+    """Ask the terminal for its RGB background with OSC 11 (200 ms limit)."""
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        return None
+    try:
+        with open("/dev/tty", "r+b", buffering=0) as terminal:
+            fd = terminal.fileno()
+            # Do not consume keys that the user has already typed.
+            if select.select([fd], [], [], 0)[0]:
+                return None
+            attributes = termios.tcgetattr(fd)
+            try:
+                tty.setcbreak(fd, termios.TCSANOW)
+                terminal.write(b"\x1b]11;?\x1b\\")
+                deadline = time.monotonic() + 0.2
+                response = bytearray()
+                while len(response) < 128:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0 or not select.select([fd], [], [], remaining)[0]:
+                        break
+                    byte = terminal.read(1)
+                    if not byte:
+                        break
+                    response.extend(byte)
+                    match = BACKGROUND_RESPONSE.search(response)
+                    if match:
+                        return tuple(
+                            int(component, 16) / (16 ** len(component) - 1)
+                            for component in match.groups()
+                        )
+            finally:
+                termios.tcsetattr(fd, termios.TCSANOW, attributes)
+    except (OSError, termios.error):
+        pass
+    return None
+
+
+def detect_terminal_theme() -> str:
+    """Use the terminal background, then COLORFGBG, then a dark fallback."""
+    background = query_terminal_background()
+    if background is None:
+        try:
+            index = int(os.environ.get("COLORFGBG", "").split(";")[-1])
+            if 0 <= index <= 255:
+                color = Color.from_ansi(index).get_truecolor()
+                background = tuple(component / 255 for component in color)
+        except ValueError:
+            pass
+    if background is None:
+        return "dark"
+    red, green, blue = background
+    brightness = 0.299 * red + 0.587 * green + 0.114 * blue
+    return "light" if brightness >= 0.5 else "dark"
 
 
 @dataclass(frozen=True)
@@ -202,6 +307,7 @@ class UpdateInputsApp(App[None]):
 
     BINDINGS = [
         ("q", "quit", "Quit"),
+        ("t", "toggle_update_theme", "Light/dark"),
         ("g", "generate", "Generate"),
         ("v", "validate", "Validate"),
         ("a", "apply", "Apply"),
@@ -210,9 +316,16 @@ class UpdateInputsApp(App[None]):
     ]
 
     def __init__(
-        self, initial_selection: set[str], system_target: SystemTarget
+        self,
+        initial_selection: set[str],
+        system_target: SystemTarget,
+        theme: str = "auto",
     ) -> None:
         super().__init__()
+        for update_theme in UPDATE_THEMES.values():
+            self.register_theme(update_theme)
+        mode = detect_terminal_theme() if theme == "auto" else theme
+        self.theme = UPDATE_THEMES[mode].name
         self.initial_selection = initial_selection
         self.system_target = system_target
         self.repo = Path(__file__).resolve().parent.parent
@@ -266,6 +379,10 @@ class UpdateInputsApp(App[None]):
             f"explicit rebuild target: {self.system_target.target}"
         )
         self.write_log(f"Repository: {self.repo}")
+
+    def action_toggle_update_theme(self) -> None:
+        mode = "light" if self.current_theme.dark else "dark"
+        self.theme = UPDATE_THEMES[mode].name
 
     def selected_inputs(self) -> tuple[str, ...]:
         return tuple(
@@ -543,13 +660,19 @@ def main() -> None:
         nargs="*",
         help="initial groups or inputs; defaults to the high-frequency group",
     )
+    parser.add_argument(
+        "--theme",
+        choices=("auto", *UPDATE_THEMES),
+        default="auto",
+        help="initial color theme (default: auto-detect); press t to toggle",
+    )
     arguments = parser.parse_args()
     try:
         selected = parse_initial_selection(arguments.selection)
         system_target = current_system_target()
     except ValueError as error:
         parser.error(str(error))
-    UpdateInputsApp(selected, system_target).run()
+    UpdateInputsApp(selected, system_target, theme=arguments.theme).run()
 
 
 if __name__ == "__main__":

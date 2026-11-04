@@ -2,4 +2,6 @@
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+# Quantize all UI colors, including Textual's derived shades, to xterm-256.
+export TEXTUAL_COLOR_SYSTEM="${TEXTUAL_COLOR_SYSTEM:-256}"
 exec uv run scripts/update-inputs.py "$@"
