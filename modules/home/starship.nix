@@ -37,7 +37,7 @@
         "$character"
       ];
       # Switch to any palette defined below: Catppuccin or Ayu.
-      palette = "ayu_light";
+      palette = "ayu_mirage";
       os = {
         disabled = false;
         style = "bg:red fg:crust";
