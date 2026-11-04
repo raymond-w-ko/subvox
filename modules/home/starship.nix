@@ -1,132 +1,76 @@
 { lib, ... }:
-let
-  languageModules = [
-    "c"
-    "cpp"
-    "rust"
-    "golang"
-    "nodejs"
-    "php"
-    "java"
-    "kotlin"
-    "haskell"
-    "python"
-  ];
-
-  languageSymbols = {
-    c = "";
-    cpp = "";
-    rust = "";
-    golang = "";
-    nodejs = "";
-    php = "";
-    java = "";
-    kotlin = "";
-    haskell = "";
-    python = "";
-  };
-in
 {
   programs.starship = {
     enable = true;
     enableFishIntegration = true;
     enableBashIntegration = true;
+    # Catppuccin Powerline: https://starship.rs/presets/catppuccin-powerline
     settings = {
+      "$schema" = "https://starship.rs/config-schema.json";
       format = lib.concatStrings [
-        "[](blue)"
+        "[](red)"
         "$os"
         "$username"
-        "$hostname"
-        "[](bg:peach fg:blue)"
+        "[](bg:peach fg:red)"
         "$directory"
         "[](bg:yellow fg:peach)"
         "$git_branch"
-        "$git_commit"
-        "$git_state"
         "$git_status"
-        "$git_metrics"
-        "[](bg:green fg:yellow)"
+        "[](fg:yellow bg:green)"
         "$c"
-        "$cpp"
         "$rust"
         "$golang"
         "$nodejs"
+        "$bun"
         "$php"
         "$java"
         "$kotlin"
         "$haskell"
         "$python"
-        "$nix_shell"
-        "$direnv"
-        "[](bg:lavender fg:green)"
-        "$cmd_duration"
-        "$jobs"
-        "$status"
+        "[](fg:green bg:sapphire)"
+        "$conda"
+        "[](fg:sapphire bg:lavender)"
         "$time"
         "[ ](fg:lavender)"
+        "$cmd_duration"
         "$line_break"
         "$character"
       ];
-
-      palette = "catppuccin_mocha";
-
-      palettes.catppuccin_mocha = {
-        rosewater = "#f5e0dc";
-        flamingo = "#f2cdcd";
-        pink = "#f5c2e7";
-        mauve = "#cba6f7";
-        red = "#f38ba8";
-        maroon = "#eba0ac";
-        peach = "#fab387";
-        yellow = "#f9e2af";
-        green = "#a6e3a1";
-        teal = "#94e2d5";
-        sky = "#89dceb";
-        sapphire = "#74c7ec";
-        blue = "#89b4fa";
-        lavender = "#b4befe";
-        text = "#cdd6f4";
-        subtext1 = "#bac2de";
-        subtext0 = "#a6adc8";
-        overlay2 = "#9399b2";
-        overlay1 = "#7f849c";
-        overlay0 = "#6c7086";
-        surface2 = "#585b70";
-        surface1 = "#45475a";
-        surface0 = "#313244";
-        base = "#1e1e2e";
-        mantle = "#181825";
-        crust = "#11111b";
-      };
-
+      palette = "catppuccin_latte";
       os = {
         disabled = false;
-        style = "bg:blue fg:crust";
-        format = "[ $symbol]($style)";
+        style = "bg:red fg:crust";
         symbols = {
-          NixOS = "";
-          Macos = "";
-          Linux = "";
-          Ubuntu = "";
-          Debian = "";
-          Arch = "";
-          Windows = "";
+          Windows = " ";
+          Ubuntu = "󰕈 ";
+          SUSE = " ";
+          Raspbian = "󰐿 ";
+          Mint = "󰣭 ";
+          Macos = "󰀵 ";
+          Manjaro = " ";
+          Linux = "󰌽 ";
+          Gentoo = "󰣨 ";
+          Fedora = "󰣛 ";
+          Alpine = " ";
+          Amazon = " ";
+          Android = " ";
+          AOSC = " ";
+          Arch = "󰣇 ";
+          Artix = "󰣇 ";
+          CachyOS = " ";
+          CentOS = " ";
+          Debian = "󰣚 ";
+          Redhat = "󱄛 ";
+          RedHatEnterprise = "󱄛 ";
+          Void = " ";
         };
       };
-
       username = {
         show_always = true;
-        style_user = "bg:blue fg:crust";
-        style_root = "bg:blue fg:crust";
+        style_user = "bg:red fg:crust";
+        style_root = "bg:red fg:crust";
         format = "[$user]($style)";
       };
-
-      hostname = {
-        ssh_only = false;
-        style = "bg:blue fg:crust";
-        format = "[@$hostname ]($style)";
-      };
-
       directory = {
         style = "bg:peach fg:crust";
         format = "[ $path ]($style)";
@@ -134,129 +78,147 @@ in
         truncation_symbol = "…/";
         substitutions = {
           Documents = "󰈙 ";
-          Downloads = "󰉍 ";
+          Downloads = " ";
           Music = "󰝚 ";
-          Pictures = "󰉏 ";
+          Pictures = " ";
           Developer = "󰲋 ";
         };
       };
-
       git_branch = {
         symbol = "";
         style = "bg:yellow";
         format = "[[ $symbol $branch ](fg:crust bg:yellow)]($style)";
       };
-
-      git_commit = {
-        disabled = false;
-        only_detached = true;
-        tag_disabled = false;
-        tag_symbol = " ";
-        style = "bg:yellow";
-        format = "[[ $hash$tag ](fg:crust bg:yellow)]($style)";
-      };
-
-      git_state = {
-        disabled = false;
-        style = "bg:yellow";
-        format = "[[ $state( $progress_current/$progress_total) ](fg:crust bg:yellow)]($style)";
-        rebase = "REBASING";
-        merge = "MERGING";
-        revert = "REVERTING";
-        cherry_pick = "PICKING";
-        bisect = "BISECTING";
-        am = "AM";
-        am_or_rebase = "AM/REBASE";
-      };
-
       git_status = {
         style = "bg:yellow";
         format = "[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)";
       };
-
-      git_metrics = {
-        disabled = false;
-        only_nonzero_diffs = true;
-        added_style = "fg:crust bg:yellow";
-        deleted_style = "fg:crust bg:yellow";
-        format = "([([+$added]($added_style))([-$deleted]($deleted_style)) ](bg:yellow))";
-      };
-
-      nix_shell = {
-        disabled = false;
-        symbol = " ";
+      nodejs = {
+        symbol = "";
         style = "bg:green";
-        format = "[[ $symbol$state( \\($name\\)) ](fg:crust bg:green)]($style)";
-        impure_msg = "impure";
-        pure_msg = "pure";
-        unknown_msg = "shell";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
       };
-
-      direnv = {
-        disabled = false;
-        symbol = " ";
+      bun = {
+        symbol = "";
         style = "bg:green";
-        format = "[[ $symbol$loaded/$allowed ](fg:crust bg:green)]($style)";
-        allowed_msg = "ok";
-        not_allowed_msg = "denied";
-        denied_msg = "denied";
-        loaded_msg = "on";
-        unloaded_msg = "off";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
       };
-
-      cmd_duration = {
-        min_time = 2000;
-        show_milliseconds = false;
-        style = "bg:lavender";
-        format = "[[ 󰔛 $duration ](fg:crust bg:lavender)]($style)";
+      c = {
+        symbol = " ";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
       };
-
-      jobs = {
-        symbol = "";
-        number_threshold = 1;
-        symbol_threshold = 1;
-        style = "bg:lavender";
-        format = "[[ $symbol $number ](fg:crust bg:lavender)]($style)";
+      rust = {
+        symbol = "";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
       };
-
-      status = {
-        disabled = false;
-        symbol = "";
-        success_symbol = "";
-        not_executable_symbol = "";
-        not_found_symbol = "";
-        sigint_symbol = "";
-        signal_symbol = "";
-        map_symbol = true;
-        pipestatus = false;
-        style = "bg:lavender";
-        format = "[[ $symbol $status ](fg:crust bg:lavender)]($style)";
+      golang = {
+        symbol = "";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
       };
-
+      php = {
+        symbol = "";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
+      };
+      java = {
+        symbol = " ";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
+      };
+      jj_bookmark = {
+        symbol = "";
+        style = "bg:yellow";
+        format = "[[ $symbol $bookmark(@$remote)$diverged( \\\\(+$overflow_count others\\\\)) ](fg:crust bg:yellow)]($style)";
+      };
+      jj_status = {
+        style = "bg:yellow";
+        format = "[[($all )](fg:crust bg:yellow)]($style)";
+      };
+      kotlin = {
+        symbol = "";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
+      };
+      haskell = {
+        symbol = "";
+        style = "bg:green";
+        format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
+      };
+      python = {
+        symbol = "";
+        style = "bg:green";
+        format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)";
+      };
+      docker_context = {
+        symbol = "";
+        style = "bg:sapphire";
+        format = "[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)";
+      };
+      conda = {
+        symbol = "  ";
+        style = "fg:crust bg:sapphire";
+        format = "[$symbol$environment ]($style)";
+        ignore_base = false;
+      };
       time = {
         disabled = false;
         time_format = "%R";
         style = "bg:lavender";
-        format = "[[  $time ](fg:crust bg:lavender)]($style)";
+        format = "[[  $time ](fg:crust bg:lavender)]($style)";
       };
-
-      line_break.disabled = false;
-
+      line_break = {
+        disabled = true;
+      };
       character = {
         disabled = false;
         success_symbol = "[❯](bold fg:green)";
         error_symbol = "[❯](bold fg:red)";
-        vimcmd_symbol = "[❯](bold fg:green)";
-        vimcmd_replace_one_symbol = "[❯](bold fg:lavender)";
-        vimcmd_replace_symbol = "[❯](bold fg:lavender)";
-        vimcmd_visual_symbol = "[❯](bold fg:yellow)";
+        vimcmd_symbol = "[❮](bold fg:green)";
+        vimcmd_replace_one_symbol = "[❮](bold fg:lavender)";
+        vimcmd_replace_symbol = "[❮](bold fg:lavender)";
+        vimcmd_visual_symbol = "[❮](bold fg:yellow)";
       };
-    }
-    // lib.genAttrs languageModules (name: {
-      style = "bg:green";
-      symbol = builtins.getAttr name languageSymbols;
-      disabled = false;
-      format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)";
-    });
+      cmd_duration = {
+        show_milliseconds = true;
+        format = " in $duration ";
+        style = "bg:lavender";
+        disabled = false;
+        show_notifications = true;
+        min_time_to_notify = 45000;
+      };
+      palettes = {
+        catppuccin_latte = {
+          rosewater = "#dc8a78";
+          flamingo = "#dd7878";
+          pink = "#ea76cb";
+          mauve = "#8839ef";
+          red = "#d20f39";
+          maroon = "#e64553";
+          peach = "#fe640b";
+          yellow = "#df8e1d";
+          green = "#40a02b";
+          teal = "#179299";
+          sky = "#04a5e5";
+          sapphire = "#209fb5";
+          blue = "#1e66f5";
+          lavender = "#7287fd";
+          text = "#4c4f69";
+          subtext1 = "#5c5f77";
+          subtext0 = "#6c6f85";
+          overlay2 = "#7c7f93";
+          overlay1 = "#8c8fa1";
+          overlay0 = "#9ca0b0";
+          surface2 = "#acb0be";
+          surface1 = "#bcc0cc";
+          surface0 = "#ccd0da";
+          base = "#eff1f5";
+          mantle = "#e6e9ef";
+          crust = "#dce0e8";
+        };
+      };
+    };
   };
 }
