@@ -42,6 +42,7 @@ let
     # core utils
     gh
     gnumake
+    just
     htop
     btop
     file
