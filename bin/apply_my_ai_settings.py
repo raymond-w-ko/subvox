@@ -1040,6 +1040,63 @@ def setting_claude_agents_md(state: State) -> None:
     )
 
 
+def is_working_bash(path: str) -> bool:
+    """True when `path` runs as bash; zsh, sh, and fish do not set BASH_VERSION."""
+    try:
+        proc = subprocess.run(
+            [path, "-c", 'printf %s "$BASH_VERSION"'],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return proc.returncode == 0 and bool(proc.stdout.strip())
+
+
+def setting_claude_shell(state: State) -> None:
+    """Make the Claude Code Bash tool run bash, not zsh.
+
+    Without CLAUDE_CODE_SHELL, Claude Code uses $SHELL when it is bash or zsh,
+    and otherwise the first zsh, then bash, it finds. So a fish or zsh user
+    gets zsh. The bash path comes from PATH and is not resolved: a package
+    manager can move the real binary on upgrade, but the PATH entry stays.
+    """
+    header("claude: Bash tool shell")
+    if WINDOWS:
+        info("claude: skipped on Windows, Claude Code uses Git Bash there")
+        return
+
+    try:
+        doc = json.loads(CLAUDE_SETTINGS.read_text())
+        current = get_path(doc, ["env", "CLAUDE_CODE_SHELL"])
+    except (OSError, ValueError):
+        # ensure_entry reports a file it cannot parse
+        current = None
+    if isinstance(current, str) and current and is_working_bash(current):
+        ok(f"claude: env.CLAUDE_CODE_SHELL is {current}, a working bash")
+        return
+    if current is not None:
+        info(f"claude: env.CLAUDE_CODE_SHELL {current!r} is not a working bash, replacing it")
+
+    bash = shutil.which("bash")
+    if bash is None:
+        state.fail("claude: bash is not on PATH")
+        return
+    if not is_working_bash(bash):
+        state.fail(f"claude: {bash} does not run as bash")
+        return
+    info(f"claude: using {bash}")
+    ensure_entry(
+        state,
+        CLAUDE_SETTINGS,
+        ["env", "CLAUDE_CODE_SHELL"],
+        bash,
+        "claude",
+        create=True,
+    )
+
+
 def setting_skill_symlinks(state: State) -> None:
     """Link shared skills and remove dangling links in each target's top level."""
     header("skills: symlink shared skills into codex, agents, and claude")
@@ -1123,6 +1180,7 @@ SETTINGS: list[Callable[[State], None]] = [
     setting_gateway,
     setting_claude_plugins,
     setting_claude_agents_md,
+    setting_claude_shell,
     setting_skill_symlinks,
 ]
 

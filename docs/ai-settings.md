@@ -112,6 +112,19 @@ next context build (new conversation, `/clear`, or compaction). Verify with
 `claude -p --tools "" --strict-mcp-config` in a repository holding only an
 `AGENTS.md`.
 
+The shell step makes the Claude Code Bash tool run bash. Without
+`CLAUDE_CODE_SHELL`, Claude Code uses `$SHELL` when it is bash or zsh, and
+otherwise the first zsh, then bash, that it finds. Fish is not supported, so a
+fish or zsh user gets zsh. The step sets `env.CLAUDE_CODE_SHELL` in
+`~/.claude/settings.json` to the `bash` found on PATH. The path is not resolved
+to its real target, so a package manager upgrade that moves the binary does not
+break it. A value that already runs as bash is kept, even when it differs from
+the PATH one, so a hand-picked bash survives reruns. A value that is not bash
+(zsh, sh, a missing file) is replaced. "Runs as bash" means `<path> -c` prints
+a non-empty `$BASH_VERSION`. The step fails when PATH has no working bash. It is
+skipped on Windows, where Claude Code uses Git Bash. Restart Claude Code to
+apply it.
+
 The skills step directly links every skill directory containing `SKILL.md`
 under `ai/skills/` into `~/.codex/skills` (or `$CODEX_HOME/skills`),
 `~/.agents/skills`, and `~/.claude/skills`. No shell or PowerShell helper is

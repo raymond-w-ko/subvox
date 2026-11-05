@@ -723,5 +723,117 @@ class SkillSymlinkTests(unittest.TestCase):
         self.unlink.assert_not_called()
 
 
+class ClaudeShellTests(unittest.TestCase):
+    bash = "/usr/local/bin/bash"
+
+    def setUp(self):
+        self.files = {
+            app.CLAUDE_SETTINGS: json.dumps({"env": {"KEEP": "keep-value"}}),
+        }
+        self.writes = []
+        self.output = io.StringIO()
+        self.addCleanup(patch.stopall)
+        patch.object(app, "WINDOWS", False).start()
+        patch.object(Path, "is_file", lambda path: path in self.files).start()
+        patch.object(Path, "read_text", lambda path: self.read(path)).start()
+        patch.object(Path, "write_text", lambda path, text: self.write(path, text)).start()
+        patch.object(Path, "chmod").start()
+        self.which = patch.object(app.shutil, "which", return_value=self.bash).start()
+        self.working = {self.bash, "/bin/bash"}
+        patch.object(app, "is_working_bash", lambda path: path in self.working).start()
+
+    def read(self, path):
+        if path not in self.files:
+            raise FileNotFoundError(path)
+        return self.files[path]
+
+    def write(self, path, text):
+        self.files[path] = text
+        self.writes.append(path)
+
+    def apply(self, dry_run=False):
+        state = app.State(dry_run)
+        with redirect_stdout(self.output):
+            app.setting_claude_shell(state)
+        return state
+
+    def shell(self):
+        return json.loads(self.files[app.CLAUDE_SETTINGS])["env"].get("CLAUDE_CODE_SHELL")
+
+    def test_sets_bash_from_path_and_keeps_other_env(self):
+        self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(self.shell(), self.bash)
+        env = json.loads(self.files[app.CLAUDE_SETTINGS])["env"]
+        self.assertEqual(env["KEEP"], "keep-value")
+        self.which.assert_called_once_with("bash")
+        before = len(self.writes)
+        self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(len(self.writes), before)
+
+    def test_keeps_an_existing_working_bash(self):
+        self.files[app.CLAUDE_SETTINGS] = json.dumps({"env": {"CLAUDE_CODE_SHELL": "/bin/bash"}})
+        self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(self.writes, [])
+        self.which.assert_not_called()
+
+    def test_replaces_a_value_that_is_not_bash(self):
+        for value in ("/usr/bin/zsh", "/missing/bash", "", 7):
+            with self.subTest(value=value):
+                self.files[app.CLAUDE_SETTINGS] = json.dumps({"env": {"CLAUDE_CODE_SHELL": value}})
+                self.assertEqual(self.apply().failures, 0)
+                self.assertEqual(self.shell(), self.bash)
+
+    def test_missing_settings_file_is_created(self):
+        self.files.pop(app.CLAUDE_SETTINGS)
+        stream = io.StringIO()
+        with patch.object(Path, "open") as opened, patch.object(Path, "mkdir"), patch.object(app.os, "chmod"):
+            opened.return_value.__enter__.return_value = stream
+            self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(json.loads(stream.getvalue())["env"]["CLAUDE_CODE_SHELL"], self.bash)
+
+    def test_no_usable_bash_is_a_failure_without_writes(self):
+        self.which.return_value = None
+        self.assertEqual(self.apply().failures, 1)
+        self.which.return_value = "/usr/bin/not-bash"
+        self.assertEqual(self.apply().failures, 1)
+        self.assertEqual(self.writes, [])
+
+    def test_dry_run_and_windows_do_not_write(self):
+        self.assertEqual(self.apply(dry_run=True).failures, 0)
+        with patch.object(app, "WINDOWS", True):
+            self.assertEqual(self.apply().failures, 0)
+        self.assertEqual(self.writes, [])
+        self.assertIsNone(self.shell())
+
+    def test_malformed_settings_are_preserved(self):
+        self.files[app.CLAUDE_SETTINGS] = '{"env": invalid}'
+        self.assertEqual(self.apply().failures, 1)
+        self.assertEqual(self.writes, [])
+
+
+class WorkingBashTests(unittest.TestCase):
+    def test_only_bash_counts(self):
+        cases = [
+            (subprocess.CompletedProcess([], 0, "5.2.37(1)-release", ""), True),
+            (subprocess.CompletedProcess([], 0, "", ""), False),  # zsh or sh
+            (subprocess.CompletedProcess([], 1, "5.2", ""), False),
+            (FileNotFoundError(), False),
+            (subprocess.TimeoutExpired("bash", 10), False),
+        ]
+        for result, expected in cases:
+            with self.subTest(result=result):
+                effect = {"side_effect": result} if isinstance(result, Exception) else {"return_value": result}
+                with patch.object(app.subprocess, "run", **effect):
+                    self.assertEqual(app.is_working_bash("/some/shell"), expected)
+
+    def test_real_shells(self):
+        bash = app.shutil.which("bash")
+        if bash:
+            self.assertTrue(app.is_working_bash(bash))
+        zsh = app.shutil.which("zsh")
+        if zsh:
+            self.assertFalse(app.is_working_bash(zsh))
+
+
 if __name__ == "__main__":
     unittest.main()
