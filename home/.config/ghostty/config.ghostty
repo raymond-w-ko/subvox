@@ -6,6 +6,7 @@ window-width = 180
 window-height = 45
 
 theme = Novel
+palette-generate = true
 
 gtk-titlebar = false
 window-theme = auto
