@@ -67,6 +67,47 @@ in
     enableZshIntegration = true;
     enableFishIntegration = true;
     defaultOptions = [ "--color=light" ];
+    # Solarized, using the 256-color approximations of the palette.
+    # To switch to Solarized Dark: set defaultOptions to [ "--color=dark" ],
+    # uncomment base3, and swap the Light attrset for the Dark one.
+    colors =
+      let
+        base03 = "234";
+        base02 = "235";
+        base2 = "254";
+        # base3 = "230";
+        yellow = "136";
+        blue = "33";
+      in
+      # Solarized Light
+      {
+        fg = "-1";
+        bg = "-1";
+        hl = blue;
+        "fg+" = base02;
+        "bg+" = base2;
+        "hl+" = blue;
+        info = yellow;
+        prompt = yellow;
+        pointer = base03;
+        marker = base03;
+        spinner = yellow;
+      }
+    # Solarized Dark
+    # {
+    #   fg = "-1";
+    #   bg = "-1";
+    #   hl = blue;
+    #   "fg+" = base2;
+    #   "bg+" = base02;
+    #   "hl+" = blue;
+    #   info = yellow;
+    #   prompt = yellow;
+    #   pointer = base3;
+    #   marker = base3;
+    #   spinner = yellow;
+    # }
+    ;
   };
 
   programs.bash.enable = true;
