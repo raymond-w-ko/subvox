@@ -66,6 +66,7 @@ in
     enableBashIntegration = true;
     enableZshIntegration = true;
     enableFishIntegration = true;
+    defaultOptions = [ "--color=16" ];
   };
 
   programs.bash.enable = true;
