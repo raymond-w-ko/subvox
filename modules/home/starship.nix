@@ -1,6 +1,76 @@
-{ lib, ... }:
 {
-  programs.starship = {
+  config,
+  lib,
+  osConfig,
+  ...
+}:
+let
+  hostName = config.subvox.starship.hostName;
+  # Hash only at Nix evaluation time. Map to HSV with 50% saturation and
+  # 95% value (RGB channels 121..242), so every hue supports dark text.
+  hash = builtins.hashString "sha256" hostName;
+  hue = lib.mod (lib.fromHexString (builtins.substring 0 8 hash)) 360;
+  sector = builtins.div hue 60;
+  offset = lib.mod hue 60;
+  rising = 121 + builtins.div (121 * offset) 60;
+  falling = 242 - builtins.div (121 * offset) 60;
+  rgb = builtins.elemAt [
+    [
+      242
+      rising
+      121
+    ]
+    [
+      falling
+      242
+      121
+    ]
+    [
+      121
+      242
+      rising
+    ]
+    [
+      121
+      falling
+      242
+    ]
+    [
+      rising
+      121
+      242
+    ]
+    [
+      242
+      121
+      falling
+    ]
+  ] sector;
+  hostColor =
+    if hostName == null then
+      "red"
+    else
+      "#${lib.concatMapStrings (channel: lib.toLower (lib.toHexString channel)) rgb}";
+  # Do not use palette.crust here: light palettes define it as a light colour.
+  hostForeground = if hostName == null then "crust" else "#171b24";
+  hostStyle = "bg:${hostColor} fg:${hostForeground}";
+in
+{
+  options.subvox.starship.hostName = lib.mkOption {
+    type = lib.types.nullOr lib.types.nonEmptyStr;
+    default = osConfig.networking.hostName or null;
+    defaultText = lib.literalExpression "osConfig.networking.hostName or null";
+    example = "nixvac";
+    description = ''
+      Hostname used to derive the first prompt block's colour at build time.
+      Defaults to the system configuration's hostname. Set this explicitly
+      for standalone Home Manager or systems without a declared hostname.
+      Null keeps the palette's red colour. Starship always displays the
+      runtime hostname; no extra command runs to compute its colour.
+    '';
+  };
+
+  config.programs.starship = {
     enable = true;
     enableFishIntegration = true;
     enableBashIntegration = true;
@@ -8,10 +78,11 @@
     settings = {
       "$schema" = "https://starship.rs/config-schema.json";
       format = lib.concatStrings [
-        "[](red)"
+        "[](${hostColor})"
         "$os"
         "$username"
-        "[](bg:peach fg:red)"
+        "$hostname"
+        "[](bg:peach fg:${hostColor})"
         "$directory"
         "[](bg:yellow fg:peach)"
         "$git_branch"
@@ -40,7 +111,7 @@
       palette = "ayu_mirage";
       os = {
         disabled = false;
-        style = "bg:red fg:crust";
+        style = hostStyle;
         symbols = {
           Windows = " ";
           Ubuntu = "󰕈 ";
@@ -68,9 +139,15 @@
       };
       username = {
         show_always = true;
-        style_user = "bg:red fg:crust";
-        style_root = "bg:red fg:crust";
+        style_user = hostStyle;
+        style_root = hostStyle;
         format = "[$user]($style)";
+      };
+      hostname = {
+        ssh_only = false;
+        ssh_symbol = "";
+        format = "[@$hostname ]($style)";
+        style = hostStyle;
       };
       directory = {
         style = "bg:peach fg:crust";
