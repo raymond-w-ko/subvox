@@ -68,12 +68,16 @@ cd ~/src/pi
 node node_modules/typescript/bin/tsc -p ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/tsconfig.json
 
 # Offline integration tests through Pi's real extension loader, without a build
-PI_OFFLINE=1 node --import ./scripts/issues/register.mjs --test ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/index.test.ts
+PI_OFFLINE=1 node --import ./packages/coding-agent/src/experimental/source-resolver.ts --test ~/subvox/home/.pi/agent/extensions/pi-rko-compact-tool-display/index.test.ts
 ```
 
-Typecheck inherits source aliases from `~/src/pi/tsconfig.json` and uses that
-checkout's Node types. Integration tests use local tool fixtures for external-tool
-ownership, resolver fallback, collapsed/expanded output, and Hashline edge cases.
+Use Node 22.19 or newer, as required by the current Pi checkout. Node strips
+TypeScript types; Pi's source resolver applies the workspace aliases from
+`~/src/pi/tsconfig.json` so tests use source modules rather than stale package
+builds. This resolver replaces the removed `scripts/issues/register.mjs` loader.
+Typecheck inherits the same source aliases and uses that checkout's Node types.
+Integration tests use local tool fixtures for external-tool ownership, resolver
+fallback, collapsed/expanded output, and Hashline edge cases.
 The additional real-Hashline test runs when `~/src/pi-hashline-edit-pro/index.ts`
 is present; otherwise only that optional test is skipped.
 
