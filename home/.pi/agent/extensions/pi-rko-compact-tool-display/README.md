@@ -107,18 +107,18 @@ there:
 |----------|---------|
 | `CONFIG.fileTools` | file-tool owner: `"builtin"` or `"hashline"` |
 | `CONFIG.enabled` | master switch for bash translation |
-| `CONFIG.model` | model (default `openrouter/google/gemini-3.5-flash-lite`) |
+| `CONFIG.model` | model (default `openrouter/anthropic/claude-haiku-5.5`, Claude Haiku 5.5 via OpenRouter) |
 | `CONFIG.thinking` | thinking level; default `low` |
 | `CONFIG.debug` | write `/tmp/rko-llm.log` diagnostics |
 
 Thinking levels: `off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`.
-Note `gemini-3.5-flash-lite` (openrouter) **requires** reasoning — `off` is
-forced to `low`. Also note `ModelRegistry.complete` needs `reasoningEffort` (not
-just `reasoning`) because it goes through `provider.stream`.
+Claude Haiku 5.5 uses `low` by default. Set `off` to disable reasoning; the
+extension passes the configured level unchanged. `ModelRegistry.complete` needs
+`reasoningEffort` (not just `reasoning`) because it goes through `provider.stream`.
 
 ## Cost-saving cache
 
-Labels are deterministic (temperature 0, pinned model), so results are cached
+Labels are cached for each model, thinking level, and command. Results are stored
 in SQLite at `~/.cache/pi-rko-compact-tool-display.sqlite3` (see `cache.ts`, uses
 `node:sqlite` — the same driver Pi's own storage uses) keyed by
 `model|thinking|command`. Hits avoid the LLM call entirely — including across
@@ -172,12 +172,12 @@ On this build, `model.api` is e.g. `"openai-completions"`. Calling
 and openrouter ends up sending `effort:"none"` → 400. Pass **both** `reasoning`
 and `reasoningEffort`.
 
-### 4. gemini-3.5-flash-lite (openrouter) REQUIRES reasoning
+### 4. Keep thinking settings consistent with the configured model
 
-`reasoning:"off"` → HTTP 400 `{"message":"Reasoning is mandatory for this
-endpoint and cannot be disabled."}` — the completion returns instantly
-(`stopReason:"error"`, `contentLen:0`) and the DB fills with `""`. `config.ts`
-forces `off` → `low`.
+The default model is Claude Haiku 5.5 via OpenRouter. It supports reasoning off,
+so `llm.ts` passes `CONFIG.thinking` unchanged instead of forcing `off` to `low`.
+If you select a model that requires reasoning, choose a supported thinking level
+in `config.ts`.
 
 ### 5. Live tool args stream in — first render has empty `command`
 

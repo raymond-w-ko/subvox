@@ -7,7 +7,7 @@
  * reuses stored credentials/API keys, base URLs, headers, and provider hooks.
  *
  * Model selection:
- *   - CONFIG.model (see config.ts) — defaults to openrouter/google/gemini-3.5-flash-lite,
+ *   - CONFIG.model (see config.ts) — defaults to openrouter/anthropic/claude-haiku-5.5,
  *     resolved via ModelRegistry.find, with a fallback to any configured model.
  */
 
@@ -98,8 +98,8 @@ export async function oneShot(prompt: string, options?: { maxTokens?: number }):
 		log("oneShot: registry.complete MISSING, returning '' (typeof=", typeof registry?.complete, ")");
 		return "";
 	}
-	// gemini-3.5-flash-lite (openrouter) requires reasoning, so "off" is invalid.
-	const reasoning: any = CONFIG.thinking === "off" ? "low" : CONFIG.thinking;
+	// Honor the configured thinking level, including "off" for Haiku 5.5.
+	const reasoning = CONFIG.thinking;
 	log("oneShot: calling registry.complete maxTokens=", options?.maxTokens ?? 40, "THINKING=", reasoning);
 
 	try {

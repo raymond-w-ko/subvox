@@ -6,9 +6,9 @@ export const CONFIG = {
 	fileTools: "builtin" as "builtin" | "hashline",
 	/** Master switch for bash-command translation. */
 	enabled: true,
-	/** Model used for the background one-shot translation. */
-	model: "openrouter/google/gemini-3.5-flash-lite",
-	/** Thinking level for the translation call (gemini-3.5-flash-lite requires reasoning). */
+	/** Claude Haiku 5.5 via OpenRouter for the background one-shot translation. */
+	model: "openrouter/anthropic/claude-haiku-5.5",
+	/** Thinking level for the translation call. Use "off" to disable reasoning. */
 	thinking: "low",
 	/** Write diagnostics to /tmp/rko-llm.log. */
 	debug: false,
