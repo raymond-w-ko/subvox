@@ -34,9 +34,9 @@
 
   environment.variables.PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.sqlite.dev}/lib/pkgconfig";
 
+  # colima comes from services.colima in modules/home/darwin.nix.
   environment.systemPackages = with pkgs; [
     docker
-    colima
   ];
 
   environment.shells = with pkgs; [
