@@ -50,7 +50,7 @@ esac
 # artificial analysis int vs cost frontier in general,
 # default is sol cause astra may be too reward hacked.
 models=(
-  openai/gpt-6.1-sol
+  openai/gpt-6.2-sol
   openai/gpt-6-astra
   openrouter/meta/muse-spark-1.3
   openrouter/xiaomi/mimo-v2.6-pro
