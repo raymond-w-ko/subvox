@@ -269,7 +269,7 @@ def ensure_entry(
 
 
 def setting_gateway(state: State) -> None:
-    header("CLIProxyAPI: codex, claude, pi, and grok")
+    header("AIVAC: codex, claude, pi, and grok")
     try:
         proxy = json.loads(AI_PROXY_CONFIG.read_text())
     except (OSError, ValueError):
@@ -322,9 +322,9 @@ def setting_gateway(state: State) -> None:
     if ensure_entry(
         state,
         CODEX_CONFIG,
-        ["model_providers", "cliproxyapi"],
+        ["model_providers", "aivac"],
         {
-            "name": "CLIProxyAPI",
+            "name": "AIVAC",
             "base_url": base_url + "/v1",
             "wire_api": "responses",
             "experimental_bearer_token": key,
@@ -338,7 +338,7 @@ def setting_gateway(state: State) -> None:
             state,
             CODEX_CONFIG,
             ["model_provider"],
-            "cliproxyapi",
+            "aivac",
             "codex",
             sensitive=True,
         )
@@ -369,7 +369,7 @@ def setting_grok_gateway(state: State, base_url: str, key: str, model: str) -> N
         GROK_CONFIG,
         ["model", "proxy"],
         {
-            "name": "CLIProxyAPI",
+            "name": "AIVAC",
             "model": model,
             "base_url": base_url + "/v1",
             "api_key": key,

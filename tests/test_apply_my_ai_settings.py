@@ -27,7 +27,7 @@ class GatewayTests(unittest.TestCase):
             }),
             app.CODEX_CONFIG: '# keep comment\nmodel = "keep-model"\n'
             '[model_providers.other]\nname = "keep-provider"\n'
-            '[model_providers.cliproxyapi]\nenv_key = "OLD_ENV"\n'
+            '[model_providers.aivac]\nenv_key = "OLD_ENV"\n'
             'experimental_bearer_token = "test-old-codex-key"\n',
             app.CLAUDE_SETTINGS: json.dumps({
                 "enabledPlugins": {"keep-plugin": True},
@@ -71,11 +71,12 @@ class GatewayTests(unittest.TestCase):
     def test_merge_and_rotation_preserve_unrelated_settings(self):
         self.assertEqual(self.run_gateway().failures, 0)
         codex = tomlkit.parse(self.files[app.CODEX_CONFIG])
-        self.assertEqual(codex["model_provider"], "cliproxyapi")
+        self.assertEqual(codex["model_provider"], "aivac")
         self.assertEqual(codex["model"], "keep-model")
         self.assertEqual(codex["model_providers"]["other"]["name"], "keep-provider")
         self.assertIn("# keep comment", self.files[app.CODEX_CONFIG])
-        provider = codex["model_providers"]["cliproxyapi"]
+        provider = codex["model_providers"]["aivac"]
+        self.assertEqual(provider["name"], "AIVAC")
         self.assertEqual(provider["experimental_bearer_token"], "test-new-key")
         self.assertEqual(provider["base_url"], "https://gateway.example.test/v1")
         self.assertEqual(provider["wire_api"], "responses")
@@ -137,7 +138,7 @@ class GatewayTests(unittest.TestCase):
             })
             self.assertEqual(self.run_gateway().failures, 0)
             codex = tomlkit.parse(self.files[app.CODEX_CONFIG])
-            self.assertEqual(codex["model_providers"]["cliproxyapi"]["base_url"], "https://gateway.example.test/v1")
+            self.assertEqual(codex["model_providers"]["aivac"]["base_url"], "https://gateway.example.test/v1")
             claude = json.loads(self.files[app.CLAUDE_SETTINGS])
             self.assertEqual(claude["env"]["ANTHROPIC_BASE_URL"], "https://gateway.example.test")
 
@@ -299,7 +300,7 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(self.run_gateway().failures, 0)
         config = tomlkit.parse(self.files[app.GROK_CONFIG])
         self.assertEqual(config["model"]["proxy"], {
-            "name": "CLIProxyAPI",
+            "name": "AIVAC",
             "model": "grok-4.6",
             "base_url": "https://gateway.example.test/v1",
             "api_key": "test-new-key",
